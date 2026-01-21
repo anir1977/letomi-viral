@@ -73,7 +73,81 @@ npm start
 
 Visit [http://localhost:3000](http://localhost:3000) to see the website.
 
-## 📈 SEO Features
+## � Admin Authentication Setup
+
+### Required Environment Variables
+
+The admin panel uses **Supabase** for authentication. You must configure these environment variables in **Vercel Dashboard**:
+
+| Variable | Description | Required |
+|----------|-------------|----------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Your Supabase project URL | ✅ Yes |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Your Supabase anonymous key | ✅ Yes |
+
+### Setting Up in Vercel
+
+1. **Go to Vercel Dashboard**
+   - Navigate to your project
+   - Click **Settings** → **Environment Variables**
+
+2. **Add Environment Variables**
+   ```
+   NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
+   ```
+
+3. **Apply to Environments**
+   - Select: Production, Preview, and Development
+   - Click **Save**
+
+4. **Redeploy**
+   - Go to **Deployments** tab
+   - Click **...** next to latest deployment
+   - Select **Redeploy**
+   - Or push a new commit to trigger deployment
+
+### Getting Supabase Credentials
+
+1. Go to [https://app.supabase.com](https://app.supabase.com)
+2. Select your project
+3. Click **Settings** → **API**
+4. Copy:
+   - **Project URL** → `NEXT_PUBLIC_SUPABASE_URL`
+   - **anon public** key → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+
+### Creating Admin Users
+
+1. In Supabase Dashboard:
+   - Go to **Authentication** → **Users**
+   - Click **Add user**
+   - Enter admin email and password
+   - User can now login at `/admin/login`
+
+2. Add email to admin allowlist:
+   - Edit `lib/admin-auth.ts`
+   - Add email to `ADMIN_EMAILS` array
+   - Commit and deploy
+
+### Local Development
+
+For local development, create a `.env.local` file:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
+```
+
+**Note:** `.env.local` is git-ignored for security.
+
+### Security Notes
+
+- ✅ No credentials are hardcoded in the repository
+- ✅ All authentication is handled server-side by Supabase
+- ✅ Environment variables are managed securely in Vercel
+- ✅ Admin access is restricted to allowlisted emails
+- ❌ Never commit `.env.local` to version control
+
+## �📈 SEO Features
 
 ### Breadcrumb Navigation
 - Schema.org BreadcrumbList markup
