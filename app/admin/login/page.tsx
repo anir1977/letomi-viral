@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase/client';
@@ -12,11 +12,41 @@ export default function AdminLoginPage() {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [debugInfo, setDebugInfo] = useState('');
+
+  useEffect(() => {
+    // Debug: Check if Supabase is configured
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    
+    if (!supabaseUrl || !supabaseKey || supabaseUrl.includes('placeholder')) {
+      console.error('❌ Supabase not configured!');
+      console.error('NEXT_PUBLIC_SUPABASE_URL:', supabaseUrl ? 'Set' : 'Missing');
+      console.error('NEXT_PUBLIC_SUPABASE_ANON_KEY:', supabaseKey ? 'Set' : 'Missing');
+      setDebugInfo('⚠️ Supabase environment variables not configured. This will only work in production.');
+    } else {
+      console.log('✅ Supabase configured:', supabaseUrl);
+      setDebugInfo('');
+    }
+  }, []);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
+
+    // Validate environment variables
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    if (!supabaseUrl || !supabaseKey || supabaseUrl.includes('placeholder')) {
+      setError('Supabase is not configured. Please set environment variables in production.');
+      setIsLoading(false);
+      console.error('❌ Cannot authenticate: Supabase not configured');
+      return;
+    }
+
+    console.log('🔐 Attempting login for:', email);
 
     try {
       const { data, error: authError } = await supabase.auth.signInWithPassword({
@@ -24,19 +54,43 @@ export default function AdminLoginPage() {
         password,
       });
 
+      console.log('📝 Login response:', { 
+        success: !!data.user, 
+        userId: data.user?.id,
+        error: authError?.message 
+      });
+
       if (authError) {
-        setError('Invalid credentials. Please check your email and password.');
+        console.error('❌ Auth error:', authError);
+        
+        // Provide specific error messages
+        if (authError.message.includes('Invalid login credentials')) {
+          setError('Invalid email or password. Please check your credentials.');
+        } else if (authError.message.includes('Email not confirmed')) {
+          setError('Please confirm your email address before logging in.');
+        } else {
+          setError(`Authentication failed: ${authError.message}`);
+        }
+        
         setIsLoading(false);
         return;
       }
 
       if (data.user) {
+        console.log('✅ Login successful! User:', data.user.email);
+        console.log('🔄 Redirecting to /admin...');
+        
         // Successful login - redirect to admin dashboard
         router.push('/admin');
         router.refresh();
+      } else {
+        console.error('❌ No user data returned');
+        setError('Authentication failed. Please try again.');
+        setIsLoading(false);
       }
     } catch (err) {
-      setError('An unexpected error occurred. Please try again.');
+      console.error('❌ Unexpected error:', err);
+      setError(`Unexpected error: ${err instanceof Error ? err.message : 'Unknown error'}`);
       setIsLoading(false);
     }
   };
@@ -60,6 +114,17 @@ export default function AdminLoginPage() {
         {/* Login Form Card */}
         <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-8 border border-gray-100 dark:border-gray-700 backdrop-blur-sm">
           <form onSubmit={handleSubmit} className="space-y-6">
+            {debugInfo && (
+              <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 border-l-4 border-yellow-500 rounded-lg">
+                <div className="flex items-start">
+                  <svg className="w-5 h-5 text-yellow-600 dark:text-yellow-400 mt-0.5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                  </svg>
+                  <p className="text-sm font-medium text-yellow-700 dark:text-yellow-400">{debugInfo}</p>
+                </div>
+              </div>
+            )}
+
             {error && (
               <div className="p-4 bg-red-50 dark:bg-red-900/30 border-l-4 border-red-500 rounded-lg animate-shake">
                 <div className="flex items-start">
