@@ -5,13 +5,13 @@ import type { NextRequest } from 'next/server';
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Allow login page
-  if (pathname === '/login') {
+  // Allow admin login page
+  if (pathname === '/admin/login') {
     return NextResponse.next();
   }
 
-  // For admin routes, authentication is handled in the layout component
-  // This is because we're using localStorage which is client-side only
+  // For other admin routes, authentication is handled in the admin layout component
+  // This uses Supabase Auth client-side for session management
   return NextResponse.next();
 }
 
@@ -19,6 +19,5 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     '/admin/:path*',
-    '/login',
   ],
 };
