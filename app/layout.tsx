@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "CurioSpark - Fascinating Facts & Surprising Truths",
     description: "Discover mind-blowing facts backed by science. Psychology, history, nature & human behavior explained.",
-    url: "https://curiospark.com",
+    url: "https://www.curiospark.org",
     siteName: "CurioSpark",
     locale: "en_US",
     type: "website",
