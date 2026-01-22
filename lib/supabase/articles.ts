@@ -8,6 +8,42 @@ import { supabase } from './client';
 import type { Article, ArticleInsert, ArticleUpdate } from '@/types/database';
 
 /**
+ * Generate a unique slug by appending a number if slug already exists
+ */
+async function generateUniqueSlug(baseSlug: string, excludeId?: string): Promise<string> {
+  let slug = baseSlug;
+  let counter = 1;
+  
+  while (true) {
+    let query = supabase
+      .from('articles')
+      .select('id')
+      .eq('slug', slug);
+    
+    // Exclude current article if updating
+    if (excludeId) {
+      query = query.neq('id', excludeId);
+    }
+    
+    const { data, error } = await query.limit(1);
+    
+    if (error) {
+      console.error('Error checking slug uniqueness:', error);
+      throw error;
+    }
+    
+    // Slug is unique
+    if (!data || data.length === 0) {
+      return slug;
+    }
+    
+    // Slug exists, try with counter
+    slug = `${baseSlug}-${counter}`;
+    counter++;
+  }
+}
+
+/**
  * Get all articles with optional filters
  */
 export async function getArticles(filters?: {
@@ -82,14 +118,68 @@ export async function getArticleBySlug(slug: string) {
  * Create new article
  */
 export async function createArticle(article: ArticleInsert): Promise<Article> {
+  console.log('📥 createArticle called with:', {
+    ...article,
+    content: article.content?.substring(0, 100) + '...',
+  });
+
+  // Validation: Ensure required fields are present
+  if (!article.title || !article.slug || !article.excerpt || !article.content) {
+    const missingFields = [];
+    if (!article.title) missingFields.push('title');
+    if (!article.slug) missingFields.push('slug');
+    if (!article.excerpt) missingFields.push('excerpt');
+    if (!article.content) missingFields.push('content');
+    throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
+  }
+
+  // Ensure category_id is provided (not null)
+  if (!article.category_id) {
+    console.warn('⚠️ category_id is null or undefined');
+    throw new Error('category_id is required and cannot be null');
+  }
+
+  // Ensure slug is unique (auto-generate unique slug if conflict)
+  const uniqueSlug = await generateUniqueSlug(article.slug);
+  if (uniqueSlug !== article.slug) {
+    console.log(`🔄 Slug conflict detected. Changed from "${article.slug}" to "${uniqueSlug}"`);
+  }
+
+  const articleWithUniqueSlug = {
+    ...article,
+    slug: uniqueSlug,
+  };
+
   const { data, error } = await supabase
     .from('articles')
     // @ts-ignore - Supabase type inference issue
-    .insert(article)
+    .insert(articleWithUniqueSlug)
     .select()
     .single();
 
-  if (error) throw error;
+  if (error) {
+    console.error('❌ Supabase INSERT error:', {
+      message: error.message,
+      details: error.details,
+      hint: error.hint,
+      code: error.code,
+      fullError: error,
+    });
+
+    // Handle unique constraint violation (should not happen after generateUniqueSlug)
+    if (error.code === '23505' && error.message.includes('slug')) {
+      throw new Error(`Slug "${uniqueSlug}" already exists. Please try again.`);
+    }
+
+    // Throw detailed error message
+    throw new Error(`Supabase error: ${error.message}${error.hint ? ' - ' + error.hint : ''}`);
+  }
+
+  if (!data) {
+    throw new Error('No data returned from insert operation');
+  }
+
+  console.log('✅ Article created successfully:', data.id);
   return data as Article;
 }
 
@@ -97,15 +187,65 @@ export async function createArticle(article: ArticleInsert): Promise<Article> {
  * Update article
  */
 export async function updateArticle(id: string, updates: ArticleUpdate) {
+  console.log('📝 updateArticle called:', {
+    id,
+    updates: {
+      ...updates,
+      content: updates.content?.substring(0, 100) + '...',
+    },
+  });
+
+  if (!id) {
+    throw new Error('Article ID is required for update');
+  }
+
+  // If slug is being updated, ensure it's unique
+  let updatedData = { ...updates };
+  if (updates.slug) {
+    const uniqueSlug = await generateUniqueSlug(updates.slug, id);
+    if (uniqueSlug !== updates.slug) {
+      console.log(`🔄 Slug conflict detected. Changed from "${updates.slug}" to "${uniqueSlug}"`);
+      updatedData.slug = uniqueSlug;
+    }
+  }
+
+  // Set updated_at timestamp
+  const updatesWithTimestamp = {
+    ...updatedData,
+    updated_at: new Date().toISOString(),
+  };
+
   const { data, error } = await supabase
     .from('articles')
     // @ts-ignore - Supabase type inference issue
-    .update(updates)
+    .update(updatesWithTimestamp)
     .eq('id', id)
     .select()
     .single();
 
-  if (error) throw error;
+  if (error) {
+    console.error('❌ Supabase UPDATE error:', {
+      message: error.message,
+      details: error.details,
+      hint: error.hint,
+      code: error.code,
+      fullError: error,
+    });
+
+    // Handle unique constraint violation (should not happen after generateUniqueSlug)
+    if (error.code === '23505' && error.message.includes('slug')) {
+      throw new Error(`Slug "${updatedData.slug}" already exists. Please try again.`);
+    }
+
+    // Throw detailed error message
+    throw new Error(`Supabase error: ${error.message}${error.hint ? ' - ' + error.hint : ''}`);
+  }
+
+  if (!data) {
+    throw new Error(`Article with ID ${id} not found`);
+  }
+
+  console.log('✅ Article updated successfully:', data.id);
   return data;
 }
 

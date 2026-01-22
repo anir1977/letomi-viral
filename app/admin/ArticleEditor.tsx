@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, ChangeEvent, FormEvent } from 'react';
+import { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   ArrowLeftIcon,
@@ -9,7 +9,10 @@ import {
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import Card from './components/Card';
-import { mockCategories } from './lib/mockData';
+import { getCategories } from '@/lib/supabase/categories';
+import { createArticle, updateArticle } from '@/lib/supabase/articles';
+import { supabase } from '@/lib/supabase/client';
+import type { Category } from '@/types/database';
 import { Article } from './types';
 
 interface ArticleEditorProps {
@@ -20,6 +23,8 @@ interface ArticleEditorProps {
 export default function ArticleEditor({ initialData, isEditing = false }: ArticleEditorProps) {
   const router = useRouter();
   const [isSaving, setIsSaving] = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [categoryId, setCategoryId] = useState(initialData?.category || '');
   const [formData, setFormData] = useState<Partial<Article>>({
     title: initialData?.title || '',
     slug: initialData?.slug || '',
@@ -33,6 +38,23 @@ export default function ArticleEditor({ initialData, isEditing = false }: Articl
   });
 
   const [tagInput, setTagInput] = useState('');
+
+  useEffect(() => {
+    loadCategories();
+  }, []);
+
+  async function loadCategories() {
+    try {
+      const data = await getCategories();
+      setCategories(data || []);
+      // Set default category if not editing and no category selected
+      if (!isEditing && !categoryId && data && data.length > 0) {
+        setCategoryId(data[0].id);
+      }
+    } catch (error) {
+      console.error('Error loading categories:', error);
+    }
+  }
 
   // Auto-generate slug from title
   const handleTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -76,17 +98,146 @@ export default function ArticleEditor({ initialData, isEditing = false }: Articl
 
   const handleSubmit = async (e: FormEvent, status: 'draft' | 'published') => {
     e.preventDefault();
+    
+    // Validation
+    if (!formData.title?.trim()) {
+      alert('Le titre est requis');
+      return;
+    }
+    
+    if (!formData.slug?.trim()) {
+      alert('Le slug est requis');
+      return;
+    }
+    
+    if (!formData.content?.trim()) {
+      alert('Le contenu est requis');
+      return;
+    }
+    
+    if (!categoryId) {
+      alert('Veuillez sélectionner une catégorie');
+      return;
+    }
+
     setIsSaving(true);
+    console.log('💾 Saving article...', { isEditing, status, categoryId });
 
-    // TODO: Implement Supabase save
-    const articleData = { ...formData, status };
-    console.log('Saving article:', articleData);
+    try {
+      // Check if user is authenticated
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError) {
+        console.error('❌ Session error:', sessionError);
+        throw new Error(`Session error: ${sessionError.message}`);
+      }
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
+      if (!session) {
+        console.error('❌ No active session - user not authenticated');
+        throw new Error(
+          'Vous devez être connecté pour sauvegarder un article. ' +
+          'Veuillez vous déconnecter et vous reconnecter à /admin/login'
+        );
+      }
 
-    setIsSaving(false);
-    router.push('/admin/articles');
+      console.log('✅ User authenticated:', session.user.email);
+
+      // Prepare article data matching DB schema
+      const articleData = {
+        title: formData.title.trim(),
+        slug: formData.slug.trim(),
+        excerpt: formData.content.substring(0, 200), // Generate excerpt from content
+        content: formData.content.trim(),
+        category_id: categoryId, // UUID (REQUIRED)
+        tags: formData.tags || [],
+        seo_title: formData.metaTitle || formData.title,
+        seo_description: formData.metaDescription || formData.content.substring(0, 160),
+        keywords: formData.tags || [], // Use tags as keywords
+        status,
+        cover_image_url: formData.coverImage || null,
+      };
+
+      console.log('📝 Article data:', {
+        ...articleData,
+        content: articleData.content.substring(0, 100) + '...',
+      });
+
+      let savedArticle;
+
+      if (isEditing && initialData?.id) {
+        // UPDATE existing article
+        console.log('🔄 Updating article:', initialData.id);
+        savedArticle = await updateArticle(initialData.id, articleData);
+        console.log('✅ Article updated successfully');
+      } else {
+        // INSERT new article
+        console.log('➕ Creating new article');
+        savedArticle = await createArticle(articleData);
+        console.log('✅ Article created successfully:', savedArticle.id);
+      }
+
+      // Success - redirect to articles list
+      router.push('/admin/articles');
+    } catch (error) {
+      console.error('❌ Error saving article:', error);
+      
+      // Log full error object for debugging
+      console.error('Full error object:', {
+        error,
+        errorType: typeof error,
+        isErrorInstance: error instanceof Error,
+        errorKeys: error ? Object.keys(error) : [],
+      });
+      
+      // Detailed error logging
+      if (error instanceof Error) {
+        console.error('Error name:', error.name);
+        console.error('Error message:', error.message);
+        console.error('Error stack:', error.stack);
+      }
+      
+      // Extract detailed error message
+      let errorMessage = 'Erreur inconnue';
+      let errorHint = '';
+      
+      if (error instanceof Error) {
+        errorMessage = error.message;
+        
+        // Add specific hints based on error message
+        if (errorMessage.includes('new row violates row-level security policy') || 
+            errorMessage.includes('RLS') ||
+            errorMessage.includes('policy')) {
+          errorHint = '\n\n🔒 PROBLÈME DE SÉCURITÉ RLS:\n' +
+            'Les policies Supabase bloquent la sauvegarde.\n\n' +
+            'SOLUTION:\n' +
+            '1. Allez dans Supabase SQL Editor\n' +
+            '2. Exécutez le fichier: supabase/ARTICLES_RLS_SETUP.sql\n' +
+            '3. Vérifiez que les policies sont créées\n' +
+            '4. Réessayez de sauvegarder';
+        } else if (errorMessage.includes('Session') || errorMessage.includes('connecté')) {
+          errorHint = '\n\n🔑 PROBLÈME D\'AUTHENTIFICATION:\n' +
+            'Votre session a expiré.\n\n' +
+            'SOLUTION:\n' +
+            '1. Déconnectez-vous\n' +
+            '2. Reconnectez-vous à /admin/login\n' +
+            '3. Réessayez';
+        } else if (errorMessage.includes('Slug') && errorMessage.includes('exists')) {
+          errorHint = '\n\n📝 Le slug sera modifié automatiquement';
+        }
+      } else if (typeof error === 'object' && error !== null) {
+        // @ts-ignore - Handle Supabase error object
+        errorMessage = error.message || JSON.stringify(error);
+      }
+      
+      // Show specific error message to user
+      alert(
+        `❌ ÉCHEC DE LA SAUVEGARDE\n\n` +
+        `Erreur: ${errorMessage}${errorHint}\n\n` +
+        `📋 Détails dans la console (F12)`
+      );
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -176,16 +327,15 @@ export default function ArticleEditor({ initialData, isEditing = false }: Articl
                   Category *
                 </label>
                 <select
-                  name="category"
-                  value={formData.category}
-                  onChange={handleInputChange}
+                  value={categoryId}
+                  onChange={(e) => setCategoryId(e.target.value)}
                   required
                   className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  <option value="">Select category</option>
-                  {mockCategories.map((cat) => (
-                    <option key={cat.id} value={cat.name}>
-                      {cat.name}
+                  <option value="">Sélectionnez une catégorie</option>
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.icon} {cat.name}
                     </option>
                   ))}
                 </select>

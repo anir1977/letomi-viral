@@ -6,21 +6,21 @@ import {
   SparklesIcon,
   ArrowPathIcon,
   CheckCircleIcon,
-  PhotoIcon,
   DocumentTextIcon,
 } from '@heroicons/react/24/outline';
 import Card from '../components/Card';
 import { generateAIArticle, type WritingMode, type ToneType } from '@/lib/ai-generator';
 import { getCategories } from '@/lib/supabase/categories';
-import { createArticle } from '@/lib/supabase/articles';
-import { autoGenerateArticleImages } from '@/lib/supabase/images';
+import { supabase } from '@/lib/supabase/client';
 import type { Category } from '@/types/database';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 export default function AIWriterPage() {
   const router = useRouter();
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const [step, setStep] = useState<'input' | 'preview' | 'saved'>('input');
+  const [step, setStep] = useState<'input' | 'preview'>('input');
   
   // Categories from DB
   const [categories, setCategories] = useState<Category[]>([]);
@@ -38,34 +38,47 @@ export default function AIWriterPage() {
   const [seoScore, setSeoScore] = useState(0);
 
   useEffect(() => {
+    console.log('🔄 Component mounted, loading categories...');
     loadCategories();
   }, []);
 
   async function loadCategories() {
     try {
+      console.log('📂 Fetching categories from database...');
       const data = await getCategories();
+      console.log('✅ Categories loaded:', data);
       setCategories(data || []);
       if (data && data.length > 0) {
         setCategoryId(data[0].id);
+        console.log('✓ Default category set:', data[0].name);
+      } else {
+        console.warn('⚠️ No categories found in database!');
       }
     } catch (error) {
-      console.error('Error loading categories:', error);
+      console.error('❌ Error loading categories:', error);
+      alert('Erreur lors du chargement des catégories. Vérifiez votre connexion Supabase.');
     }
   }
 
   // Generate article with AI
   const generateArticle = async () => {
+    console.log('🚀 Generate button clicked!');
+    console.log('Topic:', topic);
+    console.log('Category ID:', categoryId);
+    console.log('Keywords:', keywords);
+    
     if (!topic.trim()) {
-      alert('Please enter article topic');
+      alert('Veuillez entrer un sujet d\'article');
       return;
     }
 
     if (!categoryId) {
-      alert('Please select a category');
+      alert('Veuillez sélectionner une catégorie');
       return;
     }
 
     setIsGenerating(true);
+    console.log('🎯 Starting AI generation...');
 
     try {
       // Parse keywords
@@ -74,6 +87,9 @@ export default function AIWriterPage() {
       if (keywordsList.length === 0) {
         keywordsList.push(topic);
       }
+
+      console.log('📝 Keywords list:', keywordsList);
+      console.log('📂 Category:', categories.find(c => c.id === categoryId)?.name);
 
       // Generate article using AI engine
       const article = await generateAIArticle({
@@ -85,6 +101,7 @@ export default function AIWriterPage() {
         length,
       });
 
+      console.log('✅ Article generated successfully!', article);
       setGeneratedArticle(article);
       
       // Calculate SEO score
@@ -100,54 +117,106 @@ export default function AIWriterPage() {
       score += 10; // Bonus for AI generation
       
       setSeoScore(score);
+      console.log('📊 SEO Score:', score);
       setStep('preview');
     } catch (error) {
-      console.error('Error generating article:', error);
-      alert('Failed to generate article. Please try again.');
+      console.error('❌ Error generating article:', error);
+      alert(`Échec de la génération de l'article: ${error instanceof Error ? error.message : 'Erreur inconnue'}`);
     } finally {
       setIsGenerating(false);
+      console.log('🏁 Generation process completed');
     }
   };
 
-  // Save article to database
-  const saveArticle = async () => {
-    if (!generatedArticle) return;
+  // Create draft article - Simple and reliable
+  const createDraft = async () => {
+    if (!generatedArticle) {
+      console.error('❌ No generated article to save');
+      alert('Aucun article généré à sauvegarder');
+      return;
+    }
+
+    if (!categoryId) {
+      console.error('❌ No category selected');
+      alert('Veuillez sélectionner une catégorie avant de créer le brouillon');
+      return;
+    }
 
     setIsSaving(true);
+    console.log('📝 Creating draft article...');
 
     try {
-      // Create article in database
-      const newArticle = await createArticle({
+      // Get authenticated user
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        throw new Error('Vous devez être connecté. Allez à /admin/login');
+      }
+
+      console.log('✅ User:', session.user.email);
+
+      // Generate unique slug with timestamp to avoid conflicts
+      const baseSlug = generatedArticle.slug;
+      const timestamp = Date.now().toString(36); // Base36 timestamp (shorter)
+      const uniqueSlug = `${baseSlug}-${timestamp}`;
+
+      // Minimal draft data - only required fields
+      const draftData = {
         title: generatedArticle.title,
-        slug: generatedArticle.slug,
+        slug: uniqueSlug, // Guaranteed unique with timestamp
         excerpt: generatedArticle.excerpt,
         content: generatedArticle.content,
         category_id: categoryId,
-        tags: generatedArticle.tags,
-        seo_title: generatedArticle.seoTitle,
-        seo_description: generatedArticle.seoDescription,
-        keywords: generatedArticle.keywords,
-        status: 'draft',
+        author_id: session.user.id, // Set author
+        status: 'draft' as const,
+        // Optional: preserve AI-generated metadata
+        tags: generatedArticle.tags || [],
+        seo_title: generatedArticle.seoTitle || generatedArticle.title,
+        seo_description: generatedArticle.seoDescription || generatedArticle.excerpt,
+        keywords: generatedArticle.keywords || [],
+      };
+
+      console.log('📤 Saving draft:', { 
+        title: draftData.title, 
+        slug: draftData.slug,
+        category_id: draftData.category_id,
+        author_id: draftData.author_id
       });
 
-      // Auto-generate images
-      await autoGenerateArticleImages(
-        newArticle.id,
-        generatedArticle.title,
-        generatedArticle.keywords
-      );
+      // Save to database
+      // @ts-ignore - Supabase type inference issue
+      const { data, error } = await supabase
+        .from('articles')
+        // @ts-ignore
+        .insert(draftData)
+        .select()
+        .single();
 
-      setStep('saved');
+      if (error) {
+        console.error('❌ Supabase error:', error);
+        throw new Error(error.message || 'Échec de la sauvegarde');
+      }
+
+      // @ts-ignore - Type assertion for data
+      console.log('✅ Draft created:', data?.id);
       
-      // Redirect to edit page after 2 seconds
-      setTimeout(() => {
-        router.push(`/admin/articles/${newArticle.id}`);
-      }, 2000);
+      // Show success and redirect to articles dashboard
+      alert('✅ Brouillon créé avec succès!\n\nVous pouvez maintenant le modifier et le publier depuis le tableau de bord.');
+      router.push('/admin/articles');
+      
     } catch (error) {
-      console.error('Error saving article:', error);
-      alert('Failed to save article. Please try again.');
+      console.error('❌ Error creating draft:', error);
+      
+      const errorMessage = error instanceof Error ? error.message : 'Erreur inconnue';
+      
+      alert(
+        `❌ Échec de la création du brouillon\n\n` +
+        `Erreur: ${errorMessage}\n\n` +
+        `Vérifiez la console (F12) pour plus de détails.`
+      );
     } finally {
       setIsSaving(false);
+      console.log('🏁 Save process completed');
     }
   };
 
@@ -306,19 +375,24 @@ export default function AIWriterPage() {
 
             {/* Generate Button */}
             <button
-              onClick={generateArticle}
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                console.log('🔘 Button clicked - starting generation');
+                generateArticle();
+              }}
               disabled={isGenerating || !topic || !categoryId}
               className="w-full py-4 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 hover:from-purple-700 hover:via-pink-700 hover:to-blue-700 text-white rounded-lg font-semibold text-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-lg hover:shadow-xl"
             >
               {isGenerating ? (
                 <>
                   <ArrowPathIcon className="w-6 h-6 mr-3 animate-spin" />
-                  Generating viral article...
+                  Génération de l'article viral...
                 </>
               ) : (
                 <>
                   <SparklesIcon className="w-6 h-6 mr-3" />
-                  Generate Article with AI
+                  Générer l'Article avec l'IA
                 </>
               )}
             </button>
@@ -358,19 +432,19 @@ export default function AIWriterPage() {
                   New Article
                 </button>
                 <button
-                  onClick={saveArticle}
+                  onClick={createDraft}
                   disabled={isSaving}
-                  className="px-6 py-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-lg transition-all flex items-center font-semibold disabled:opacity-50"
+                  className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all flex items-center font-semibold disabled:opacity-50 shadow-md"
                 >
                   {isSaving ? (
                     <>
                       <ArrowPathIcon className="w-5 h-5 mr-2 animate-spin" />
-                      Saving...
+                      Création...
                     </>
                   ) : (
                     <>
-                      <CheckCircleIcon className="w-5 h-5 mr-2" />
-                      Save & Generate Images
+                      <DocumentTextIcon className="w-5 h-5 mr-2" />
+                      Créer un brouillon
                     </>
                   )}
                 </button>
@@ -497,10 +571,18 @@ export default function AIWriterPage() {
 
           {/* Content Preview */}
           <Card title="📄 Article Content">
-            <div className="prose dark:prose-invert max-w-none">
-              <div className="whitespace-pre-wrap text-gray-800 dark:text-gray-200 leading-relaxed">
+            <div className="prose prose-lg dark:prose-invert max-w-none 
+              prose-headings:font-bold prose-headings:text-gray-900 dark:prose-headings:text-white
+              prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-p:leading-relaxed
+              prose-a:text-blue-600 dark:prose-a:text-blue-400
+              prose-strong:text-gray-900 dark:prose-strong:text-white
+              prose-ul:list-disc prose-ol:list-decimal
+              prose-li:text-gray-700 dark:prose-li:text-gray-300
+              prose-code:text-purple-600 dark:prose-code:text-purple-400
+              prose-pre:bg-gray-100 dark:prose-pre:bg-gray-800">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
                 {generatedArticle.content}
-              </div>
+              </ReactMarkdown>
             </div>
           </Card>
 
@@ -518,28 +600,6 @@ export default function AIWriterPage() {
             </Card>
           )}
         </>
-      )}
-
-      {/* Saved State */}
-      {step === 'saved' && (
-        <Card>
-          <div className="text-center py-16">
-            <div className="mb-6">
-              <CheckCircleIcon className="w-20 h-20 mx-auto text-green-600 dark:text-green-400 animate-bounce" />
-            </div>
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-3">
-              🎉 Article Created Successfully!
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-4">
-              Generating images and redirecting to editor...
-            </p>
-            <div className="flex items-center justify-center gap-2">
-              <div className="w-2 h-2 bg-purple-600 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-              <div className="w-2 h-2 bg-blue-600 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-              <div className="w-2 h-2 bg-pink-600 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
-            </div>
-          </div>
-        </Card>
       )}
     </div>
   );
