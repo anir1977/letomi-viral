@@ -136,14 +136,15 @@ export default function AIWriterPage() {
       return;
     }
 
-    if (!categoryId) {
-      console.error('❌ No category selected');
-      alert('Veuillez sélectionner une catégorie avant de créer le brouillon');
-      return;
-    }
+    // NOTE: Category validation removed - will be set in Article Editor
+    // if (!categoryId) {
+    //   console.error('❌ No category selected');
+    //   alert('Veuillez sélectionner une catégorie avant de créer le brouillon');
+    //   return;
+    // }
 
     setIsSaving(true);
-    console.log('📝 Creating draft article...');
+    console.log('📝 Creating draft article (category will be set in editor)...');
 
     try {
       // Get authenticated user
@@ -161,12 +162,14 @@ export default function AIWriterPage() {
       const uniqueSlug = `${baseSlug}-${timestamp}`;
 
       // Minimal draft data - only required fields
+      // NOTE: category_id temporarily removed due to Supabase schema cache issue
+      // Users can set the category in the Article Editor after creation
       const draftData = {
         title: generatedArticle.title,
         slug: uniqueSlug, // Guaranteed unique with timestamp
         excerpt: generatedArticle.excerpt,
         content: generatedArticle.content,
-        category_id: categoryId,
+        // category_id: categoryId, // TEMPORARILY DISABLED - schema cache not updated
         author_id: session.user.id, // Set author
         status: 'draft' as const,
         // Optional: preserve AI-generated metadata
@@ -179,8 +182,8 @@ export default function AIWriterPage() {
       console.log('📤 Saving draft:', { 
         title: draftData.title, 
         slug: draftData.slug,
-        category_id: draftData.category_id,
-        author_id: draftData.author_id
+        author_id: draftData.author_id,
+        note: 'Category will be set in Article Editor'
       });
 
       // Save to database
@@ -201,7 +204,11 @@ export default function AIWriterPage() {
       console.log('✅ Draft created:', data?.id);
       
       // Show success and redirect to articles dashboard
-      alert('✅ Brouillon créé avec succès!\n\nVous pouvez maintenant le modifier et le publier depuis le tableau de bord.');
+      alert(
+        '✅ Brouillon créé avec succès!\n\n' +
+        '📝 N\'oubliez pas de définir la CATÉGORIE dans l\'éditeur d\'articles.\n\n' +
+        'Vous allez être redirigé vers le tableau de bord.'
+      );
       router.push('/admin/articles');
       
     } catch (error) {
@@ -272,7 +279,9 @@ export default function AIWriterPage() {
 
             {/* Category and Length */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Category */}
+              {/* Category - TEMPORARILY DISABLED due to Supabase schema cache */}
+              {/* Will be set in Article Editor after draft creation */}
+              {/*
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Category *
@@ -289,8 +298,18 @@ export default function AIWriterPage() {
                   ))}
                 </select>
               </div>
+              */}
 
-              {/* Length */}
+              {/* Info message about category */}
+              <div className="md:col-span-2 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                <p className="text-sm text-blue-800 dark:text-blue-200">
+                  ℹ️ <strong>Note:</strong> Vous définirez la catégorie de l'article dans l'éditeur après création du brouillon.
+                </p>
+              </div>
+            </div>
+
+            {/* Length - Full width now */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Article Length
