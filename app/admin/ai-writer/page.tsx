@@ -1,5 +1,6 @@
 'use client';
 
+// VERSION: 2026-01-22-FIX-CATEGORY-ID (without category_id in payload)
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import {
@@ -229,6 +230,9 @@ export default function AIWriterPage() {
 
   return (
     <div className="space-y-6">
+      {/* Version indicator (hidden but visible in DOM) */}
+      <div data-version="2026-01-22-NO-CATEGORY-ID" style={{display: 'none'}}>v2.0</div>
+      
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
