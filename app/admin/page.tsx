@@ -69,6 +69,19 @@ export default function AdminDashboard() {
       setLowCTRArticles(lowCTRData || []);
     } catch (error) {
       console.error('Error loading dashboard data:', error);
+      // Set fallback demo data if database fails
+      setStats({
+        totalArticles: 0,
+        publishedArticles: 0,
+        draftArticles: 0,
+        totalViews: 0,
+        viewsLastWeek: 0,
+        viewsGrowth: 0,
+      });
+      setTopArticles([]);
+      setTrendingArticles([]);
+      setArticlesWithoutImages([]);
+      setLowCTRArticles([]);
     } finally {
       setLoading(false);
     }

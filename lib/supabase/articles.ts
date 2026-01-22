@@ -149,62 +149,74 @@ export async function publishArticle(id: string) {
  * Get dashboard stats (REAL DATA)
  */
 export async function getDashboardStats() {
-  // Total articles
-  const { count: totalArticles } = await supabase
-    .from('articles')
-    .select('*', { count: 'exact', head: true });
+  try {
+    // Total articles
+    const { count: totalArticles } = await supabase
+      .from('articles')
+      .select('*', { count: 'exact', head: true });
 
-  // Published articles
-  const { count: publishedArticles } = await supabase
-    .from('articles')
-    .select('*', { count: 'exact', head: true })
-    .eq('status', 'published');
+    // Published articles
+    const { count: publishedArticles } = await supabase
+      .from('articles')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'published');
 
-  // Draft articles
-  const { count: draftArticles } = await supabase
-    .from('articles')
-    .select('*', { count: 'exact', head: true })
-    .eq('status', 'draft');
+    // Draft articles
+    const { count: draftArticles } = await supabase
+      .from('articles')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'draft');
 
-  // Total views
-  const { data: articlesWithViews } = await supabase
-    .from('articles')
-    .select('views');
+    // Total views
+    const { data: articlesWithViews } = await supabase
+      .from('articles')
+      .select('views');
 
-  const totalViews = (articlesWithViews as any)?.reduce((sum: number, article: any) => sum + (article.views || 0), 0) || 0;
+    const totalViews = (articlesWithViews as any)?.reduce((sum: number, article: any) => sum + (article.views || 0), 0) || 0;
 
-  // Views last 7 days
-  const sevenDaysAgo = new Date();
-  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    // Views last 7 days
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
-  const { count: viewsLastWeek } = await supabase
-    .from('article_views')
-    .select('*', { count: 'exact', head: true })
-    .gte('created_at', sevenDaysAgo.toISOString());
+    const { count: viewsLastWeek } = await supabase
+      .from('article_views')
+      .select('*', { count: 'exact', head: true })
+      .gte('created_at', sevenDaysAgo.toISOString());
 
-  // Views previous 7 days
-  const fourteenDaysAgo = new Date();
-  fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14);
+    // Views previous 7 days
+    const fourteenDaysAgo = new Date();
+    fourteenDaysAgo.setDate(fourteenDaysAgo.getDate() - 14);
 
-  const { count: viewsPreviousWeek } = await supabase
-    .from('article_views')
-    .select('*', { count: 'exact', head: true })
-    .gte('created_at', fourteenDaysAgo.toISOString())
-    .lt('created_at', sevenDaysAgo.toISOString());
+    const { count: viewsPreviousWeek } = await supabase
+      .from('article_views')
+      .select('*', { count: 'exact', head: true })
+      .gte('created_at', fourteenDaysAgo.toISOString())
+      .lt('created_at', sevenDaysAgo.toISOString());
 
-  // Calculate growth
-  const viewsGrowth = viewsPreviousWeek 
-    ? Math.round(((viewsLastWeek || 0) - viewsPreviousWeek) / viewsPreviousWeek * 100)
-    : 0;
+    // Calculate growth
+    const viewsGrowth = viewsPreviousWeek 
+      ? Math.round(((viewsLastWeek || 0) - viewsPreviousWeek) / viewsPreviousWeek * 100)
+      : 0;
 
-  return {
-    totalArticles: totalArticles || 0,
-    publishedArticles: publishedArticles || 0,
-    draftArticles: draftArticles || 0,
-    totalViews,
-    viewsLastWeek: viewsLastWeek || 0,
-    viewsGrowth,
-  };
+    return {
+      totalArticles: totalArticles || 0,
+      publishedArticles: publishedArticles || 0,
+      draftArticles: draftArticles || 0,
+      totalViews,
+      viewsLastWeek: viewsLastWeek || 0,
+      viewsGrowth,
+    };
+  } catch (error) {
+    console.error('Error in getDashboardStats:', error);
+    return {
+      totalArticles: 0,
+      publishedArticles: 0,
+      draftArticles: 0,
+      totalViews: 0,
+      viewsLastWeek: 0,
+      viewsGrowth: 0,
+    };
+  }
 }
 
 /**
