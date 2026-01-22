@@ -110,8 +110,8 @@ export default function SEOHead({
           <meta property="article:published_time" content={article.published_at || article.created_at} />
           <meta property="article:modified_time" content={article.updated_at} />
           <meta property="article:author" content="CurioSpark Editorial Team" />
-          {article.category && <meta property="article:section" content={article.category.name} />}
-          {article.tags.map(tag => (
+          {article.category?.name && <meta property="article:section" content={article.category.name} />}
+          {article.tags?.map(tag => (
             <meta key={tag} property="article:tag" content={tag} />
           ))}
         </>
