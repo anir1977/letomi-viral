@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   MagnifyingGlassIcon,
@@ -10,28 +10,59 @@ import {
   EyeIcon,
 } from '@heroicons/react/24/outline';
 import Card from '../components/Card';
-import { mockArticles } from '../lib/mockData';
+import { getArticles, deleteArticle } from '@/lib/supabase/articles';
+import type { Article } from '@/types/database';
 
 type FilterStatus = 'all' | 'published' | 'draft';
 
 export default function ArticlesPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<FilterStatus>('all');
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadArticles();
+  }, [statusFilter]);
+
+  async function loadArticles() {
+    try {
+      setLoading(true);
+      console.log('📂 Loading articles from Supabase...');
+      const data = await getArticles({
+        status: statusFilter === 'all' ? undefined : statusFilter,
+      });
+      console.log('✅ Articles loaded:', data?.length || 0);
+      setArticles(data || []);
+    } catch (error) {
+      console.error('❌ Error loading articles:', error);
+      setArticles([]);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   // Filter articles
-  const filteredArticles = mockArticles.filter((article) => {
+  const filteredArticles = articles.filter((article) => {
     const matchesSearch =
       article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      article.category.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus =
-      statusFilter === 'all' || article.status === statusFilter;
-    return matchesSearch && matchesStatus;
+      (article.category_id || '').toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesSearch;
   });
 
-  const handleDelete = (id: string) => {
-    // TODO: Implement delete with Supabase
-    if (confirm('Are you sure you want to delete this article?')) {
-      console.log('Delete article:', id);
+  const handleDelete = async (id: string) => {
+    if (!confirm('Êtes-vous sûr de vouloir supprimer cet article?')) {
+      return;
+    }
+
+    try {
+      await deleteArticle(id);
+      console.log('✅ Article deleted:', id);
+      // Reload articles
+      loadArticles();
+    } catch (error) {
+      console.error('❌ Error deleting article:', error);
+      alert('Erreur lors de la suppression de l\'article');
     }
   };
 
@@ -44,17 +75,24 @@ export default function ArticlesPage() {
             Articles
           </h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            Manage all your content
+            Gérez tout votre contenu ({articles.length} articles)
           </p>
         </div>
         <Link
-          href="/admin/articles/new"
+          href="/admin/ai-writer"
           className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
         >
           <PlusIcon className="w-5 h-5 mr-2" />
-          New Article
+          Nouvel Article
         </Link>
       </div>
+
+      {loading && (
+        <div className="text-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-2 text-gray-600 dark:text-gray-400">Chargement...</p>
+        </div>
+      )}
 
       {/* Filters */}
       <Card>
@@ -146,7 +184,7 @@ export default function ArticlesPage() {
                     </td>
                     <td className="py-4 px-4">
                       <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400">
-                        {article.category}
+                        {article.category_id || 'N/A'}
                       </span>
                     </td>
                     <td className="py-4 px-4">
@@ -163,14 +201,14 @@ export default function ArticlesPage() {
                     <td className="py-4 px-4 text-gray-900 dark:text-white">
                       <div className="flex items-center">
                         <EyeIcon className="w-4 h-4 mr-1 text-gray-400" />
-                        {article.views.toLocaleString()}
+                        {(article.views || 0).toLocaleString()}
                       </div>
                     </td>
                     <td className="py-4 px-4 text-gray-600 dark:text-gray-400">
-                      {article.author}
+                      {article.author || 'Admin'}
                     </td>
                     <td className="py-4 px-4 text-gray-600 dark:text-gray-400 text-sm">
-                      {new Date(article.updatedAt).toLocaleDateString()}
+                      {new Date(article.updated_at || article.created_at).toLocaleDateString()}
                     </td>
                     <td className="py-4 px-4">
                       <div className="flex items-center justify-end space-x-2">

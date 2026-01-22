@@ -103,6 +103,43 @@ CREATE POLICY "Admin users can read all views"
 */
 
 -- ============================================
+-- 4. CATEGORIES TABLE POLICIES
+-- ============================================
+
+-- Enable RLS on categories table
+ALTER TABLE categories ENABLE ROW LEVEL SECURITY;
+
+-- Public users can READ all categories
+CREATE POLICY "Anyone can read categories"
+  ON categories
+  FOR SELECT
+  USING (true);
+
+-- Admin users can INSERT categories
+CREATE POLICY "Admin users can insert categories"
+  ON categories
+  FOR INSERT
+  WITH CHECK (
+    auth.jwt() ->> 'email' = 'yuba1977@gmail.com'
+  );
+
+-- Admin users can UPDATE categories
+CREATE POLICY "Admin users can update categories"
+  ON categories
+  FOR UPDATE
+  USING (
+    auth.jwt() ->> 'email' = 'yuba1977@gmail.com'
+  );
+
+-- Admin users can DELETE categories
+CREATE POLICY "Admin users can delete categories"
+  ON categories
+  FOR DELETE
+  USING (
+    auth.jwt() ->> 'email' = 'yuba1977@gmail.com'
+  );
+
+-- ============================================
 -- DONE! 
 -- ============================================
 -- Your RLS policies are now active.
@@ -111,5 +148,6 @@ CREATE POLICY "Admin users can read all views"
 -- 1. Sign in as yuba1977@gmail.com to perform admin operations
 -- 2. Unauthenticated users can only read published articles
 -- 3. Anyone can track views (important for analytics)
+-- 4. Anyone can read categories (needed for AI Writer)
 -- 
 -- Security is properly configured for production! 🔒

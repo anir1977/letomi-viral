@@ -155,3 +155,56 @@ body {
   animation-delay: 3s;
 }
 
+/* Markdown Content Styling for AI Writer Preview */
+.markdown-preview {
+  @apply text-gray-800 dark:text-gray-200;
+}
+
+.markdown-preview h1 {
+  @apply text-3xl font-bold mt-8 mb-4 text-gray-900 dark:text-white;
+}
+
+.markdown-preview h2 {
+  @apply text-2xl font-bold mt-6 mb-3 text-gray-900 dark:text-white;
+}
+
+.markdown-preview h3 {
+  @apply text-xl font-semibold mt-4 mb-2 text-gray-900 dark:text-white;
+}
+
+.markdown-preview p {
+  @apply mb-4 leading-relaxed;
+}
+
+.markdown-preview ul,
+.markdown-preview ol {
+  @apply mb-4 ml-6;
+}
+
+.markdown-preview li {
+  @apply mb-2;
+}
+
+.markdown-preview strong {
+  @apply font-bold text-gray-900 dark:text-white;
+}
+
+.markdown-preview em {
+  @apply italic;
+}
+
+.markdown-preview a {
+  @apply text-blue-600 dark:text-blue-400 hover:underline;
+}
+
+.markdown-preview code {
+  @apply bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-sm font-mono text-purple-600 dark:text-purple-400;
+}
+
+.markdown-preview pre {
+  @apply bg-gray-100 dark:bg-gray-800 p-4 rounded-lg overflow-x-auto mb-4;
+}
+
+.markdown-preview blockquote {
+  @apply border-l-4 border-gray-300 dark:border-gray-700 pl-4 italic my-4;
+}
