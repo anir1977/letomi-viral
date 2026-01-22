@@ -19,6 +19,7 @@ export default function TrendingArticles({ limit = 5 }: TrendingArticlesProps) {
 
   useEffect(() => {
     loadTrending();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function loadTrending() {
