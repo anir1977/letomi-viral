@@ -4,10 +4,32 @@ import type { Database } from '@/types/database';
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBsYWNlaG9sZGVyIiwicm9sZSI6ImFub24iLCJpYXQiOjE2NDUxOTI4MDAsImV4cCI6MTk2MDc2ODgwMH0.placeholder';
 
-export const supabase = createSupabaseClient<Database>(supabaseUrl, supabaseKey);
+// Create Supabase client with fresh schema
+export const supabase = createSupabaseClient<Database>(supabaseUrl, supabaseKey, {
+  db: {
+    schema: 'public',
+  },
+  auth: {
+    autoRefreshToken: true,
+    persistSession: true,
+  },
+  global: {
+    headers: {
+      'x-client-info': 'curiospark-admin',
+    },
+  },
+});
 
 export function createClient() {
-  return createSupabaseClient<Database>(supabaseUrl, supabaseKey);
+  return createSupabaseClient<Database>(supabaseUrl, supabaseKey, {
+    db: {
+      schema: 'public',
+    },
+    auth: {
+      autoRefreshToken: true,
+      persistSession: true,
+    },
+  });
 }
 
 export function isSupabaseConfigured(): boolean {
