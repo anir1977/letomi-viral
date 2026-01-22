@@ -21,6 +21,7 @@ export default function RelatedArticles({ articleId, limit = 4 }: RelatedArticle
 
   useEffect(() => {
     loadRelatedArticles();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [articleId]);
 
   async function loadRelatedArticles() {

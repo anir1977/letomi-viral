@@ -2,15 +2,13 @@
  * Categories Service - Real Database Operations
  */
 
-import { createClient } from './client';
+import { supabase } from './client';
 import type { Category } from '@/types/database';
-
-const supabase = createClient();
 
 /**
  * Get all categories
  */
-export async function getCategories() {
+export async function getCategories(): Promise<Category[] | null> {
   const { data, error } = await supabase
     .from('categories')
     .select('*')
@@ -23,7 +21,7 @@ export async function getCategories() {
 /**
  * Get category by slug
  */
-export async function getCategoryBySlug(slug: string) {
+export async function getCategoryBySlug(slug: string): Promise<Category | null> {
   const { data, error } = await supabase
     .from('categories')
     .select('*')
@@ -37,7 +35,7 @@ export async function getCategoryBySlug(slug: string) {
 /**
  * Get category with article count
  */
-export async function getCategoriesWithCount() {
+export async function getCategoriesWithCount(): Promise<any[] | null> {
   const { data, error } = await supabase
     .from('categories')
     .select(`

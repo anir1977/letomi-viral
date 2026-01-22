@@ -62,7 +62,7 @@ export async function GET() {
   <!-- Categories -->
   ${categories
     ?.map(
-      (category) => `
+      (category: { slug: string; name: string }) => `
   <url>
     <loc>${baseUrl}/category/${category.slug}</loc>
     <lastmod>${new Date().toISOString()}</lastmod>
