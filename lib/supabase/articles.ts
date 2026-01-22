@@ -18,10 +18,7 @@ export async function getArticles(filters?: {
 }) {
   let query = supabase
     .from('articles')
-    .select(`
-      *,
-      category:categories(*)
-    `)
+    .select('*')
     .order('created_at', { ascending: false });
 
   if (filters?.status) {
@@ -54,7 +51,6 @@ export async function getArticle(id: string) {
     .from('articles')
     .select(`
       *,
-      category:categories(*),
       images:article_images(*)
     `)
     .eq('id', id)
@@ -72,7 +68,6 @@ export async function getArticleBySlug(slug: string) {
     .from('articles')
     .select(`
       *,
-      category:categories(*),
       images:article_images(*)
     `)
     .eq('slug', slug)
