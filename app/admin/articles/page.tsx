@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import {
   MagnifyingGlassIcon,
@@ -21,11 +21,7 @@ export default function ArticlesPage() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadArticles();
-  }, [statusFilter]);
-
-  async function loadArticles() {
+  const loadArticles = useCallback(async () => {
     try {
       setLoading(true);
       console.log('📂 Loading articles from Supabase...');
@@ -40,7 +36,11 @@ export default function ArticlesPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [statusFilter]);
+
+  useEffect(() => {
+    loadArticles();
+  }, [loadArticles]);
 
   // Filter articles
   const filteredArticles = articles.filter((article) => {
