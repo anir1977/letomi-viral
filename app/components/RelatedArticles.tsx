@@ -7,6 +7,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { getRelatedArticles } from '@/lib/supabase/articles';
 import type { Article } from '@/types/database';
 
@@ -65,9 +66,11 @@ export default function RelatedArticles({ articleId, limit = 4 }: RelatedArticle
           >
             {article.cover_image_url && (
               <div className="relative h-40 overflow-hidden">
-                <img
+                <Image
                   src={article.cover_image_url}
                   alt={article.title}
+                  width={400}
+                  height={160}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
               </div>

@@ -1,7 +1,7 @@
 'use client';
 
 // VERSION: 2026-01-23-MINIMAL-PAYLOAD (title, slug, excerpt, content, status ONLY)
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   SparklesIcon,
@@ -38,12 +38,7 @@ export default function AIWriterPage() {
   const [generatedArticle, setGeneratedArticle] = useState<any | null>(null);
   const [seoScore, setSeoScore] = useState(0);
 
-  useEffect(() => {
-    console.log('🔄 Component mounted, loading categories...');
-    loadCategories();
-  }, []);
-
-  async function loadCategories() {
+  const loadCategories = useCallback(async () => {
     try {
       console.log('📂 Fetching categories from database...');
       const data = await getCategories();
@@ -59,7 +54,12 @@ export default function AIWriterPage() {
       console.error('❌ Error loading categories:', error);
       alert('Erreur lors du chargement des catégories. Vérifiez votre connexion Supabase.');
     }
-  }
+  }, []);
+
+  useEffect(() => {
+    console.log('🔄 Component mounted, loading categories...');
+    loadCategories();
+  }, [loadCategories]);
 
   // Generate article with AI
   const generateArticle = async () => {
