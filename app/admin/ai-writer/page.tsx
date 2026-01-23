@@ -1,6 +1,6 @@
 'use client';
 
-// VERSION: 2026-01-22-FIX-CATEGORY-ID (without category_id in payload)
+// VERSION: 2026-01-23-MINIMAL-PAYLOAD (title, slug, excerpt, content, status ONLY)
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import {
@@ -162,29 +162,24 @@ export default function AIWriterPage() {
       const timestamp = Date.now().toString(36); // Base36 timestamp (shorter)
       const uniqueSlug = `${baseSlug}-${timestamp}`;
 
-      // Minimal draft data - only required fields
-      // NOTE: category_id temporarily removed due to Supabase schema cache issue
-      // Users can set the category in the Article Editor after creation
+      // MINIMAL draft data - ONLY basic columns to avoid schema cache errors
+      // All other fields (category, tags, seo, etc.) will be set in Article Editor
       const draftData = {
         title: generatedArticle.title,
         slug: uniqueSlug, // Guaranteed unique with timestamp
         excerpt: generatedArticle.excerpt,
         content: generatedArticle.content,
-        // category_id: categoryId, // TEMPORARILY DISABLED - schema cache not updated
-        author_id: session.user.id, // Set author
         status: 'draft' as const,
-        // Optional: preserve AI-generated metadata
-        tags: generatedArticle.tags || [],
-        seo_title: generatedArticle.seoTitle || generatedArticle.title,
-        seo_description: generatedArticle.seoDescription || generatedArticle.excerpt,
-        keywords: generatedArticle.keywords || [],
+        // NOTE: author_id, category_id, tags, seo_* fields removed temporarily
+        // due to Supabase schema cache not being updated after column additions
+        // These will be set when editing the draft in Article Editor
       };
 
-      console.log('📤 Saving draft:', { 
+      console.log('📤 Saving MINIMAL draft:', { 
         title: draftData.title, 
         slug: draftData.slug,
-        author_id: draftData.author_id,
-        note: 'Category will be set in Article Editor'
+        status: draftData.status,
+        note: 'All other fields will be set in Article Editor'
       });
 
       // Save to database
@@ -207,8 +202,11 @@ export default function AIWriterPage() {
       // Show success and redirect to articles dashboard
       alert(
         '✅ Brouillon créé avec succès!\n\n' +
-        '📝 N\'oubliez pas de définir la CATÉGORIE dans l\'éditeur d\'articles.\n\n' +
-        'Vous allez être redirigé vers le tableau de bord.'
+        '⚠️ IMPORTANT: Définissez dans l\'éditeur :\n' +
+        '  • Catégorie\n' +
+        '  • Auteur\n' +
+        '  • Tags SEO\n\n' +
+        'Redirection vers le tableau de bord...'
       );
       router.push('/admin/articles');
       
@@ -231,7 +229,7 @@ export default function AIWriterPage() {
   return (
     <div className="space-y-6">
       {/* Version indicator (hidden but visible in DOM) */}
-      <div data-version="2026-01-22-NO-CATEGORY-ID" style={{display: 'none'}}>v2.0</div>
+      <div data-version="2026-01-23-MINIMAL-PAYLOAD" style={{display: 'none'}}>v3.0</div>
       
       {/* Header */}
       <div className="flex items-center justify-between">
