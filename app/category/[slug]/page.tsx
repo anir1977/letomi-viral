@@ -113,11 +113,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
         </div>
       </main>
 
-      <footer className="border-t border-gray-200 dark:border-gray-800 mt-20">
-        <div className="container mx-auto px-4 py-8 text-center text-sm text-gray-600 dark:text-gray-400">
-          <p>&copy; 2026 CurioSpark. All rights reserved.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

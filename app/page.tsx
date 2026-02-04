@@ -399,6 +399,7 @@ export default function Home() {
                 <li><Link href="/about" className="hover:text-yellow-300 transition-colors duration-200">About Us</Link></li>
                 <li><Link href="/privacy-policy" className="hover:text-yellow-300 transition-colors duration-200">Privacy Policy</Link></li>
                 <li><Link href="/terms-of-service" className="hover:text-yellow-300 transition-colors duration-200">Terms of Service</Link></li>
+                <li><Link href="/contact" className="hover:text-yellow-300 transition-colors duration-200">Contact</Link></li>
               </ul>
               <h3 className="font-bold text-white mt-6 mb-4 text-sm uppercase tracking-wider">Follow Us</h3>
               <div className="flex space-x-3">
