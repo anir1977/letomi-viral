@@ -205,7 +205,9 @@ export default function ArticlesPage() {
                       </div>
                     </td>
                     <td className="py-4 px-4 text-gray-600 dark:text-gray-400">
-                      {article.author || 'Admin'}
+                      {typeof article.author === 'object' && article.author
+                        ? article.author.name
+                        : article.author || 'Admin'}
                     </td>
                     <td className="py-4 px-4 text-gray-600 dark:text-gray-400 text-sm">
                       {new Date(article.updated_at || article.created_at).toLocaleDateString()}

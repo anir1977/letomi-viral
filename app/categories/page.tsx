@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { categories } from "@/lib/posts";
-import Footer from "@/app/components/Footer";
 
 export const metadata: Metadata = {
   title: "All Categories - CurioSpark",
@@ -57,7 +56,6 @@ export default function CategoriesPage() {
         </div>
       </main>
 
-      <Footer />
     </div>
   );
 }

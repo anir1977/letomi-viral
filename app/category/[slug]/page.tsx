@@ -113,7 +113,6 @@ export default function CategoryPage({ params }: CategoryPageProps) {
         </div>
       </main>
 
-      <Footer />
     </div>
   );
 }

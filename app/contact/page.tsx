@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Footer from "@/app/components/Footer";
 
 export const metadata: Metadata = {
   title: "Contact Us - CurioSpark",
@@ -58,7 +57,6 @@ export default function ContactPage() {
         </div>
       </main>
 
-      <Footer variant="full" />
     </div>
   );
 }
