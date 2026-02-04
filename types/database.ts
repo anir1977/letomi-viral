@@ -52,6 +52,11 @@ export interface Database {
           seo_description: string | null
           keywords: string[]
           author_id: string | null
+          author?: {
+            name: string
+            slug?: string
+            avatar?: string
+          } | null
           status: 'draft' | 'published' | 'scheduled'
           views: number
           created_at: string
@@ -72,6 +77,11 @@ export interface Database {
           seo_description?: string | null
           keywords?: string[]
           author_id?: string | null
+          author?: {
+            name: string
+            slug?: string
+            avatar?: string
+          } | null
           status?: 'draft' | 'published' | 'scheduled'
           views?: number
           created_at?: string
@@ -92,6 +102,11 @@ export interface Database {
           seo_description?: string | null
           keywords?: string[]
           author_id?: string | null
+          author?: {
+            name: string
+            slug?: string
+            avatar?: string
+          } | null
           status?: 'draft' | 'published' | 'scheduled'
           views?: number
           created_at?: string

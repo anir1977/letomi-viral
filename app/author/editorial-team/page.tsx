@@ -128,7 +128,6 @@ export default function AuthorPage() {
         </div>
       </main>
 
-      <Footer />
     </div>
   );
 }
