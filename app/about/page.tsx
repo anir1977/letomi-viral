@@ -128,6 +128,7 @@ export default function AboutPage() {
               <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
                 <li><Link href="/privacy-policy" className="hover:text-purple-600">Privacy Policy</Link></li>
                 <li><Link href="/terms-of-service" className="hover:text-purple-600">Terms of Service</Link></li>
+                <li><Link href="/contact" className="hover:text-purple-600">Contact</Link></li>
               </ul>
             </div>
           </div>
