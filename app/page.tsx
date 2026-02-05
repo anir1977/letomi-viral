@@ -37,6 +37,7 @@ export default function Home() {
               <span className="text-lg">🔥</span> Trending
             </Link>
             <Link href="/latest" className="text-white/90 hover:text-yellow-300 transition-colors duration-200">Latest</Link>
+            <Link href="/articles" className="text-white/90 hover:text-yellow-300 transition-colors duration-200">Articles</Link>
             <Link href="/categories" className="text-white/90 hover:text-yellow-300 transition-colors duration-200">Categories</Link>
             <Link href="/about" className="text-white/90 hover:text-yellow-300 transition-colors duration-200">About</Link>
           </div>
