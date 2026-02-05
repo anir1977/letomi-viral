@@ -3,7 +3,7 @@
  */
 
 export async function GET() {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://curiospark.com';
+  const baseUrl = 'https://curiospark.org';
 
   const robotsTxt = `# CurioSpark Robots.txt
 # Allow all crawlers
