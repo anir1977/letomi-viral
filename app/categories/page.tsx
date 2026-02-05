@@ -18,6 +18,7 @@ export default function CategoriesPage() {
           </Link>
           <div className="hidden md:flex space-x-6">
             <Link href="/" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition">Home</Link>
+            <Link href="/articles" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition">Articles</Link>
             <Link href="/categories" className="text-gray-900 dark:text-white font-semibold">Categories</Link>
             <Link href="/about" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition">About</Link>
           </div>
