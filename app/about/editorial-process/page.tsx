@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import SiteHeader from "@/app/components/SiteHeader";
 
 export const metadata: Metadata = {
   title: "Editorial Process - CurioSpark",
@@ -9,20 +10,7 @@ export const metadata: Metadata = {
 export default function EditorialProcessPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-black">
-      <header className="border-b border-gray-200 dark:border-gray-800">
-        <nav className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center space-x-2">
-            <span className="text-2xl">⚡</span>
-            <h1 className="text-xl font-bold text-gray-900 dark:text-white">CurioSpark</h1>
-          </Link>
-          <div className="hidden md:flex space-x-6">
-            <Link href="/" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition">Home</Link>
-            <Link href="/articles" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition">Articles</Link>
-            <Link href="/categories" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition">Categories</Link>
-            <Link href="/about" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition">About</Link>
-          </div>
-        </nav>
-      </header>
+      <SiteHeader />
 
       <main className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
@@ -182,12 +170,6 @@ export default function EditorialProcessPage() {
           </div>
         </div>
       </main>
-
-      <footer className="border-t border-gray-200 dark:border-gray-800 mt-20">
-        <div className="container mx-auto px-4 py-8 text-center text-sm text-gray-600 dark:text-gray-400">
-          <p>&copy; 2026 CurioSpark. All rights reserved.</p>
-        </div>
-      </footer>
     </div>
   );
 }

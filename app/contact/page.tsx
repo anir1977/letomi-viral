@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import SiteHeader from "@/app/components/SiteHeader";
 
 export const metadata: Metadata = {
   title: "Contact Us - CurioSpark",
@@ -9,20 +10,7 @@ export const metadata: Metadata = {
 export default function ContactPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-black">
-      <header className="border-b border-gray-200 dark:border-gray-800">
-        <nav className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center space-x-2">
-            <span className="text-2xl">⚡</span>
-            <h1 className="text-xl font-bold text-gray-900 dark:text-white">CurioSpark</h1>
-          </Link>
-          <div className="hidden md:flex space-x-6">
-            <Link href="/" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition">Home</Link>
-            <Link href="/articles" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition">Articles</Link>
-            <Link href="/categories" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition">Categories</Link>
-            <Link href="/about" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition">About</Link>
-          </div>
-        </nav>
-      </header>
+      <SiteHeader />
 
       <main className="container mx-auto px-4 py-16">
         <div className="max-w-3xl mx-auto text-center">

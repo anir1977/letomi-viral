@@ -4,17 +4,25 @@
 
 import { getArticles } from '@/lib/supabase/articles';
 import { getCategories } from '@/lib/supabase/categories';
+import { isSupabaseConfigured } from '@/lib/supabase/client';
 import { generateSitemapEntries } from '@/lib/seo';
 
 export async function GET() {
-  const baseUrl = 'https://curiospark.org';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://curiospark.org';
 
   try {
-    // Get all published articles
-    const articles = await getArticles({ status: 'published', limit: 10000 });
-    
-    // Get all categories
-    const categories = await getCategories();
+    let articles: Awaited<ReturnType<typeof getArticles>> = [];
+    let categories: Awaited<ReturnType<typeof getCategories>> = [];
+
+    if (isSupabaseConfigured()) {
+      // Get all published articles
+      articles = await getArticles({ status: 'published', limit: 10000 });
+
+      // Get all categories
+      categories = await getCategories();
+    } else {
+      console.warn('Supabase not configured. Generating sitemap with static routes only.');
+    }
 
     // Generate sitemap entries
     const articleEntries = generateSitemapEntries(articles || [], baseUrl);
