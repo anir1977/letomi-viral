@@ -6,16 +6,18 @@ interface SharePromptProps {
   question?: string;
   title: string;
   slug: string;
+  basePath?: string;
 }
 
 export default function SharePrompt({ 
   question = "Did this surprise you? Share with someone who needs to know this!",
   title,
-  slug
+  slug,
+  basePath = "/post"
 }: SharePromptProps) {
   const [copied, setCopied] = useState(false);
-  
-  const url = typeof window !== 'undefined' ? `${window.location.origin}/post/${slug}` : '';
+  const normalizedBasePath = basePath.startsWith("/") ? basePath : `/${basePath}`;
+  const url = typeof window !== 'undefined' ? `${window.location.origin}${normalizedBasePath}/${slug}` : '';
   
   const handleFacebookShare = () => {
     window.open(

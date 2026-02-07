@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import ArticleLayout from "@/app/components/ArticleLayout";
 
 export const articles: Record<
   string,
@@ -1048,6 +1049,17 @@ export const articles: Record<
   },
 };
 
+const defaultArticleMeta = {
+  image: "/images/article-hero.svg",
+  imageAlt: "CurioSpark article illustration",
+  readingTime: "6 min",
+  dateLabel: "Feb 6, 2026",
+  category: {
+    name: "CurioSpark",
+    href: "/articles",
+  },
+};
+
 export async function generateStaticParams() {
   return Object.keys(articles).map((slug) => ({ slug }));
 }
@@ -1069,6 +1081,18 @@ export async function generateMetadata({
   return {
     title: `${article.title} - CurioSpark`,
     description: article.description,
+    openGraph: {
+      title: `${article.title} - CurioSpark`,
+      description: article.description,
+      images: [defaultArticleMeta.image],
+      type: "article",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${article.title} - CurioSpark`,
+      description: article.description,
+      images: [defaultArticleMeta.image],
+    },
   };
 }
 
@@ -1079,21 +1103,37 @@ export default function Page({ params }: { params: { slug: string } }) {
     notFound();
   }
 
+  const relatedItems = Object.keys(articles)
+    .filter((slug) => slug !== params.slug)
+    .slice(0, 3)
+    .map((slug) => {
+      const relatedArticle = articles[slug];
+      return {
+        slug,
+        href: `/articles/${slug}`,
+        title: relatedArticle.title,
+        excerpt: relatedArticle.description,
+        image: defaultArticleMeta.image,
+        imageAlt: defaultArticleMeta.imageAlt,
+        readingTime: defaultArticleMeta.readingTime,
+        categoryLabel: defaultArticleMeta.category.name,
+      };
+    });
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-black">
-      <main className="container mx-auto px-4 py-16">
-        <div className="max-w-3xl mx-auto">
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-            {article.title}
-          </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-400 mb-10">
-            {article.description}
-          </p>
-          <div className="prose prose-lg dark:prose-invert max-w-none">
-            {article.content}
-          </div>
-        </div>
-      </main>
-    </div>
+    <ArticleLayout
+      title={article.title}
+      excerpt={article.description}
+      slug={params.slug}
+      dateLabel={defaultArticleMeta.dateLabel}
+      readingTime={defaultArticleMeta.readingTime}
+      category={defaultArticleMeta.category}
+      image={defaultArticleMeta.image}
+      imageAlt={defaultArticleMeta.imageAlt}
+      contentNode={article.content}
+      relatedItems={relatedItems}
+      relatedTitle="Related Articles"
+      sharePath="/articles"
+    />
   );
 }

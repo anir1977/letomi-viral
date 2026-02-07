@@ -21,6 +21,7 @@ export interface Post {
   date: string;
   image: string;
   imageAlt: string;
+  heroImage: string;
   faqs: FAQ[];
   isTrending?: boolean;
   isFeatured?: boolean;
@@ -81,6 +82,7 @@ export const posts: Post[] = [
     excerpt: "Despite being only 2% of your body weight, your brain consumes a massive amount of energy.",
     image: "https://images.unsplash.com/photo-1559757175-5700dde675bc?w=1200&h=600&fit=crop",
     imageAlt: "Glowing brain illustration showing neural activity and energy consumption",
+    heroImage: "/articles/brain-energy-consumption.svg",
     didYouKnow: "Your brain can burn up to 400 calories a day just by existing—that's the equivalent of a 45-minute run, without moving a muscle!",
     surprisingFact: "Chess grandmasters can burn up to 6,000 calories during a tournament day—their brains working so intensely that they lose weight from thinking alone!",
     shareableQuote: "Your brain is only 2% of your body weight but uses 20% of your energy. Mental work isn't just tiring—it's literally burning calories.",
@@ -234,6 +236,7 @@ The next time you feel mentally drained after a challenging task, remember: your
     excerpt: "Recent studies show that placebos can work even when people know they're taking a sugar pill.",
     image: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=1200&h=600&fit=crop",
     imageAlt: "Medical pills and capsules representing placebo effect research",
+    heroImage: "/articles/placebo-effect-awareness.svg",
     didYouKnow: "In one study, people with chronic pain who knowingly took placebo pills experienced 30% pain reduction—the same as many prescription painkillers!",
     surprisingFact: "Even doctors who prescribe placebos can experience improved health when they take one themselves—knowing full well it's a sugar pill!",
     shareableQuote: "Your mind is so powerful that taking a sugar pill you KNOW is fake can still trigger real healing. The placebo effect doesn't need deception to work.",
@@ -445,6 +448,7 @@ The next time you take any medication—or even a vitamin—remember that part o
     excerpt: "The physical act of smiling can actually make you feel happier, thanks to the facial feedback hypothesis.",
     image: "https://images.unsplash.com/photo-1515377905703-c4788e51af15?w=1200&h=600&fit=crop",
     imageAlt: "Happy person smiling showing genuine joy and positive emotions",
+    heroImage: "/articles/smiling-happiness-connection.svg",
     didYouKnow: "Simply holding a pencil between your teeth (which forces your face into a smile shape) can make you feel happier within 60 seconds—even when you're in a bad mood!",
     surprisingFact: "Flight attendants who are required to smile for hours during flights report genuine mood improvements by the end of their shifts—their forced smiles literally changed their emotional state!",
     shareableQuote: "Your face doesn't just show your emotions—it creates them. Smile for 60 seconds and your brain will start releasing happiness chemicals, whether you feel happy or not.",
@@ -590,6 +594,7 @@ This remarkable mind-body connection reminds us that happiness isn't just a ment
     excerpt: "Miller's Law explains why we struggle to remember long lists and phone numbers.",
     image: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=1200&h=600&fit=crop",
     imageAlt: "Notes and numbers representing working memory and cognitive limits",
+    heroImage: "/articles/working-memory-limit.svg",
     content: `
 ## The Magic Number Seven
 
@@ -638,6 +643,7 @@ This is why user interfaces work best with limited options, and why information 
     excerpt: "Neuroplasticity means you can learn, adapt, and change at any age—your brain never stops developing.",
     image: "https://images.unsplash.com/photo-1617791160505-6f00504e3519?w=1200&h=600&fit=crop",
     imageAlt: "Neural network connections showing brain plasticity and learning",
+    heroImage: "/articles/neuroplasticity-lifelong.svg",
     content: `
 ## The Discovery of Neuroplasticity
 
@@ -692,6 +698,7 @@ Whether you're 8 or 80, learning new skills, languages, or habits physically cha
     excerpt: "Ancient Egyptian tombs contained pots of honey that were still perfectly edible after thousands of years.",
     image: "https://images.unsplash.com/photo-1558642891-54be180ea339?w=1200&h=600&fit=crop",
     imageAlt: "Golden honey in jar showing natural preservation properties",
+    heroImage: "/articles/honey-never-spoils.svg",
     didYouKnow: "Archaeologists have tasted 3,000-year-old honey from Egyptian tombs and confirmed it was still perfectly safe to eat—though they don't recommend it as a regular snack!",
     surprisingFact: "A jar of honey in your pantry could theoretically last forever. If kept sealed and dry, the honey you buy today could still be perfectly edible in the year 5000!",
     shareableQuote: "Honey never expires. Archaeologists found 3,000-year-old honey in Egyptian tombs that was still edible. It's the only food that can literally last forever.",
@@ -891,6 +898,7 @@ So cherish that jar of honey. You're not just eating a sweet treat—you're expe
     excerpt: "These incredible creatures have a circulatory system unlike anything on Earth.",
     image: "https://images.unsplash.com/photo-1545671913-b89ac1b4ac10?w=1200&h=600&fit=crop",
     imageAlt: "Octopus underwater showing its unique biological features",
+    heroImage: "/articles/octopus-three-hearts.svg",
     content: `
 ## The Alien Anatomy
 
@@ -943,6 +951,7 @@ When an octopus swims, its systemic heart stops beating. This is why they prefer
     excerpt: "Every banana contains radioactive potassium-40, leading to the creation of the 'banana equivalent dose.'",
     image: "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=1200&h=600&fit=crop",
     imageAlt: "Fresh yellow bananas illustrating natural radioactivity in food",
+    heroImage: "/articles/bananas-radioactive.svg",
     content: `
 ## Natural Radioactivity
 
@@ -994,6 +1003,7 @@ Banana shipments can trigger radiation alarms at ports because of their natural 
     excerpt: "If you unraveled all the DNA in your body, it would stretch about 100 trillion meters.",
     image: "https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=1200&h=600&fit=crop",
     imageAlt: "DNA double helix structure showing genetic code complexity",
+    heroImage: "/articles/dna-length-in-body.svg",
     content: `
 ## The Mathematics of DNA
 
@@ -1046,6 +1056,7 @@ You need multiple copies of your genetic instructions in every cell that needs t
     excerpt: "When lightning hits sand, it creates hollow glass tubes called fulgurites that can extend deep underground.",
     image: "https://images.unsplash.com/photo-1605727216801-e27ce1d0cc28?w=1200&h=600&fit=crop",
     imageAlt: "Lightning strike illuminating the night sky over desert sand",
+    heroImage: "/articles/fulgurites-lightning-glass.svg",
     didYouKnow: "Lightning strikes can reach 30,000°C—five times hotter than the surface of the sun—and this extreme heat instantly transforms sand into glass sculptures underground!",
     surprisingFact: "Some fulgurites (lightning glass) extend 15 meters (50 feet) underground, creating intricate branching patterns that look like frozen lightning bolts trapped in glass forever!",
     shareableQuote: "When lightning strikes sand, it creates temperatures 5x hotter than the sun's surface, instantly fusing sand into beautiful hollow glass tubes called fulgurites.",
@@ -1275,6 +1286,7 @@ Whether you're a scientist studying ancient climates, a collector appreciating n
     excerpt: "Your brain's reduced focus when tired can actually boost creative problem-solving.",
     image: "https://images.unsplash.com/photo-1499209974431-9dddcece7f88?w=1200&h=600&fit=crop",
     imageAlt: "Person working late at night showing creative thinking process",
+    heroImage: "/articles/creativity-tiredness.svg",
     content: `
 ## The Tired Mind Advantage
 
@@ -1331,6 +1343,7 @@ Save analytical tasks for when you're alert, and creative tasks for when you're 
     excerpt: "Most face-touching is unconscious, making it nearly impossible to stop even when we try.",
     image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=1200&h=600&fit=crop",
     imageAlt: "Person touching face showing unconscious behavioral patterns",
+    heroImage: "/articles/face-touching-frequency.svg",
     content: `
 ## The Unconscious Habit
 
@@ -1388,6 +1401,7 @@ Awareness is the first step. Try:
     excerpt: "Judges are more likely to grant parole right after lunch than before—hunger affects our judgment.",
     image: "https://images.unsplash.com/photo-1490818387583-1baba5e638af?w=1200&h=600&fit=crop",
     imageAlt: "Healthy meal representing nutrition's impact on decision making",
+    heroImage: "/articles/decision-fatigue-hunger.svg",
     content: `
 ## The Hungry Judge Effect
 
@@ -1449,6 +1463,7 @@ Never make major life decisions when hungry, tired, or stressed. Your brain lite
     excerpt: "Our self-control and moral compass are strongest early in the day.",
     image: "https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?w=1200&h=600&fit=crop",
     imageAlt: "Sunrise representing morning clarity and honest thinking",
+    heroImage: "/articles/morning-honesty.svg",
     content: `
 ## The Morning Morality Effect
 
@@ -1511,6 +1526,7 @@ This doesn't make you a bad person—it's just biology. Understanding it helps y
     excerpt: "The endowment effect explains why stores let you handle products before buying.",
     image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200&h=600&fit=crop",
     imageAlt: "Shopping and product interaction showing consumer behavior",
+    heroImage: "/articles/touch-increases-ownership.svg",
     content: `
 ## The Power of Touch
 
@@ -1580,6 +1596,7 @@ This is why online retailers struggle compared to physical stores—you can't to
     excerpt: "The shape, texture, and pattern of your tongue is completely unique to you.",
     image: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1200&h=600&fit=crop",
     imageAlt: "Fingerprint pattern representing unique biological identifiers",
+    heroImage: "/articles/tongue-print-unique.svg",
     content: `
 ## Your Personal Identifier
 
@@ -1643,6 +1660,7 @@ You also have unique:
     excerpt: "Your stomach acid is so strong that your body must constantly rebuild the protective barrier.",
     image: "https://images.unsplash.com/photo-1505576399279-565b52d4ac71?w=1200&h=600&fit=crop",
     imageAlt: "Digestive system illustration showing stomach regeneration process",
+    heroImage: "/articles/stomach-lining-regeneration.svg",
     content: `
 ## The Extreme Environment
 
@@ -1705,6 +1723,7 @@ Your stomach produces about 1-2 liters of gastric juice daily, containing this p
     excerpt: "This is completely normal and part of your hair's natural growth cycle.",
     image: "https://images.unsplash.com/photo-1522337660859-02fbefca4702?w=1200&h=600&fit=crop",
     imageAlt: "Healthy hair showing natural growth cycle and renewal",
+    heroImage: "/articles/daily-hair-loss-normal.svg",
     content: `
 ## The Hair Growth Cycle
 
@@ -1772,6 +1791,7 @@ Unless there's a problem, you'll grow back what you lose. Your hair is constantl
     excerpt: "Your eyes are 'immune privileged' sites with their own unique defense system.",
     image: "https://images.unsplash.com/photo-1519415510236-718bdfcd89c8?w=1200&h=600&fit=crop",
     imageAlt: "Close-up of human eye showing iris detail and unique biology",
+    heroImage: "/articles/eye-immune-privilege.svg",
     content: `
 ## Immune Privilege
 
@@ -1838,6 +1858,7 @@ Similar systems exist in:
     excerpt: "You can be up to 1-2 cm taller in the morning due to spinal disc decompression during sleep.",
     image: "https://images.unsplash.com/photo-1483721310020-03333e577078?w=1200&h=600&fit=crop",
     imageAlt: "Person measuring height showing daily body changes",
+    heroImage: "/articles/height-variation-daily.svg",
     content: `
 ## The Shrinking Day
 

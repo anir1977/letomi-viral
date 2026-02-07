@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { Search, X } from 'lucide-react';
 import { getAllPosts } from '@/lib/posts';
 
 export default function SearchBar() {
@@ -28,16 +27,21 @@ export default function SearchBar() {
       return;
     }
 
-    const posts = getAllPosts();
-    const searchQuery = query.toLowerCase();
-    
-    const filtered = posts.filter(post => 
-      post.title.toLowerCase().includes(searchQuery) ||
-      post.excerpt.toLowerCase().includes(searchQuery) ||
-      post.content.toLowerCase().includes(searchQuery)
-    ).slice(0, 5);
+    try {
+      const posts = getAllPosts();
+      const searchQuery = query.toLowerCase();
+      
+      const filtered = posts.filter(post => 
+        post.title.toLowerCase().includes(searchQuery) ||
+        post.excerpt.toLowerCase().includes(searchQuery) ||
+        post.content.toLowerCase().includes(searchQuery)
+      ).slice(0, 5);
 
-    setResults(filtered);
+      setResults(filtered);
+    } catch (error) {
+      console.error('Search error:', error);
+      setResults([]);
+    }
   }, [query]);
 
   return (
@@ -45,16 +49,18 @@ export default function SearchBar() {
       <div className="relative">
         <input
           type="text"
-          placeholder="Search fascinating facts..."
+          placeholder="Search facts, topics, or keywords"
           value={query}
           onChange={(e) => {
             setQuery(e.target.value);
             setIsOpen(true);
           }}
           onFocus={() => setIsOpen(true)}
-          className="w-full md:w-80 px-4 py-2 pl-10 pr-10 rounded-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+          className="w-full rounded-full border border-white/30 bg-white/10 backdrop-blur-sm px-4 py-2.5 pl-10 pr-10 text-sm text-white placeholder-white/60 shadow-sm transition focus:border-white/50 focus:outline-none focus:ring-2 focus:ring-white/30"
         />
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+        <svg className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
         {query && (
           <button
             onClick={() => {
@@ -63,13 +69,15 @@ export default function SearchBar() {
             }}
             className="absolute right-3 top-1/2 -translate-y-1/2"
           >
-            <X className="w-5 h-5 text-gray-400 hover:text-gray-600" />
+            <svg className="h-4 w-4 text-white/60 hover:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
           </button>
         )}
       </div>
 
       {isOpen && results.length > 0 && (
-        <div className="absolute top-full mt-2 w-full bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 max-h-96 overflow-y-auto z-50">
+        <div className="absolute top-full z-50 mt-2 w-full max-h-96 overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-xl">
           {results.map((post) => (
             <Link
               key={post.id}
@@ -78,15 +86,15 @@ export default function SearchBar() {
                 setIsOpen(false);
                 setQuery('');
               }}
-              className="block p-4 hover:bg-gray-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 last:border-b-0"
+              className="block border-b border-slate-100 p-4 transition hover:bg-slate-50 last:border-b-0"
             >
-              <h4 className="font-semibold text-gray-900 dark:text-white mb-1">
+              <h4 className="mb-1 font-semibold text-slate-900">
                 {post.title}
               </h4>
-              <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+              <p className="line-clamp-2 text-sm text-slate-600">
                 {post.excerpt}
               </p>
-              <div className="flex items-center gap-2 mt-2 text-xs text-gray-500">
+              <div className="mt-2 flex items-center gap-2 text-xs text-slate-500">
                 <span>{post.readingTime}</span>
                 <span>•</span>
                 <span>{post.views} views</span>
@@ -97,8 +105,8 @@ export default function SearchBar() {
       )}
 
       {isOpen && query.length >= 2 && results.length === 0 && (
-        <div className="absolute top-full mt-2 w-full bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 p-4 z-50">
-          <p className="text-gray-600 dark:text-gray-400 text-center">
+        <div className="absolute top-full z-50 mt-2 w-full rounded-2xl border border-slate-200 bg-white p-4 shadow-xl">
+          <p className="text-center text-slate-600">
             No results found for "{query}"
           </p>
         </div>

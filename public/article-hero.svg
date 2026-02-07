@@ -1,0 +1,54 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#F4EEFF" />
+      <stop offset="55%" stop-color="#E8F1FF" />
+      <stop offset="100%" stop-color="#F1E6FF" />
+    </linearGradient>
+    <linearGradient id="orb1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#BDA7FF" stop-opacity="0.45" />
+      <stop offset="100%" stop-color="#8FB7FF" stop-opacity="0.35" />
+    </linearGradient>
+    <linearGradient id="orb2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#C9B6FF" stop-opacity="0.35" />
+      <stop offset="100%" stop-color="#A7D2FF" stop-opacity="0.3" />
+    </linearGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(800 420) rotate(90) scale(300 520)">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.75" />
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+    </radialGradient>
+    <filter id="softBlur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="26" />
+    </filter>
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="16" stdDeviation="22" flood-color="#6B5CA5" flood-opacity="0.25" />
+    </filter>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#bg)" />
+
+  <circle cx="250" cy="210" r="190" fill="url(#orb1)" filter="url(#softBlur)" />
+  <circle cx="1340" cy="700" r="220" fill="url(#orb2)" filter="url(#softBlur)" />
+  <ellipse cx="1200" cy="200" rx="140" ry="90" fill="url(#orb2)" filter="url(#softBlur)" />
+  <ellipse cx="420" cy="680" rx="180" ry="120" fill="url(#orb1)" filter="url(#softBlur)" />
+
+  <rect x="220" y="260" width="1160" height="380" rx="190" fill="#FFFFFF" fill-opacity="0.5" filter="url(#shadow)" />
+  <rect x="260" y="300" width="1080" height="300" rx="150" fill="#FFFFFF" fill-opacity="0.55" />
+
+  <circle cx="560" cy="450" r="120" fill="url(#orb1)" />
+  <circle cx="1040" cy="450" r="120" fill="url(#orb2)" />
+
+  <circle cx="640" cy="450" r="16" fill="#B89BFF" />
+  <circle cx="720" cy="420" r="10" fill="#9FBFFF" />
+  <circle cx="820" cy="480" r="12" fill="#C8B2FF" />
+  <circle cx="900" cy="420" r="10" fill="#A5C7FF" />
+  <circle cx="980" cy="450" r="16" fill="#BDA7FF" />
+
+  <path d="M640 450 C700 410, 760 410, 820 450" stroke="#C4B5FD" stroke-width="4" stroke-linecap="round" />
+  <path d="M820 450 C880 490, 940 490, 1000 450" stroke="#A5B8FF" stroke-width="4" stroke-linecap="round" />
+
+  <rect x="760" y="380" width="80" height="140" rx="40" fill="#FFFFFF" fill-opacity="0.65" />
+  <rect x="780" y="400" width="40" height="100" rx="20" fill="#C7B7FF" fill-opacity="0.7" />
+
+  <ellipse cx="800" cy="440" rx="520" ry="260" fill="url(#glow)" />
+</svg>

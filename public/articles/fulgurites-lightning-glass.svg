@@ -1,0 +1,21 @@
+<svg width="1200" height="675" viewBox="0 0 1200 675" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#F4EFFF" />
+      <stop offset="55%" stop-color="#E9F3FF" />
+      <stop offset="100%" stop-color="#FDE9FF" />
+    </linearGradient>
+    <linearGradient id="bolt" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#CDB8FF" stop-opacity="0.7" />
+      <stop offset="100%" stop-color="#9FC8FF" stop-opacity="0.6" />
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="10" />
+    </filter>
+  </defs>
+  <rect width="1200" height="675" fill="url(#bg)" />
+  <path d="M620 120 L520 280 L640 280 L540 480 L720 320 L600 320 L700 120" stroke="url(#bolt)" stroke-width="12" stroke-linejoin="round" stroke-linecap="round" fill="none" filter="url(#glow)" />
+  <path d="M620 120 L520 280 L640 280 L540 480 L720 320 L600 320 L700 120" stroke="#FFFFFF" stroke-opacity="0.5" stroke-width="4" stroke-linejoin="round" stroke-linecap="round" fill="none" />
+  <circle cx="820" cy="460" r="90" fill="#B9AEFF" fill-opacity="0.2" />
+  <circle cx="360" cy="220" r="120" fill="#9FC8FF" fill-opacity="0.2" />
+</svg>
