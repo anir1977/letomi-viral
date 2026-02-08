@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { getCategoryBySlug, getRelatedPosts, type Category, type FAQ, type Post, type Source } from "@/lib/posts";
-import SiteHeader from "@/app/components/SiteHeader";
 import PostBadge from "@/app/components/PostBadge";
 import TableOfContents from "@/app/components/TableOfContents";
 import MarkdownContent from "@/app/components/MarkdownContent";
@@ -125,10 +124,7 @@ export default function ArticleLayout({
   const resolvedReadingTime = resolvedPost?.readingTime || readingTime;
   const resolvedViews = resolvedPost?.views || views;
   const resolvedImageAlt = resolvedPost?.imageAlt || imageAlt || resolvedTitle || "";
-  const resolvedHeroImage = (resolvedPost as { coverImage?: string; image?: string } | undefined)?.coverImage
-    || resolvedPost?.image
-    || image
-    || "/articles/default.jpg";
+  const resolvedHeroImage = resolvedPost?.image || resolvedPost?.heroImage || image || "/articles/default.jpg";
   const resolvedContentMarkdown = resolvedPost?.content || contentMarkdown;
   const resolvedContentNode = resolvedContentMarkdown ? undefined : contentNode;
   const resolvedDidYouKnow = resolvedPost?.didYouKnow || didYouKnow;
@@ -171,7 +167,7 @@ export default function ArticleLayout({
     ) : null
   );
 
-  if (!resolvedTitle || !resolvedSlug || !resolvedExcerpt || !resolvedHeroImage) {
+  if (!resolvedTitle || !resolvedSlug || !resolvedExcerpt) {
     return null;
   }
 
@@ -181,13 +177,25 @@ export default function ArticleLayout({
         <StructuredData post={resolvedPost} category={structuredCategory} />
       )}
       <ReadingProgress />
-      <SiteHeader />
 
-      <article className="container mx-auto px-4 py-10 md:py-14">
+      <article className="container mx-auto px-4 pt-12 pb-24">
         <div className="max-w-4xl mx-auto">
           {resolvedBreadcrumb}
 
-          <div className="mt-6 md:mt-8 bg-white dark:bg-gray-900 border border-gray-200/70 dark:border-gray-800 rounded-2xl md:rounded-3xl shadow-sm p-6 sm:p-8 md:p-10">
+          <div className="mt-6 md:mt-10 bg-white dark:bg-zinc-900 border border-gray-200/70 dark:border-gray-800 rounded-xl shadow-sm p-8">
+            <div className="mb-8 md:mb-10">
+              <div className="relative w-full aspect-video rounded-xl shadow-sm overflow-hidden">
+                <Image
+                  src={resolvedHeroImage}
+                  alt={resolvedImageAlt}
+                  fill
+                  className="object-cover"
+                  priority
+                  sizes="(max-width: 768px) 100vw, 1200px"
+                />
+              </div>
+            </div>
+
             <header className="space-y-4">
               <div className="flex items-center gap-3 flex-wrap">
                 {displayCategory && (
@@ -204,22 +212,32 @@ export default function ArticleLayout({
                     </span>
                   )
                 )}
-                {resolvedReadingTime && (
-                  <span className="text-gray-500 dark:text-gray-400 text-sm">
-                    {resolvedReadingTime} read
-                  </span>
-                )}
-                <span className="text-gray-500 dark:text-gray-400 text-sm">Date: {resolvedDateLabel}</span>
-                {resolvedViews && (
-                  <span className="text-gray-500 dark:text-gray-400 text-sm">Views: {resolvedViews}</span>
-                )}
               </div>
 
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white leading-tight">
+              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white leading-tight mb-6">
                 {resolvedTitle}
               </h1>
 
-              <p className="text-lg md:text-xl text-gray-700 dark:text-gray-300 leading-relaxed">
+              <div className="flex flex-wrap items-center gap-3 text-sm md:text-base text-gray-600 dark:text-gray-400">
+                {displayCategory && (
+                  displayCategory.href || displayCategory.slug ? (
+                    <Link
+                      href={displayCategory.href || `/category/${displayCategory.slug}`}
+                      className="font-semibold text-gray-900 dark:text-gray-200 hover:underline"
+                    >
+                      {displayCategory.name}
+                    </Link>
+                  ) : (
+                    <span className="font-semibold text-gray-900 dark:text-gray-200">
+                      {displayCategory.name}
+                    </span>
+                  )
+                )}
+                <span className="text-gray-400">|</span>
+                <span>{resolvedDateLabel}</span>
+              </div>
+
+              <p className="text-lg md:text-xl text-gray-700 dark:text-gray-300 leading-relaxed mb-8">
                 {resolvedExcerpt}
               </p>
 
@@ -228,19 +246,7 @@ export default function ArticleLayout({
               </div>
             </header>
 
-            <div className="mt-8 flex justify-center">
-              <Image
-                src={resolvedHeroImage}
-                alt={resolvedImageAlt}
-                width={1200}
-                height={675}
-                className="w-full max-w-4xl h-auto rounded-2xl"
-                priority
-                sizes="(max-width: 768px) 100vw, 1200px"
-              />
-            </div>
-
-            <div className="h-px bg-gray-200/70 dark:bg-gray-800 my-8"></div>
+            <div className="h-px bg-gray-200/70 dark:bg-gray-800 my-6"></div>
 
             <AdSlot position="top" className="my-6" />
 
@@ -252,7 +258,7 @@ export default function ArticleLayout({
 
             {resolvedDidYouKnow && <DidYouKnowBox fact={resolvedDidYouKnow} />}
 
-            <section className="prose prose-lg md:prose-xl dark:prose-invert max-w-none text-gray-800 dark:text-gray-100 leading-relaxed prose-p:my-6 prose-li:my-2 prose-h2:mt-10 prose-h2:text-xl prose-h2:font-semibold prose-h3:mt-8">
+            <section className="prose prose-lg max-w-3xl mx-auto leading-relaxed text-lg text-gray-700 dark:text-gray-300 prose-p:my-6 prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-li:my-2 prose-h2:mt-10 prose-h2:mb-4 prose-h2:text-2xl md:prose-h2:text-3xl prose-h2:font-semibold prose-h3:mt-10 prose-h3:mb-4 prose-h3:text-xl prose-h3:font-semibold prose-p:first-of-type:text-xl prose-p:first-of-type:first-letter:text-6xl md:prose-p:first-of-type:first-letter:text-7xl prose-p:first-of-type:first-letter:font-bold prose-p:first-of-type:first-letter:leading-none prose-p:first-of-type:first-letter:float-left prose-p:first-of-type:first-letter:mr-3 prose-p:first-of-type:first-letter:text-gray-900 dark:prose-p:first-of-type:first-letter:text-white">
               {resolvedContentMarkdown ? <MarkdownContent content={resolvedContentMarkdown} /> : resolvedContentNode}
             </section>
 

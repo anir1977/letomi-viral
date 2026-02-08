@@ -7,8 +7,8 @@ export default function ReadingProgress() {
 
   useEffect(() => {
     const handleScroll = () => {
-      const totalHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-      const scrollProgress = (window.scrollY / totalHeight) * 100;
+      const totalHeight = document.body.scrollHeight - window.innerHeight;
+      const scrollProgress = totalHeight > 0 ? (window.scrollY / totalHeight) * 100 : 0;
       setProgress(Math.min(100, Math.max(0, scrollProgress)));
     };
 
@@ -17,9 +17,9 @@ export default function ReadingProgress() {
   }, []);
 
   return (
-    <div className="fixed top-0 left-0 w-full h-1 bg-gray-200 dark:bg-gray-800 z-50">
+    <div className="fixed top-0 left-0 w-full h-[3px] bg-transparent z-50">
       <div
-        className="h-full bg-gradient-to-r from-purple-600 to-blue-600 transition-all duration-150 ease-out"
+        className="h-full bg-gradient-to-r from-purple-600 to-pink-500 transition-all duration-150 ease-out"
         style={{ width: `${progress}%` }}
       />
     </div>

@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Fraunces, Manrope } from "next/font/google";
 import "./globals.css";
+import SiteHeader from "./components/SiteHeader";
 import ScrollToTop from "./components/ScrollToTop";
 import Footer from "./components/Footer";
+import ReadingProgress from "./components/ReadingProgress";
 import { Analytics } from "@vercel/analytics/next";
 
 const manrope = Manrope({ subsets: ["latin"], variable: "--font-body" });
@@ -43,6 +45,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${manrope.variable} ${fraunces.variable} antialiased`}>
+        <ReadingProgress />
+        <SiteHeader />
         {children}
         <Footer />
         <ScrollToTop />
