@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import SiteHeader from "@/app/components/SiteHeader";
 
 export const metadata: Metadata = {
   title: "Contact Us - CurioSpark",
@@ -10,8 +9,6 @@ export const metadata: Metadata = {
 export default function ContactPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-black">
-      <SiteHeader />
-
       <main className="container mx-auto px-4 py-16">
         <div className="max-w-3xl mx-auto text-center">
           <h1 className="text-5xl font-bold text-gray-900 dark:text-white mb-8">

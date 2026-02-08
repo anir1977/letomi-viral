@@ -10,8 +10,6 @@ export async function GET() {
 User-agent: *
 Allow: /
 
-# Disallow admin areas
-Disallow: /admin/
 Disallow: /api/
 
 # Crawl delay (optional)

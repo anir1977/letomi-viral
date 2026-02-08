@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import SiteHeader from "@/app/components/SiteHeader";
 
 export const metadata: Metadata = {
   title: "About Us - CurioSpark",
@@ -10,64 +9,36 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-black">
-      <SiteHeader />
-
       <main className="container mx-auto px-4 py-16">
         <div className="max-w-3xl mx-auto">
           <h1 className="text-5xl font-bold text-gray-900 dark:text-white mb-6">
-            About CurioSpark
+            Our Editorial Approach
           </h1>
 
           <div className="prose prose-lg dark:prose-invert">
             <p className="text-xl text-gray-600 dark:text-gray-400 mb-8">
-              We believe curiosity is the spark that ignites understanding. CurioSpark delivers fascinating facts that make you see the world differently.
+              Curiosity comes first. At CurioSpark, we focus on ideas that spark genuine curiosity - questions that make people pause, think, and want to learn more about the world around them.
             </p>
 
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white mt-12 mb-4">
-              Our Mission
+              Clear, thoughtful storytelling
             </h2>
             <p className="text-gray-700 dark:text-gray-300 mb-6">
-              In a world overflowing with information, we curate the most intriguing, scientifically accurate, and genuinely fascinating facts. Our mission is to make learning addictive by delivering bite-sized knowledge that sparks curiosity and wonder.
+              Each article is written to be easy to follow, engaging, and grounded in reliable information. We aim to explain complex topics in a way that feels natural and accessible, without oversimplifying or exaggerating the facts.
             </p>
 
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white mt-12 mb-4">
-              What We Cover
-            </h2>
-            <p className="text-gray-700 dark:text-gray-300 mb-4">
-              CurioSpark explores four main areas:
-            </p>
-            <ul className="list-disc pl-6 space-y-2 text-gray-700 dark:text-gray-300 mb-6">
-              <li><strong>Psychology:</strong> Discover how your mind works and why you think the way you do</li>
-              <li><strong>Science:</strong> Explore breakthrough discoveries and natural phenomena</li>
-              <li><strong>Human Behavior:</strong> Understand the surprising patterns in how we act</li>
-              <li><strong>Life Facts:</strong> Learn amazing truths about everyday experiences</li>
-            </ul>
-
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mt-12 mb-4">
-              Our Standards
+              Responsible research
             </h2>
             <p className="text-gray-700 dark:text-gray-300 mb-6">
-              Every fact on CurioSpark is:
-            </p>
-            <ul className="list-disc pl-6 space-y-2 text-gray-700 dark:text-gray-300 mb-6">
-              <li>Backed by scientific research or credible sources</li>
-              <li>Written in clear, accessible language</li>
-              <li>Designed to educate, not mislead</li>
-              <li>Verified for accuracy before publication</li>
-            </ul>
-
-            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mt-12 mb-4">
-              Why CurioSpark?
-            </h2>
-            <p className="text-gray-700 dark:text-gray-300 mb-6">
-              We're different from other fact sites because we prioritize quality over quantity. Each article is crafted to be genuinely interesting, not just clickbait. We respect your intelligence and your time.
+              Topics are selected based on scientific interest, psychological insight, and real-world relevance. When research or studies are discussed, we rely on publicly available and credible sources to ensure accuracy and context.
             </p>
 
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white mt-12 mb-4">
-              Join Our Community
+              Independent and reader-focused
             </h2>
             <p className="text-gray-700 dark:text-gray-300 mb-6">
-              Thousands of curious minds visit CurioSpark daily to feed their love of learning. Subscribe to our newsletter to get the most fascinating facts delivered straight to your inbox.
+              CurioSpark is an independent editorial project. Our content is created to inform and inspire curiosity - not to promote products, push opinions, or chase clicks.
             </p>
 
             <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl p-8 text-center text-white mt-12">

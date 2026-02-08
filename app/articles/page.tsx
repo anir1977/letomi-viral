@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import fs from "fs";
-import path from "path";
-import { articles } from "./[slug]/page";
+import Image from "next/image";
+import articles from "./articleIndex.json";
 
 export const metadata: Metadata = {
   title: "Articles - CurioSpark",
@@ -13,32 +12,13 @@ export const metadata: Metadata = {
 type ArticleCard = {
   slug: string;
   title: string;
-  description: string;
-};
-
-const getArticleSlugs = (): string[] => {
-  const filePath = path.join(process.cwd(), "app", "articles", "articleIndex.json");
-  const raw = fs.readFileSync(filePath, "utf8");
-  return JSON.parse(raw) as string[];
+  excerpt: string;
+  category: string;
+  image?: string;
 };
 
 export default function ArticlesIndexPage() {
-  const slugs = getArticleSlugs();
-  const items = slugs
-    .map((slug) => {
-      const article = articles[slug];
-
-      if (!article) {
-        return null;
-      }
-
-      return {
-        slug,
-        title: article.title,
-        description: article.description,
-      } satisfies ArticleCard;
-    })
-    .filter((article): article is ArticleCard => Boolean(article));
+  const items = articles as ArticleCard[];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-black">
@@ -68,24 +48,49 @@ export default function ArticlesIndexPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="space-y-8">
             {items.map((article) => (
               <article
                 key={article.slug}
-                className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl p-6 shadow-sm hover:shadow-lg transition"
+                className="group bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition"
               >
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
-                  {article.title}
-                </h2>
-                <p className="text-gray-600 dark:text-gray-400 mb-6">
-                  {article.description}
-                </p>
-                <Link
-                  href={`/articles/${article.slug}`}
-                  className="inline-flex items-center text-purple-600 dark:text-purple-400 font-semibold hover:text-purple-700 dark:hover:text-purple-300 transition"
-                >
-                  Read More →
-                </Link>
+                <div className="grid grid-cols-1 md:grid-cols-[240px_minmax(0,1fr)] gap-6 md:gap-8 p-6">
+                  <Link href={`/articles/${article.slug}`} className="block">
+                    <div className="relative w-full aspect-[16/9] md:aspect-[4/3] bg-gray-100 dark:bg-gray-700 rounded-xl overflow-hidden">
+                      {article.image ? (
+                        <Image
+                          src={article.image}
+                          alt={article.title}
+                          fill
+                          className="object-cover transition-transform duration-300 group-hover:scale-105"
+                          sizes="(max-width: 768px) 100vw, 240px"
+                        />
+                      ) : (
+                        <div className="absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-100 dark:from-gray-700 dark:to-gray-600" />
+                      )}
+                    </div>
+                  </Link>
+
+                  <div className="flex flex-col justify-center">
+                    <span className="inline-flex items-center text-xs font-semibold uppercase tracking-wide text-purple-700 dark:text-purple-300 bg-purple-100 dark:bg-purple-900/30 px-3 py-1 rounded-full mb-3 w-fit">
+                      {article.category}
+                    </span>
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                      <Link href={`/articles/${article.slug}`} className="hover:underline">
+                        {article.title}
+                      </Link>
+                    </h2>
+                    <p className="text-gray-600 dark:text-gray-400 mb-5">
+                      {article.excerpt}
+                    </p>
+                    <Link
+                      href={`/articles/${article.slug}`}
+                      className="inline-flex items-center text-purple-600 dark:text-purple-400 font-semibold hover:text-purple-700 dark:hover:text-purple-300 transition"
+                    >
+                      Read article →
+                    </Link>
+                  </div>
+                </div>
               </article>
             ))}
           </div>

@@ -41,7 +41,7 @@ export default function AdSense({
     }
   }, [isProduction]);
 
-  // Don't render ads in admin or development
+  // Don't render ads during SSR or in development
   if (!isProduction || typeof window === 'undefined') {
     return (
       <div

@@ -5,11 +5,9 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { getRelatedArticles } from '@/lib/supabase/articles';
-import type { Article } from '@/types/database';
+import { getRelatedArticles } from '@/lib/articles';
 
 interface RelatedArticlesProps {
   articleId: string;
@@ -17,34 +15,7 @@ interface RelatedArticlesProps {
 }
 
 export default function RelatedArticles({ articleId, limit = 4 }: RelatedArticlesProps) {
-  const [articles, setArticles] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    loadRelatedArticles();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [articleId]);
-
-  async function loadRelatedArticles() {
-    try {
-      const data = await getRelatedArticles(articleId, limit);
-      setArticles(data || []);
-    } catch (error) {
-      console.error('Error loading related articles:', error);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  if (loading) {
-    return (
-      <div className="animate-pulse space-y-4">
-        {[...Array(3)].map((_, i) => (
-          <div key={i} className="h-24 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
-        ))}
-      </div>
-    );
-  }
+  const articles = getRelatedArticles(articleId, limit);
 
   if (articles.length === 0) {
     return null;
@@ -60,21 +31,23 @@ export default function RelatedArticles({ articleId, limit = 4 }: RelatedArticle
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {articles.map((article) => (
           <Link
-            key={article.id}
-            href={`/post/${article.slug}`}
+            key={article.slug}
+            href={`/articles/${article.slug}`}
             className="group flex flex-col bg-gray-50 dark:bg-gray-900 rounded-lg overflow-hidden hover:shadow-md transition-all duration-300 border border-gray-200 dark:border-gray-700"
           >
-            {article.cover_image_url && (
-              <div className="relative h-40 overflow-hidden">
+            <div className="relative h-40 overflow-hidden bg-gray-100 dark:bg-gray-800">
+              {article.image ? (
                 <Image
-                  src={article.cover_image_url}
+                  src={article.image}
                   alt={article.title}
                   width={400}
                   height={160}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
-              </div>
-            )}
+              ) : (
+                <div className="absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-100 dark:from-gray-700 dark:to-gray-600" />
+              )}
+            </div>
             
             <div className="p-4 flex-1">
               <h3 className="font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">

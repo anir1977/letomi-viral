@@ -1,16 +1,11 @@
 'use client';
 
 import Link from "next/link";
-import SearchBar from "./SearchBar";
-import { useState } from "react";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { Menu, X, Search } from "lucide-react";
-
-const categories = [
-  { name: "Psychology", slug: "psychology", icon: "🧠" },
-  { name: "Science", slug: "science", icon: "🔬" },
-  { name: "Human Body", slug: "human-body", icon: "💪" },
-  { name: "Nature", slug: "nature", icon: "🌿" },
-];
+import { categories } from "@/lib/posts";
+import SearchBar from "./SearchBar";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -23,16 +18,37 @@ const navLinks = [
 export default function SiteHeader() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const pathname = usePathname();
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  const isActiveLink = (href: string) => {
+    if (href === "/") {
+      return pathname === "/";
+    }
+    return pathname?.startsWith(href);
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 8);
+    };
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <header className="bg-gradient-to-r from-purple-600 via-blue-600 to-indigo-600 shadow-lg sticky top-0 z-50 backdrop-blur-sm">
+    <header className={`bg-gradient-to-r from-purple-700 via-blue-700 to-indigo-700 backdrop-blur-sm border-b border-white/10 transition-shadow ${
+      isScrolled ? "shadow-[0_10px_24px_-22px_rgba(0,0,0,0.75)]" : "shadow-none"
+    }`}>
       {/* Main Navigation */}
-      <nav className="container mx-auto px-4 py-3">
-        <div className="flex items-center justify-between gap-2">
+      <nav className="container mx-auto px-4 py-2.5 md:py-3 min-h-[56px]">
+        <div className="flex items-center justify-between gap-3">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2 group flex-shrink-0">
+          <Link href="/" className="flex items-center space-x-3 group flex-shrink-0">
             <span className="text-2xl md:text-3xl group-hover:scale-110 transition-transform duration-200">⚡</span>
-            <h1 className="text-lg md:text-xl font-bold text-white drop-shadow-lg">CurioSpark</h1>
+            <h1 className="text-lg md:text-xl font-bold text-white tracking-wide drop-shadow-lg">CurioSpark</h1>
           </Link>
           
           {/* Desktop Search Bar */}
@@ -42,11 +58,39 @@ export default function SiteHeader() {
           
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center space-x-6">
+            <div className="relative group">
+              <button
+                type="button"
+                className="text-sm whitespace-nowrap font-semibold tracking-wide text-white/85 transition-colors duration-200 border-b-2 border-transparent pb-1 hover:text-white hover:border-white/60"
+                aria-haspopup="true"
+              >
+                Categories
+              </button>
+              <div className="absolute left-0 top-full mt-2 w-56 rounded-xl border border-white/15 bg-white/95 text-gray-900 shadow-xl opacity-0 pointer-events-none transition duration-200 group-hover:opacity-100 group-hover:pointer-events-auto group-focus-within:opacity-100 group-focus-within:pointer-events-auto">
+                <div className="py-2">
+                  {categories.map((category) => (
+                    <Link
+                      key={category.slug}
+                      href={`/category/${category.slug}`}
+                      className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-gray-800 hover:bg-slate-100"
+                    >
+                      <span>{category.icon}</span>
+                      <span>{category.name}</span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </div>
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-white/90 hover:text-yellow-300 transition-colors duration-200 font-medium text-sm whitespace-nowrap"
+                className={`text-sm whitespace-nowrap font-semibold tracking-wide transition-colors duration-200 border-b-2 pb-1 ${
+                  isActiveLink(link.href)
+                    ? "text-white border-white/80"
+                    : "text-white/85 border-transparent hover:text-white hover:border-white/60"
+                }`}
+                aria-current={isActiveLink(link.href) ? "page" : undefined}
               >
                 {link.icon && <span className="mr-1">{link.icon}</span>}
                 {link.label}
@@ -81,27 +125,9 @@ export default function SiteHeader() {
         )}
       </nav>
 
-      {/* Categories Bar - Desktop */}
-      <div className="hidden md:block border-t border-white/20">
-        <div className="container mx-auto px-4 py-2">
-          <div className="flex gap-4 overflow-x-auto scrollbar-hide">
-            {categories.map((category) => (
-              <Link
-                key={category.slug}
-                href={`/category/${category.slug}`}
-                className="flex items-center gap-2 text-white/80 hover:text-yellow-300 transition-colors duration-200 whitespace-nowrap text-sm"
-              >
-                <span>{category.icon}</span>
-                <span>{category.name}</span>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </div>
-
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="lg:hidden border-t border-white/20 bg-gradient-to-b from-purple-700 to-indigo-700">
+        <div className="lg:hidden border-t border-white/20 bg-gradient-to-b from-purple-800 to-indigo-800">
           <div className="container mx-auto px-4 py-4">
             {/* Mobile Navigation Links */}
             <div className="space-y-3 mb-4">
@@ -110,7 +136,12 @@ export default function SiteHeader() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center gap-2 text-white/90 hover:text-yellow-300 transition-colors duration-200 py-2 text-base font-medium"
+                  className={`flex items-center gap-2 py-2 text-base font-semibold transition-colors duration-200 border-b border-transparent ${
+                    isActiveLink(link.href)
+                      ? "text-white border-white/60"
+                      : "text-white/85 hover:text-white hover:border-white/40"
+                  }`}
+                  aria-current={isActiveLink(link.href) ? "page" : undefined}
                 >
                   {link.icon && <span>{link.icon}</span>}
                   {link.label}

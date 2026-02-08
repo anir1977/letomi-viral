@@ -1,3 +1,5 @@
+import articleIndex from "@/app/articles/articleIndex.json";
+
 export interface FAQ {
   question: string;
   answer: string;
@@ -41,36 +43,40 @@ export interface Category {
   color: string;
 }
 
-export const categories: Category[] = [
-  {
-    name: "Psychology",
-    slug: "psychology",
+const categoryMeta: Record<string, Omit<Category, "name" | "slug">> = {
+  Psychology: {
     icon: "🧠",
     description: "Explore the fascinating workings of the human mind",
-    color: "bg-purple-100 hover:bg-purple-200 dark:bg-purple-900/30 dark:hover:bg-purple-900/50"
+    color: "bg-purple-100 hover:bg-purple-200 dark:bg-purple-900/30 dark:hover:bg-purple-900/50",
   },
-  {
-    name: "Science",
-    slug: "science",
+  Science: {
     icon: "🔬",
     description: "Discover incredible scientific facts and breakthroughs",
-    color: "bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/30 dark:hover:bg-blue-900/50"
+    color: "bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/30 dark:hover:bg-blue-900/50",
   },
-  {
-    name: "Human Behavior",
-    slug: "human-behavior",
+  "Human Behavior": {
     icon: "👥",
     description: "Understand why we do what we do",
-    color: "bg-green-100 hover:bg-green-200 dark:bg-green-900/30 dark:hover:bg-green-900/50"
+    color: "bg-green-100 hover:bg-green-200 dark:bg-green-900/30 dark:hover:bg-green-900/50",
   },
-  {
-    name: "Life Facts",
-    slug: "life-facts",
+  "Life Facts": {
     icon: "✨",
     description: "Everyday wonders and surprising truths",
-    color: "bg-amber-100 hover:bg-amber-200 dark:bg-amber-900/30 dark:hover:bg-amber-900/50"
-  }
-];
+    color: "bg-amber-100 hover:bg-amber-200 dark:bg-amber-900/30 dark:hover:bg-amber-900/50",
+  },
+};
+
+const slugifyCategory = (value: string) => value.toLowerCase().replace(/\s+/g, "-");
+
+export const categories: Category[] = Array.from(
+  new Set((articleIndex as Array<{ category: string }>).map((article) => article.category))
+).map((name) => ({
+  name,
+  slug: slugifyCategory(name),
+  icon: categoryMeta[name]?.icon ?? "📌",
+  description: categoryMeta[name]?.description ?? "Curated insights and curious discoveries",
+  color: categoryMeta[name]?.color ?? "bg-slate-100 hover:bg-slate-200 dark:bg-slate-900/30 dark:hover:bg-slate-900/50",
+}));
 
 export const posts: Post[] = [
   // Psychology Posts
@@ -236,7 +242,7 @@ The next time you feel mentally drained after a challenging task, remember: your
     excerpt: "Recent studies show that placebos can work even when people know they're taking a sugar pill.",
     image: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=1200&h=600&fit=crop",
     imageAlt: "Medical pills and capsules representing placebo effect research",
-    heroImage: "/articles/placebo-effect-awareness.svg",
+    heroImage: "/articles/default.jpg",
     didYouKnow: "In one study, people with chronic pain who knowingly took placebo pills experienced 30% pain reduction—the same as many prescription painkillers!",
     surprisingFact: "Even doctors who prescribe placebos can experience improved health when they take one themselves—knowing full well it's a sugar pill!",
     shareableQuote: "Your mind is so powerful that taking a sugar pill you KNOW is fake can still trigger real healing. The placebo effect doesn't need deception to work.",

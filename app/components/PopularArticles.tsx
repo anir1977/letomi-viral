@@ -5,48 +5,15 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { getTopArticles } from '@/lib/supabase/articles';
+import { getTopArticles } from '@/lib/articles';
 
 interface PopularArticlesProps {
   limit?: number;
 }
 
 export default function PopularArticles({ limit = 6 }: PopularArticlesProps) {
-  const [articles, setArticles] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    loadPopular();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  async function loadPopular() {
-    try {
-      const data = await getTopArticles(limit);
-      setArticles(data || []);
-    } catch (error) {
-      console.error('Error loading popular articles:', error);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  if (loading) {
-    return (
-      <section className="py-12">
-        <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8 text-center">
-          🏆 Most Popular
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
-          {[...Array(6)].map((_, i) => (
-            <div key={i} className="h-64 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
-          ))}
-        </div>
-      </section>
-    );
-  }
+  const articles = getTopArticles(limit);
 
   if (articles.length === 0) {
     return null;
@@ -67,8 +34,8 @@ export default function PopularArticles({ limit = 6 }: PopularArticlesProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {articles.map((article, index) => (
           <Link
-            key={article.id}
-            href={`/post/${article.slug}`}
+            key={article.slug}
+            href={`/articles/${article.slug}`}
             className="group relative bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-200 dark:border-gray-700"
           >
             {/* Ranking Badge */}
