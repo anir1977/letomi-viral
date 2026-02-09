@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { Fraunces, Manrope } from "next/font/google";
-import Script from "next/script";
 import "./globals.css";
 import SiteHeader from "./components/SiteHeader";
 import ScrollToTop from "./components/ScrollToTop";
@@ -47,12 +46,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${manrope.variable} ${fraunces.variable} antialiased`}>
-        <Script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9750203778031302"
-          crossOrigin="anonymous"
-          strategy="afterInteractive"
-        />
         <ReadingProgress />
         <SiteHeader />
         {children}
