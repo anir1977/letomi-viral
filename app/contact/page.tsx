@@ -23,10 +23,10 @@ export default function ContactPage() {
             <div className="bg-white dark:bg-gray-800 rounded-lg p-8 shadow-sm border border-gray-200 dark:border-gray-700">
               <p className="text-gray-600 dark:text-gray-400 mb-4">Email us at:</p>
               <a 
-                href="mailto:contact@curiospark.org"
+                href="mailto:yuba1977@gmail.com"
                 className="text-2xl font-semibold text-purple-600 hover:text-purple-700 dark:hover:text-purple-400 transition"
               >
-                contact@curiospark.org
+                yuba1977@gmail.com
               </a>
             </div>
 

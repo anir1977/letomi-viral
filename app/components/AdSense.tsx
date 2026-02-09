@@ -25,6 +25,7 @@ export default function AdSense({
   const adRef = useRef<HTMLModElement>(null);
   const isProduction = process.env.NODE_ENV === 'production';
   const adClient = process.env.NEXT_PUBLIC_ADSENSE_CLIENT || 'ca-pub-9750203778031302';
+  const hasValidSlot = Boolean(slot) && !slot.includes('XXXXXXXXXX');
 
   useEffect(() => {
     if (!isProduction) {
@@ -41,8 +42,8 @@ export default function AdSense({
     }
   }, [isProduction]);
 
-  // Don't render ads during SSR or in development
-  if (!isProduction || typeof window === 'undefined') {
+  // Don't render ads during SSR, in development, or if slot is not configured.
+  if (!isProduction || typeof window === 'undefined' || !hasValidSlot) {
     return (
       <div
         className={`bg-gray-200 dark:bg-gray-700 border-2 border-dashed border-gray-400 dark:border-gray-600 rounded-lg flex items-center justify-center ${className}`}

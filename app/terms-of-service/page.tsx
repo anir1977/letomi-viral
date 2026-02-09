@@ -107,7 +107,7 @@ export default function TermsOfServicePage() {
               Contact Information
             </h2>
             <p className="text-gray-700 dark:text-gray-300 mb-6">
-              If you have any questions about these Terms of Service, please contact us at legal@curiospark.com.
+              If you have any questions about these Terms of Service, please contact us at yuba1977@gmail.com.
             </p>
           </div>
         </div>

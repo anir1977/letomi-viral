@@ -110,7 +110,7 @@ export default function PrivacyPolicyPage() {
               Contact Us
             </h2>
             <p className="text-gray-700 dark:text-gray-300 mb-6">
-              If you have any questions about this Privacy Policy, please contact us through our website or email us at privacy@curiospark.com.
+              If you have any questions about this Privacy Policy, please contact us through our website or email us at yuba1977@gmail.com.
             </p>
           </div>
         </div>
