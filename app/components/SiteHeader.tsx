@@ -1,6 +1,7 @@
 'use client';
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Menu, X, Search } from "lucide-react";
@@ -9,11 +10,13 @@ import SearchBar from "./SearchBar";
 
 const navLinks = [
   { href: "/", label: "Home" },
-  { href: "/trending", label: "Trending", icon: "🔥" },
   { href: "/latest", label: "Latest" },
-  { href: "/articles", label: "Articles" },
+  { href: "/trending", label: "Trending", icon: "🔥" },
   { href: "/about", label: "About" },
 ];
+
+const homeLink = navLinks[0];
+const restLinks = navLinks.slice(1);
 
 export default function SiteHeader() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -39,9 +42,12 @@ export default function SiteHeader() {
   }, []);
 
   return (
-    <header className={`bg-gradient-to-r from-purple-700 via-blue-700 to-indigo-700 backdrop-blur-sm border-b border-white/10 transition-shadow ${
+    <header
+      data-site-header
+      className={`relative z-40 bg-gradient-to-r from-purple-700 via-blue-700 to-indigo-700 backdrop-blur-sm border-b border-white/10 transition-shadow ${
       isScrolled ? "shadow-[0_10px_24px_-22px_rgba(0,0,0,0.75)]" : "shadow-none"
-    }`}>
+    }`}
+    >
       {/* Main Navigation */}
       <nav className="container mx-auto px-4 py-2.5 md:py-3 min-h-[56px]">
         <div className="flex items-center justify-between gap-3">
@@ -58,6 +64,18 @@ export default function SiteHeader() {
           
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center space-x-6">
+            <Link
+              href={homeLink.href}
+              className={`text-sm whitespace-nowrap font-semibold tracking-wide transition-colors duration-200 border-b-2 pb-1 ${
+                isActiveLink(homeLink.href)
+                  ? "text-white border-white/80"
+                  : "text-white/85 border-transparent hover:text-white hover:border-white/60"
+              }`}
+              aria-current={isActiveLink(homeLink.href) ? "page" : undefined}
+            >
+              {homeLink.label}
+            </Link>
+
             <div className="relative group">
               <button
                 type="button"
@@ -66,7 +84,7 @@ export default function SiteHeader() {
               >
                 Categories
               </button>
-              <div className="absolute left-0 top-full mt-2 w-56 rounded-xl border border-white/15 bg-white/95 text-gray-900 shadow-xl opacity-0 pointer-events-none transition duration-200 group-hover:opacity-100 group-hover:pointer-events-auto group-focus-within:opacity-100 group-focus-within:pointer-events-auto">
+              <div className="absolute left-0 top-full mt-2 w-56 rounded-xl border border-white/15 bg-white/95 text-gray-900 shadow-xl opacity-0 pointer-events-none translate-y-2 transition duration-200 z-50 group-hover:opacity-100 group-hover:pointer-events-auto group-hover:translate-y-0 group-focus-within:opacity-100 group-focus-within:pointer-events-auto group-focus-within:translate-y-0">
                 <div className="py-2">
                   {categories.map((category) => (
                     <Link
@@ -74,14 +92,26 @@ export default function SiteHeader() {
                       href={`/category/${category.slug}`}
                       className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-gray-800 hover:bg-slate-100"
                     >
-                      <span>{category.icon}</span>
+                      {category.image ? (
+                        <Image
+                          src={category.image}
+                          alt={category.imageAlt || category.name}
+                          width={20}
+                          height={20}
+                          className="rounded-full object-cover"
+                        />
+                      ) : (
+                        <span className="w-5 h-5 rounded-full bg-gray-200 text-[10px] font-semibold text-gray-700 flex items-center justify-center">
+                          {category.name.slice(0, 1)}
+                        </span>
+                      )}
                       <span>{category.name}</span>
                     </Link>
                   ))}
                 </div>
               </div>
             </div>
-            {navLinks.map((link) => (
+            {restLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
@@ -160,7 +190,19 @@ export default function SiteHeader() {
                     onClick={() => setMobileMenuOpen(false)}
                     className="flex items-center gap-2 text-white/80 hover:text-yellow-300 transition-colors duration-200 text-sm py-2"
                   >
-                    <span className="text-lg">{category.icon}</span>
+                    {category.image ? (
+                      <Image
+                        src={category.image}
+                        alt={category.imageAlt || category.name}
+                        width={22}
+                        height={22}
+                        className="rounded-full object-cover"
+                      />
+                    ) : (
+                      <span className="w-5 h-5 rounded-full bg-white/20 text-[10px] font-semibold text-white flex items-center justify-center">
+                        {category.name.slice(0, 1)}
+                      </span>
+                    )}
                     <span>{category.name}</span>
                   </Link>
                 ))}

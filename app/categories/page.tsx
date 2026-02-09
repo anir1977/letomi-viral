@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { categories } from "@/lib/posts";
 
 export const metadata: Metadata = {
@@ -26,7 +27,21 @@ export default function CategoriesPage() {
                 href={`/category/${category.slug}`}
                 className={`${category.color} rounded-2xl p-8 transition transform hover:scale-105`}
               >
-                <div className="text-5xl mb-4">{category.icon}</div>
+                <div className="mb-4">
+                  {category.image ? (
+                    <Image
+                      src={category.image}
+                      alt={category.imageAlt || category.name}
+                      width={72}
+                      height={72}
+                      className="rounded-full object-cover shadow-sm"
+                    />
+                  ) : (
+                    <div className="w-[72px] h-[72px] rounded-full bg-white/80 flex items-center justify-center text-2xl font-semibold text-gray-700">
+                      {category.name.slice(0, 1)}
+                    </div>
+                  )}
+                </div>
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
                   {category.name}
                 </h2>

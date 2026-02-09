@@ -24,7 +24,7 @@ export default function AdSense({
 }: AdSlotProps) {
   const adRef = useRef<HTMLModElement>(null);
   const isProduction = process.env.NODE_ENV === 'production';
-  const adClient = process.env.NEXT_PUBLIC_ADSENSE_CLIENT || 'ca-pub-XXXXXXXXXXXXXXXX';
+  const adClient = process.env.NEXT_PUBLIC_ADSENSE_CLIENT || 'ca-pub-9750203778031302';
 
   useEffect(() => {
     if (!isProduction) {

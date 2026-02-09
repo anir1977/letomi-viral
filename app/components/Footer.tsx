@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { categories } from "@/lib/posts";
 
 interface FooterVariant {
@@ -41,15 +42,33 @@ export default function Footer({ variant = "full" }: FooterVariant) {
           <div>
             <h3 className="font-bold text-white mb-4 text-sm uppercase tracking-wider">Categories</h3>
             <ul className="space-y-3 text-sm text-gray-300">
-              {categories.map((category) => (
+              {categories.slice(0, 6).map((category) => (
                 <li key={category.slug}>
                   <Link href={`/category/${category.slug}`} className="hover:text-yellow-300 transition-colors duration-200 flex items-center gap-2">
-                    <span>{category.icon}</span>
+                    {category.image ? (
+                      <Image
+                        src={category.image}
+                        alt={category.imageAlt || category.name}
+                        width={18}
+                        height={18}
+                        className="rounded-full object-cover"
+                      />
+                    ) : (
+                      <span className="w-4 h-4 rounded-full bg-white/20 text-[10px] font-semibold text-white flex items-center justify-center">
+                        {category.name.slice(0, 1)}
+                      </span>
+                    )}
                     <span>{category.name}</span>
                   </Link>
                 </li>
               ))}
             </ul>
+            <Link
+              href="/categories"
+              className="mt-4 inline-flex text-sm font-semibold text-yellow-300 hover:text-yellow-200 transition-colors duration-200"
+            >
+              View all categories →
+            </Link>
           </div>
 
           {/* Discover Section */}
@@ -73,7 +92,6 @@ export default function Footer({ variant = "full" }: FooterVariant) {
               <li><Link href="/terms-of-service" className="hover:text-yellow-300 transition-colors duration-200">Terms of Service</Link></li>
               <li><Link href="/contact" className="hover:text-yellow-300 transition-colors duration-200">Contact</Link></li>
             </ul>
-            <p className="mt-6 text-sm text-gray-300">Contact: info@curiospark.org</p>
           </div>
         </div>
 

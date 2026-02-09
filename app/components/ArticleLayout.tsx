@@ -48,6 +48,8 @@ interface ArticleLayoutProps {
     name: string;
     slug?: string;
     icon?: string;
+    image?: string;
+    imageAlt?: string;
     href?: string;
   };
   image?: string;
@@ -113,6 +115,8 @@ export default function ArticleLayout({
     name: resolvedCategory.name,
     slug: "slug" in resolvedCategory ? resolvedCategory.slug : undefined,
     icon: "icon" in resolvedCategory ? resolvedCategory.icon : undefined,
+    image: "image" in resolvedCategory ? resolvedCategory.image : undefined,
+    imageAlt: "imageAlt" in resolvedCategory ? resolvedCategory.imageAlt : undefined,
     href: "href" in resolvedCategory ? resolvedCategory.href : undefined,
   } : undefined;
   const structuredCategory = resolvedPost && resolvedCategory && "description" in resolvedCategory
@@ -204,11 +208,45 @@ export default function ArticleLayout({
                       href={displayCategory.href || `/category/${displayCategory.slug}`}
                       className="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 text-sm font-semibold px-4 py-2 rounded-full hover:bg-purple-200 dark:hover:bg-purple-900/50 transition"
                     >
-                      {displayCategory.icon ? `${displayCategory.icon} ` : ""}{displayCategory.name}
+                      <span className="inline-flex items-center gap-2">
+                        {displayCategory.image ? (
+                          <Image
+                            src={displayCategory.image}
+                            alt={displayCategory.imageAlt || displayCategory.name}
+                            width={18}
+                            height={18}
+                            className="rounded-full object-cover"
+                          />
+                        ) : displayCategory.icon ? (
+                          <span>{displayCategory.icon}</span>
+                        ) : (
+                          <span className="w-4 h-4 rounded-full bg-purple-200 text-[10px] font-semibold text-purple-700 flex items-center justify-center">
+                            {displayCategory.name.slice(0, 1)}
+                          </span>
+                        )}
+                        <span>{displayCategory.name}</span>
+                      </span>
                     </Link>
                   ) : (
                     <span className="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 text-sm font-semibold px-4 py-2 rounded-full">
-                      {displayCategory.icon ? `${displayCategory.icon} ` : ""}{displayCategory.name}
+                      <span className="inline-flex items-center gap-2">
+                        {displayCategory.image ? (
+                          <Image
+                            src={displayCategory.image}
+                            alt={displayCategory.imageAlt || displayCategory.name}
+                            width={18}
+                            height={18}
+                            className="rounded-full object-cover"
+                          />
+                        ) : displayCategory.icon ? (
+                          <span>{displayCategory.icon}</span>
+                        ) : (
+                          <span className="w-4 h-4 rounded-full bg-purple-200 text-[10px] font-semibold text-purple-700 flex items-center justify-center">
+                            {displayCategory.name.slice(0, 1)}
+                          </span>
+                        )}
+                        <span>{displayCategory.name}</span>
+                      </span>
                     </span>
                   )
                 )}

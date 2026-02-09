@@ -1,4 +1,3 @@
-import articleIndex from "@/app/articles/articleIndex.json";
 import { categories, posts } from "@/lib/posts";
 
 const baseUrl = "https://curiospark.org";
@@ -17,7 +16,6 @@ export async function GET() {
 
   const staticPaths = [
     "/",
-    "/articles",
     "/categories",
     "/latest",
     "/trending",
@@ -30,11 +28,7 @@ export async function GET() {
 
   const categoryPaths = categories.map((category) => `/category/${category.slug}`);
   const postPaths = posts.map((post) => `/post/${post.slug}`);
-  const articlePaths = (articleIndex as Array<{ slug: string }>).map(
-    (article) => `/articles/${article.slug}`
-  );
-
-  const allPaths = [...staticPaths, ...categoryPaths, ...postPaths, ...articlePaths];
+  const allPaths = [...staticPaths, ...categoryPaths, ...postPaths];
   const urls = allPaths.map((path) => toUrlEntry(path, lastmod)).join("\n");
 
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>

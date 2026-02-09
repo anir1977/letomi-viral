@@ -45,7 +45,19 @@ export default function CategoryPage({ params }: CategoryPageProps) {
       <main className="container mx-auto px-4 py-16">
         <div className="max-w-4xl mx-auto mb-12">
           <div className="flex items-center justify-center mb-6">
-            <span className="text-6xl">{category.icon}</span>
+            {category.image ? (
+              <Image
+                src={category.image}
+                alt={category.imageAlt || category.name}
+                width={96}
+                height={96}
+                className="rounded-full object-cover shadow-sm"
+              />
+            ) : (
+              <div className="w-24 h-24 rounded-full bg-white/80 flex items-center justify-center text-3xl font-semibold text-gray-700">
+                {category.name.slice(0, 1)}
+              </div>
+            )}
           </div>
           <h1 className="text-5xl font-bold text-gray-900 dark:text-white mb-6 text-center">
             {category.name}

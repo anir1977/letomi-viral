@@ -10,21 +10,6 @@ export const metadata: Metadata = {
 export default function AuthorPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-black">
-      <header className="border-b border-gray-200 dark:border-gray-800">
-        <nav className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center space-x-2">
-            <span className="text-2xl">⚡</span>
-            <h1 className="text-xl font-bold text-gray-900 dark:text-white">CurioSpark</h1>
-          </Link>
-          <div className="hidden md:flex space-x-6">
-            <Link href="/" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition">Home</Link>
-            <Link href="/articles" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition">Articles</Link>
-            <Link href="/categories" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition">Categories</Link>
-            <Link href="/about" className="text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition">About</Link>
-          </div>
-        </nav>
-      </header>
-
       <main className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 md:p-12">
@@ -44,14 +29,6 @@ export default function AuthorPage() {
                 </p>
                 
                 <div className="flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-400">
-                  <div className="flex items-center gap-2">
-                    <span className="text-2xl">📝</span>
-                    <span>20+ Articles</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-2xl">👁️</span>
-                    <span>500K+ Readers</span>
-                  </div>
                   <div className="flex items-center gap-2">
                     <span className="text-2xl">✅</span>
                     <span>Fact-Checked Content</span>

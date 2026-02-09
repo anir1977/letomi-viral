@@ -3,8 +3,8 @@ import Image from "next/image";
 import { categories, getTrendingPosts, getFeaturedPosts, getShortReads, getRecentPosts, getPostsWithSurprisingFacts } from "@/lib/posts";
 import PostBadge from "@/app/components/PostBadge";
 import SurprisinglyTrueSection from "@/app/components/SurprisinglyTrueSection";
-import SiteHeader from "@/app/components/SiteHeader";
 import SiteStats from "@/app/components/SiteStats";
+import HeroImageRotator from "@/app/components/HeroImageRotator";
 
 export default function Home() {
   const trendingPosts = getTrendingPosts(6);
@@ -21,22 +21,13 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-black">
-      <SiteHeader />
-
       <main>
         {/* Hero Section with Animated Background */}
         <section className="relative overflow-hidden">
           {/* Animated Background Image */}
           <div className="absolute inset-0 z-0">
             <div className="absolute inset-0 bg-gradient-to-b from-purple-900/40 via-blue-900/30 to-black/60 z-10"></div>
-            <Image
-              src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1920&h=1080&fit=crop"
-              alt="Abstract space and stars background"
-              fill
-              className="object-cover opacity-60 animate-slow-zoom"
-              priority
-              quality={90}
-            />
+            <HeroImageRotator />
             {/* Floating Particles Effect */}
             <div className="absolute inset-0 z-20 overflow-hidden">
               <div className="particle particle-1"></div>
@@ -48,18 +39,18 @@ export default function Home() {
           </div>
 
           {/* Hero Content */}
-          <div className="container mx-auto px-4 py-20 md:py-32 text-center relative z-30">
+          <div className="container mx-auto px-4 py-20 md:py-32 text-left sm:text-center relative z-30">
             <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold text-white mb-4 md:mb-6 animate-fade-in-up drop-shadow-2xl leading-tight">
               Short Facts. <br />
               <span className="bg-gradient-to-r from-yellow-300 via-pink-400 to-purple-400 bg-clip-text text-transparent animate-gradient-shift">
                 Big Curiosity.
               </span>
             </h1>
-            <p className="text-base md:text-xl text-gray-200 max-w-2xl mx-auto mb-6 md:mb-8 animate-fade-in-up animation-delay-200 drop-shadow-lg px-4">
+            <p className="text-base md:text-xl text-gray-200 max-w-none sm:max-w-2xl sm:mx-auto mb-6 md:mb-8 animate-fade-in-up animation-delay-200 drop-shadow-lg px-0 sm:px-4">
               Discover fascinating facts that will change how you see the world. 
               One curiosity at a time.
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center animate-fade-in-up animation-delay-400 px-4">
+            <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-start sm:justify-center animate-fade-in-up animation-delay-400 px-0 sm:px-4">
               <Link href="/trending" className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-6 md:px-8 py-2.5 md:py-3 rounded-full font-semibold transition transform hover:scale-105 shadow-lg hover:shadow-purple-500/50 text-sm md:text-base">
                 Explore Now ✨
               </Link>
@@ -87,7 +78,21 @@ export default function Home() {
                 href={`/category/${category.slug}`}
                 className={`${category.color} rounded-xl md:rounded-2xl p-5 md:p-6 transition transform hover:scale-105`}
               >
-                <div className="text-3xl md:text-4xl mb-2 md:mb-3">{category.icon}</div>
+                <div className="mb-2 md:mb-3">
+                  {category.image ? (
+                    <Image
+                      src={category.image}
+                      alt={category.imageAlt || category.name}
+                      width={56}
+                      height={56}
+                      className="rounded-full object-cover shadow-sm"
+                    />
+                  ) : (
+                    <div className="w-14 h-14 rounded-full bg-white/70 flex items-center justify-center text-lg font-semibold text-gray-700">
+                      {category.name.slice(0, 1)}
+                    </div>
+                  )}
+                </div>
                 <h3 className="text-lg md:text-xl font-semibold text-gray-900 dark:text-white mb-1.5 md:mb-2">
                   {category.name}
                 </h3>
@@ -221,39 +226,56 @@ export default function Home() {
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-            {shortReads.map((post) => (
-              <Link
-                key={post.id}
-                href={`/post/${post.slug}`}
-                className="bg-white dark:bg-gray-800 rounded-xl p-4 md:p-6 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition transform hover:scale-105"
-              >
-                <div className="flex items-start gap-3 md:gap-4">
-                  <div className="flex-shrink-0 w-16 h-16 md:w-20 md:h-20 relative rounded-lg overflow-hidden">
-                    <Image
-                      src={post.image}
-                      alt={post.imageAlt}
-                      fill
-                      className="object-cover"
-                      sizes="80px"
-                    />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1.5 md:mb-2">
-                      <span className="text-xs bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 font-semibold px-2 py-0.5 md:py-1 rounded">
-                        {post.readingTime}
-                      </span>
-                      <PostBadge isTrending={post.isTrending} isFeatured={post.isFeatured} />
+            {shortReads.map((post) => {
+              const categoryInfo = categories.find((category) => category.slug === post.category);
+
+              return (
+                <Link
+                  key={post.id}
+                  href={`/post/${post.slug}`}
+                  className="bg-white dark:bg-gray-800 rounded-xl p-4 md:p-6 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition transform hover:scale-105"
+                >
+                  <div className="flex items-start gap-3 md:gap-4">
+                    <div className="flex-shrink-0 w-16 h-16 md:w-20 md:h-20 relative rounded-lg overflow-hidden">
+                      <Image
+                        src={post.image}
+                        alt={post.imageAlt}
+                        fill
+                        className="object-cover"
+                        sizes="80px"
+                      />
                     </div>
-                    <h3 className="text-sm md:text-base font-bold text-gray-900 dark:text-white mb-1.5 md:mb-2 leading-tight line-clamp-2">
-                      {post.title}
-                    </h3>
-                    <p className="text-gray-600 dark:text-gray-400 text-xs md:text-sm">
-                      {categories.find(c => c.slug === post.category)?.icon} {categories.find(c => c.slug === post.category)?.name}
-                    </p>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1.5 md:mb-2">
+                        <span className="text-xs bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 font-semibold px-2 py-0.5 md:py-1 rounded">
+                          {post.readingTime}
+                        </span>
+                        <PostBadge isTrending={post.isTrending} isFeatured={post.isFeatured} />
+                      </div>
+                      <h3 className="text-sm md:text-base font-bold text-gray-900 dark:text-white mb-1.5 md:mb-2 leading-tight line-clamp-2">
+                        {post.title}
+                      </h3>
+                      <p className="text-gray-600 dark:text-gray-400 text-xs md:text-sm flex items-center gap-2">
+                        {categoryInfo?.image ? (
+                          <Image
+                            src={categoryInfo.image}
+                            alt={categoryInfo.imageAlt || categoryInfo.name}
+                            width={18}
+                            height={18}
+                            className="rounded-full object-cover"
+                          />
+                        ) : (
+                          <span className="w-4 h-4 rounded-full bg-gray-200 text-[10px] font-semibold text-gray-700 flex items-center justify-center">
+                            {categoryInfo?.name?.slice(0, 1) || "?"}
+                          </span>
+                        )}
+                        <span>{categoryInfo?.name}</span>
+                      </p>
+                    </div>
                   </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              );
+            })}
           </div>
         </section>
 
@@ -311,22 +333,31 @@ export default function Home() {
 
         {/* CTA Section */}
         <section className="container mx-auto px-4 py-12 md:py-20">
-          <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl md:rounded-3xl p-8 md:p-12 text-center text-white">
-            <h2 className="text-2xl md:text-4xl font-bold mb-3 md:mb-4">
-              Never Stop Learning
-            </h2>
-            <p className="text-base md:text-xl mb-6 md:mb-8 opacity-90">
-              Get daily curiosities delivered to your inbox
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-1 px-4 md:px-6 py-2.5 md:py-3 rounded-full text-gray-900 text-sm md:text-base focus:outline-none focus:ring-4 focus:ring-white/50"
-              />
-              <button className="bg-white text-purple-600 px-6 md:px-8 py-2.5 md:py-3 rounded-full font-semibold hover:bg-gray-100 transition text-sm md:text-base whitespace-nowrap">
-                Subscribe
-              </button>
+          <div className="relative overflow-hidden rounded-2xl md:rounded-3xl border border-white/15 bg-gradient-to-r from-indigo-700 via-blue-700 to-cyan-700 p-8 md:p-12 text-center text-white shadow-2xl">
+            <div className="pointer-events-none absolute -top-24 -right-24 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
+            <div className="pointer-events-none absolute -bottom-28 -left-28 h-72 w-72 rounded-full bg-cyan-300/20 blur-3xl" />
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.18),transparent_60%)]" />
+
+            <div className="relative z-10">
+              <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-white/70">
+                Newsletter
+              </span>
+              <h2 className="mt-3 text-2xl md:text-4xl font-bold [text-shadow:0_3px_14px_rgba(0,0,0,0.4)]">
+                Never Stop Learning
+              </h2>
+              <p className="mt-3 text-base md:text-xl text-white/90 [text-shadow:0_2px_10px_rgba(0,0,0,0.35)]">
+                Get daily curiosities delivered to your inbox
+              </p>
+              <div className="mt-6 flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  className="flex-1 rounded-full bg-white/95 px-4 md:px-6 py-2.5 md:py-3 text-sm md:text-base text-slate-900 placeholder:text-slate-500 shadow-sm focus:outline-none focus:ring-4 focus:ring-white/40"
+                />
+                <button className="rounded-full bg-slate-900/90 px-6 md:px-8 py-2.5 md:py-3 text-sm md:text-base font-semibold text-white shadow-lg transition hover:-translate-y-0.5 hover:bg-slate-900">
+                  Subscribe
+                </button>
+              </div>
             </div>
           </div>
         </section>
