@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getCategoryBySlug, getPostsByCategory, categories } from "@/lib/posts";
+import { SITE_URL, toAbsoluteUrl } from "@/lib/site";
 import PostBadge from "@/app/components/PostBadge";
 
 interface CategoryPageProps {
@@ -23,12 +24,46 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
   if (!category) {
     return {
       title: "Category Not Found - CurioSpark",
+      robots: {
+        index: false,
+        follow: false,
+      },
     };
   }
 
+  const categoryUrl = `${SITE_URL}/category/${category.slug}`;
+  const ogImage = toAbsoluteUrl("/og-default.svg");
+  const isTechnology = category.slug === "technology";
+  const title = isTechnology
+    ? "Technology Facts & AI Insights - CurioSpark"
+    : `${category.name} Facts - CurioSpark`;
+  const description = isTechnology
+    ? "Explore technology trends, AI breakthroughs, and future-shaping innovations. Clear, concise tech insights updated regularly."
+    : `Discover fascinating ${category.name.toLowerCase()} facts. ${category.description}`;
+  const keywords = isTechnology
+    ? ["technology", "AI", "artificial intelligence", "tech trends", "innovation", "future tech"]
+    : undefined;
+
   return {
-    title: `${category.name} Facts - CurioSpark`,
-    description: `Discover fascinating ${category.name.toLowerCase()} facts. ${category.description}`,
+    title,
+    description,
+    keywords,
+    alternates: {
+      canonical: categoryUrl,
+    },
+    openGraph: {
+      title,
+      description,
+      url: categoryUrl,
+      type: "website",
+      images: [ogImage],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [ogImage],
+    },
   };
 }
 

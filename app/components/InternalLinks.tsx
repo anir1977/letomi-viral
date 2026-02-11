@@ -1,19 +1,13 @@
 import Link from 'next/link';
-import { getAllPosts } from '@/lib/posts';
+import { getRelatedPosts } from '@/lib/posts';
 import { ArrowRight } from 'lucide-react';
 
 interface InternalLinksProps {
   currentSlug: string;
-  category: string;
 }
 
-export default function InternalLinks({ currentSlug, category }: InternalLinksProps) {
-  const posts = getAllPosts();
-  
-  // Get related posts from same category, excluding current post
-  const relatedPosts = posts
-    .filter(post => post.category === category && post.slug !== currentSlug)
-    .slice(0, 4);
+export default function InternalLinks({ currentSlug }: InternalLinksProps) {
+  const relatedPosts = getRelatedPosts(currentSlug, 4);
 
   if (relatedPosts.length === 0) return null;
 

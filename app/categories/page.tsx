@@ -2,10 +2,27 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { categories } from "@/lib/posts";
+import { SITE_URL, toAbsoluteUrl } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "All Categories - CurioSpark",
   description: "Browse all categories of fascinating facts: Psychology, Science, Human Behavior, and Life Facts.",
+  alternates: {
+    canonical: `${SITE_URL}/categories`,
+  },
+  openGraph: {
+    title: "All Categories - CurioSpark",
+    description: "Browse all categories of fascinating facts: Psychology, Science, Human Behavior, and Life Facts.",
+    url: `${SITE_URL}/categories`,
+    type: "website",
+    images: [toAbsoluteUrl("/og-default.svg")],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "All Categories - CurioSpark",
+    description: "Browse all categories of fascinating facts: Psychology, Science, Human Behavior, and Life Facts.",
+    images: [toAbsoluteUrl("/og-default.svg")],
+  },
 };
 
 export default function CategoriesPage() {

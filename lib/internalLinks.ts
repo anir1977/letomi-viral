@@ -50,12 +50,12 @@ export function generateInlineLinkSuggestions(
     });
   });
 
-  // Return unique suggestions, max 5
+  // Return unique suggestions, max 3
   const unique = suggestions
     .filter((item, index, self) => 
       index === self.findIndex(t => t.slug === item.slug)
     )
-    .slice(0, 5);
+    .slice(0, 3);
     
   return unique;
 }
@@ -65,7 +65,12 @@ function isRelatedCategory(cat1: string, cat2: string): boolean {
     'psychology': ['human-behavior', 'science'],
     'science': ['psychology', 'life-facts'],
     'human-behavior': ['psychology', 'life-facts'],
-    'life-facts': ['human-behavior', 'science']
+    'life-facts': ['human-behavior', 'science'],
+    'technology': ['science', 'space', 'life-facts'],
+    'space': ['science', 'technology'],
+    'history': ['science', 'life-facts'],
+    'nature': ['science', 'health'],
+    'health': ['science', 'psychology']
   };
   
   return related[cat1]?.includes(cat2) || false;

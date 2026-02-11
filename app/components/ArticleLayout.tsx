@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { getCategoryBySlug, getRelatedPosts, type Category, type FAQ, type Post, type Source } from "@/lib/posts";
+import { generateInlineLinkSuggestions, insertInternalLinks } from "@/lib/internalLinks";
 import PostBadge from "@/app/components/PostBadge";
 import TableOfContents from "@/app/components/TableOfContents";
 import MarkdownContent from "@/app/components/MarkdownContent";
@@ -130,6 +131,12 @@ export default function ArticleLayout({
   const resolvedImageAlt = resolvedPost?.imageAlt || imageAlt || resolvedTitle || "";
   const resolvedHeroImage = resolvedPost?.image || resolvedPost?.heroImage || image || "/articles/default.jpg";
   const resolvedContentMarkdown = resolvedPost?.content || contentMarkdown;
+  const resolvedContentWithLinks = resolvedContentMarkdown && resolvedSlug && resolvedInternalLinksCategory
+    ? insertInternalLinks(
+        resolvedContentMarkdown,
+        generateInlineLinkSuggestions(resolvedContentMarkdown, resolvedSlug, resolvedInternalLinksCategory)
+      )
+    : resolvedContentMarkdown;
   const resolvedContentNode = resolvedContentMarkdown ? undefined : contentNode;
   const resolvedDidYouKnow = resolvedPost?.didYouKnow || didYouKnow;
   const resolvedSurprisingFact = resolvedPost?.surprisingFact || surprisingFact;
@@ -297,7 +304,7 @@ export default function ArticleLayout({
             {resolvedDidYouKnow && <DidYouKnowBox fact={resolvedDidYouKnow} />}
 
             <section className="prose prose-lg max-w-3xl mx-auto leading-relaxed text-lg text-gray-700 dark:text-gray-300 prose-p:my-6 prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-li:my-2 prose-h2:mt-10 prose-h2:mb-4 prose-h2:text-2xl md:prose-h2:text-3xl prose-h2:font-semibold prose-h3:mt-10 prose-h3:mb-4 prose-h3:text-xl prose-h3:font-semibold prose-p:first-of-type:text-xl prose-p:first-of-type:first-letter:text-6xl md:prose-p:first-of-type:first-letter:text-7xl prose-p:first-of-type:first-letter:font-bold prose-p:first-of-type:first-letter:leading-none prose-p:first-of-type:first-letter:float-left prose-p:first-of-type:first-letter:mr-3 prose-p:first-of-type:first-letter:text-gray-900 dark:prose-p:first-of-type:first-letter:text-white">
-              {resolvedContentMarkdown ? <MarkdownContent content={resolvedContentMarkdown} /> : resolvedContentNode}
+              {resolvedContentWithLinks ? <MarkdownContent content={resolvedContentWithLinks} /> : resolvedContentNode}
             </section>
 
             {resolvedSurprisingFact && <SurprisingFact fact={resolvedSurprisingFact} />}
@@ -314,7 +321,7 @@ export default function ArticleLayout({
             )}
 
             {resolvedInternalLinksCategory && (
-              <InternalLinks currentSlug={resolvedSlug} category={resolvedInternalLinksCategory} />
+              <InternalLinks currentSlug={resolvedSlug} />
             )}
 
             <AdSlot position="end" className="my-8" />

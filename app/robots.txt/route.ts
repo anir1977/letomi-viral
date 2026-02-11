@@ -2,8 +2,10 @@
  * robots.txt - SEO Configuration
  */
 
+import { SITE_URL } from "@/lib/site";
+
 export async function GET() {
-  const baseUrl = 'https://curiospark.org';
+  const baseUrl = SITE_URL;
 
   const robotsTxt = `# CurioSpark Robots.txt
 # Allow all crawlers
