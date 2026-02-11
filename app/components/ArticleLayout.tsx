@@ -131,12 +131,6 @@ export default function ArticleLayout({
   const resolvedImageAlt = resolvedPost?.imageAlt || imageAlt || resolvedTitle || "";
   const resolvedHeroImage = resolvedPost?.image || resolvedPost?.heroImage || image || "/articles/default.jpg";
   const resolvedContentMarkdown = resolvedPost?.content || contentMarkdown;
-  const resolvedContentWithLinks = resolvedContentMarkdown && resolvedSlug && resolvedInternalLinksCategory
-    ? insertInternalLinks(
-        resolvedContentMarkdown,
-        generateInlineLinkSuggestions(resolvedContentMarkdown, resolvedSlug, resolvedInternalLinksCategory)
-      )
-    : resolvedContentMarkdown;
   const resolvedContentNode = resolvedContentMarkdown ? undefined : contentNode;
   const resolvedDidYouKnow = resolvedPost?.didYouKnow || didYouKnow;
   const resolvedSurprisingFact = resolvedPost?.surprisingFact || surprisingFact;
@@ -146,6 +140,12 @@ export default function ArticleLayout({
   const resolvedLastUpdated = resolvedPost?.lastUpdated || lastUpdated || resolvedPost?.date || resolvedDateLabel;
   const resolvedFaqs = resolvedPost?.faqs || faqs;
   const resolvedInternalLinksCategory = internalLinksCategory || resolvedPost?.category;
+  const resolvedContentWithLinks = resolvedContentMarkdown && resolvedSlug && resolvedInternalLinksCategory
+    ? insertInternalLinks(
+        resolvedContentMarkdown,
+        generateInlineLinkSuggestions(resolvedContentMarkdown, resolvedSlug, resolvedInternalLinksCategory)
+      )
+    : resolvedContentMarkdown;
   const resolvedSharePath = basePath || sharePath;
   const resolvedRelatedItems: RelatedItem[] | undefined = relatedItems || (resolvedPost
     ? getRelatedPosts(resolvedPost.slug)
