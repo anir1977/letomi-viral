@@ -6,6 +6,10 @@ interface InlineLinkSuggestion {
   title: string;
 }
 
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 /**
  * Generate contextual inline link suggestions based on post content
  * Returns keywords found in content that match other article titles/excerpts
@@ -39,7 +43,8 @@ export function generateInlineLinkSuggestions(
     // Check for key topic words (simplified)
     const keyTopics = extractKeyTopics(post);
     keyTopics.forEach(topic => {
-      const regex = new RegExp(`\\b${topic}\\b`, 'gi');
+      const escapedTopic = escapeRegExp(topic);
+      const regex = new RegExp(`\\b${escapedTopic}\\b`, 'gi');
       if (regex.test(currentContent)) {
         suggestions.push({
           keyword: topic,
@@ -110,7 +115,8 @@ export function insertInternalLinks(
   
   suggestions.forEach(suggestion => {
     // Only replace first occurrence to avoid over-linking
-    const regex = new RegExp(`\\b(${suggestion.keyword})\\b`, 'i');
+    const escapedKeyword = escapeRegExp(suggestion.keyword);
+    const regex = new RegExp(`\\b(${escapedKeyword})\\b`, 'i');
     const match = updatedContent.match(regex);
     
     if (match) {
