@@ -60,7 +60,7 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
     authors: [
       {
         name: "CurioSpark Editorial Team",
-        url: `${siteUrl}/author/editorial-team`,
+        url: `${SITE_URL}/author/editorial-team`,
       },
     ],
     openGraph: {
