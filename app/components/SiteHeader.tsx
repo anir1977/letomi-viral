@@ -44,8 +44,8 @@ export default function SiteHeader() {
   return (
     <header
       data-site-header
-      className={`relative z-40 bg-gradient-to-r from-purple-700 via-blue-700 to-indigo-700 backdrop-blur-sm border-b border-white/10 transition-shadow ${
-      isScrolled ? "shadow-[0_10px_24px_-22px_rgba(0,0,0,0.75)]" : "shadow-none"
+      className={`sticky top-0 z-40 bg-gradient-to-r from-purple-700 via-blue-700 to-indigo-700 backdrop-blur-sm border-b border-white/10 transition-all duration-300 ${
+      isScrolled ? "shadow-lg shadow-purple-900/20" : "shadow-none"
     }`}
     >
       {/* Main Navigation */}
@@ -53,8 +53,13 @@ export default function SiteHeader() {
         <div className="flex items-center justify-between gap-3">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-3 group flex-shrink-0">
-            <span className="text-2xl md:text-3xl group-hover:scale-110 transition-transform duration-200">⚡</span>
-            <h1 className="text-lg md:text-xl font-bold text-white tracking-wide drop-shadow-lg">CurioSpark</h1>
+            <div className="relative">
+              <span className="text-2xl md:text-3xl group-hover:scale-110 transition-transform duration-300 filter drop-shadow-lg">⚡</span>
+              <div className="absolute inset-0 bg-yellow-400 blur-xl opacity-0 group-hover:opacity-50 transition-opacity duration-300 rounded-full"></div>
+            </div>
+            <h1 className="text-lg md:text-xl font-bold text-white tracking-wide drop-shadow-lg group-hover:text-yellow-200 transition-colors duration-300">
+              CurioSpark
+            </h1>
           </Link>
           
           {/* Desktop Search Bar */}

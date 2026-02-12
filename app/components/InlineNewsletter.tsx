@@ -73,6 +73,9 @@ export default function InlineNewsletter() {
         <p className="text-sm mt-4 opacity-75">
           No spam. Unsubscribe anytime. 100% free.
         </p>
+        <p className="text-xs mt-2 opacity-80">
+          Questions? <a className="underline" href="mailto:info@curiospark.org">info@curiospark.org</a>
+        </p>
       </div>
     </div>
   );

@@ -4,8 +4,12 @@ interface AdSlotProps {
 }
 
 export default function AdSlot({ position, className = '' }: AdSlotProps) {
-  // This is a placeholder for future AdSense integration
-  // Currently shows placeholder to maintain layout stability
+  // Hide placeholders unless explicitly enabled.
+  const showPlaceholders = process.env.NEXT_PUBLIC_SHOW_AD_PLACEHOLDERS === 'true';
+
+  if (!showPlaceholders) {
+    return null;
+  }
   
   const heightClass = position === 'sidebar' 
     ? 'h-[600px]' 

@@ -120,6 +120,15 @@
   }
 }
 
+@keyframes dyk-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
 .animate-slow-zoom {
   animation: slow-zoom 20s ease-in-out infinite;
 }
@@ -136,6 +145,28 @@
 
 .animate-shake {
   animation: shake 0.5s ease-in-out;
+}
+
+.dyk-marquee {
+  overflow: hidden;
+  position: relative;
+}
+
+.dyk-track {
+  display: flex;
+  gap: 1rem;
+  width: max-content;
+  animation: dyk-scroll 35s linear infinite;
+}
+
+.dyk-marquee:hover .dyk-track {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dyk-track {
+    animation: none;
+  }
 }
 
 .animation-delay-200 {

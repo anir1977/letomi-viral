@@ -80,6 +80,9 @@ export default function InlineNewsletter() {
         <p className="text-xs text-purple-200 mt-4">
           No spam, unsubscribe anytime. We respect your privacy.
         </p>
+        <p className="text-[11px] text-purple-200 mt-2">
+          Questions? <a className="underline" href="mailto:info@curiospark.org">info@curiospark.org</a>
+        </p>
       </div>
     </div>
   );

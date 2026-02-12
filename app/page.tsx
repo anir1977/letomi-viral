@@ -1,10 +1,11 @@
 import Link from "next/link";
 import Image from "next/image";
-import { categories, getTrendingPosts, getFeaturedPosts, getShortReads, getRecentPosts, getPostsWithSurprisingFacts } from "@/lib/posts";
+import { categories, getTrendingPosts, getFeaturedPosts, getShortReads, getRecentPosts, getPostsWithSurprisingFacts, getPostsWithDidYouKnow } from "@/lib/posts";
 import PostBadge from "@/app/components/PostBadge";
 import SurprisinglyTrueSection from "@/app/components/SurprisinglyTrueSection";
 import SiteStats from "@/app/components/SiteStats";
 import HeroImageRotator from "@/app/components/HeroImageRotator";
+import HomeNewsletterCTA from "@/app/components/HomeNewsletterCTA";
 
 export default function Home() {
   const trendingPosts = getTrendingPosts(6);
@@ -12,6 +13,7 @@ export default function Home() {
   const shortReads = getShortReads(6);
   const recentPosts = getRecentPosts(4);
   const surprisingFactsPosts = getPostsWithSurprisingFacts(3);
+  const didYouKnowPosts = getPostsWithDidYouKnow(6);
   
   const surprisingFacts = surprisingFactsPosts.map(post => ({
     title: post.title,
@@ -65,6 +67,43 @@ export default function Home() {
         <section className="container mx-auto px-4 py-8">
           <SiteStats />
         </section>
+
+        {/* Did You Know Strip */}
+        {didYouKnowPosts.length > 0 && (
+          <section className="container mx-auto px-4 py-8">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
+                💡 Did You Know
+              </h2>
+              <Link href="/facts" className="text-purple-600 hover:text-purple-700 font-semibold text-sm md:text-base">
+                See all →
+              </Link>
+            </div>
+            <div className="dyk-marquee">
+              <div className="absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-white to-transparent dark:from-gray-900 pointer-events-none"></div>
+              <div className="absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-white to-transparent dark:from-gray-900 pointer-events-none"></div>
+              <div className="dyk-track pb-2">
+                {[...didYouKnowPosts, ...didYouKnowPosts].map((post, index) => (
+                  <Link
+                    key={`${post.id}-${index}`}
+                    href={`/post/${post.slug}`}
+                    className="min-w-[260px] max-w-[320px] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 hover:shadow-lg transition"
+                  >
+                    <p className="text-xs uppercase tracking-wide text-purple-600 dark:text-purple-300 font-semibold mb-2">
+                      Did You Know
+                    </p>
+                    <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed mb-3">
+                      {post.didYouKnow}
+                    </p>
+                    <div className="text-xs text-purple-600 dark:text-purple-300 font-semibold">
+                      {post.title} →
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* Categories Section */}
         <section className="container mx-auto px-4 py-12 md:py-16">
@@ -338,27 +377,7 @@ export default function Home() {
             <div className="pointer-events-none absolute -bottom-28 -left-28 h-72 w-72 rounded-full bg-cyan-300/20 blur-3xl" />
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.18),transparent_60%)]" />
 
-            <div className="relative z-10">
-              <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-white/70">
-                Newsletter
-              </span>
-              <h2 className="mt-3 text-2xl md:text-4xl font-bold [text-shadow:0_3px_14px_rgba(0,0,0,0.4)]">
-                Never Stop Learning
-              </h2>
-              <p className="mt-3 text-base md:text-xl text-white/90 [text-shadow:0_2px_10px_rgba(0,0,0,0.35)]">
-                Get daily curiosities delivered to your inbox
-              </p>
-              <div className="mt-6 flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  className="flex-1 rounded-full bg-white/95 px-4 md:px-6 py-2.5 md:py-3 text-sm md:text-base text-slate-900 placeholder:text-slate-500 shadow-sm focus:outline-none focus:ring-4 focus:ring-white/40"
-                />
-                <button className="rounded-full bg-slate-900/90 px-6 md:px-8 py-2.5 md:py-3 text-sm md:text-base font-semibold text-white shadow-lg transition hover:-translate-y-0.5 hover:bg-slate-900">
-                  Subscribe
-                </button>
-              </div>
-            </div>
+            <HomeNewsletterCTA />
           </div>
         </section>
       </main>

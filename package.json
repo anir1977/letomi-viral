@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "publish:auto": "node scripts/auto-publish.mjs"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
@@ -16,7 +17,8 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-markdown": "^9.1.0",
-    "remark-gfm": "^4.0.1"
+    "remark-gfm": "^4.0.1",
+    "vercel": "^50.14.1"
   },
   "devDependencies": {
     "@types/node": "^20",

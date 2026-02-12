@@ -142,6 +142,27 @@ Congratulations! CurioSpark has been transformed into a **premium viral content 
 
 ---
 
+## 🤖 Auto-Publish Scheduling (Optional)
+
+If you want fully automated publishing, the repo includes a GitHub Actions workflow that runs on a schedule and publishes one article per category with AI images.
+
+### 1) Add GitHub Secrets
+- `OPENAI_API_KEY`
+- `NEWSAPI_KEY` (optional)
+- `OPENAI_MODEL` (optional)
+- `OPENAI_IMAGE_MODEL` (optional)
+- `BLOCKLIST_TOPICS` (optional, pipe-separated)
+
+### 2) Adjust Schedule
+Edit the cron entries in [.github/workflows/auto-publish.yml](.github/workflows/auto-publish.yml). Times are in UTC, annotated with America/New_York equivalents.
+
+### 3) Local Run
+```bash
+npm run publish:auto
+```
+
+---
+
 ## 📁 KEY FILES
 
 ### New Components

@@ -102,6 +102,9 @@ export default function AboutPage() {
                   Subscribe
                 </button>
               </div>
+              <p className="text-xs mt-4 opacity-80">
+                Questions? <a className="underline" href="mailto:info@curiospark.org">info@curiospark.org</a>
+              </p>
             </div>
           </div>
         </div>
