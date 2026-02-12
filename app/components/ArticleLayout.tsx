@@ -140,6 +140,7 @@ export default function ArticleLayout({
   const resolvedLastUpdated = resolvedPost?.lastUpdated || lastUpdated || resolvedPost?.date || resolvedDateLabel;
   const resolvedFaqs = resolvedPost?.faqs || faqs;
   const resolvedInternalLinksCategory = internalLinksCategory || resolvedPost?.category;
+  const isAdFree = resolvedSlug === "the-psychology-of-navy-basketball-how-the-mind-shapes-perfor";
   const resolvedContentWithLinks = resolvedContentMarkdown && resolvedSlug && resolvedInternalLinksCategory
     ? insertInternalLinks(
         resolvedContentMarkdown,
@@ -293,7 +294,7 @@ export default function ArticleLayout({
 
             <div className="h-px bg-gray-200/70 dark:bg-gray-800 my-6"></div>
 
-            <AdSlot position="top" className="my-6" />
+            {!isAdFree && <AdSlot position="top" className="my-6" />}
 
             {resolvedContentMarkdown && (
               <aside className="bg-gray-50 dark:bg-gray-900/40 border border-gray-200/70 dark:border-gray-800 rounded-xl p-4 sm:p-5 md:p-6">
@@ -311,7 +312,7 @@ export default function ArticleLayout({
             {resolvedShareableQuote && <ShareableQuote quote={resolvedShareableQuote} />}
             {resolvedPollQuestion && <ArticlePoll question={resolvedPollQuestion} articleSlug={resolvedSlug} />}
 
-            <AdSlot position="mid-content" className="my-8" />
+            {!isAdFree && <AdSlot position="mid-content" className="my-8" />}
 
             <InlineNewsletter />
             <ArticleReactions articleSlug={resolvedSlug} />
@@ -324,7 +325,7 @@ export default function ArticleLayout({
               <InternalLinks currentSlug={resolvedSlug} />
             )}
 
-            <AdSlot position="end" className="my-8" />
+            {!isAdFree && <AdSlot position="end" className="my-8" />}
 
             <SharePrompt question={sharePromptQuestion} title={resolvedTitle} slug={resolvedSlug} basePath={resolvedSharePath} />
             <AuthorBox />
