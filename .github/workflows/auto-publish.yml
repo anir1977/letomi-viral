@@ -39,7 +39,7 @@ jobs:
           BLOCKLIST_TOPICS: ${{ secrets.BLOCKLIST_TOPICS }}
           WRITING_TONE: professional
           LENGTH_PRESETS: short,medium,long,medium
-          FACEBOOK_ENABLE: "true"
+          FACEBOOK_ENABLE: "false"
           FACEBOOK_POST_LIMIT: 1
           FACEBOOK_PAGE_ID: ${{ secrets.FACEBOOK_PAGE_ID }}
           FACEBOOK_PAGE_ACCESS_TOKEN: ${{ secrets.FACEBOOK_PAGE_ACCESS_TOKEN }}
