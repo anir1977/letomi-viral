@@ -294,6 +294,251 @@ Your brain remembers peaks and endings more than the middle. A strong finish can
   },
 
   {
+    id: "3d0c5f3a-6a2e-4d7e-9b2e-1b8a6f7f0f12",
+    title: "AI in Daily Life: The Invisible Co-Pilot in Your Phone",
+    slug: "ai-in-daily-life-invisible-co-pilot",
+    category: "technology",
+    excerpt: "AI already shapes your day through search, maps, photos, and messages. Here is how it helps, where it misleads, and how to stay in control.",
+    content: `## Introduction
+AI is not a robot in your kitchen. It is the quiet layer behind the apps you already use: search, maps, cameras, and messaging. That is why AI in daily life feels invisible. It does not announce itself. It just makes tiny decisions faster than you can.
+
+## The Focus Keyword: AI in daily life
+AI in daily life refers to the machine learning systems that predict, rank, and personalize the tools you rely on every day. It is less about humanoids and more about suggestions, filters, and automation.
+
+## Where AI Shows Up Every Day
+You can spot it in at least five common places:
+
+- **Search and discovery:** Results and autocomplete are ranked by models that learn from billions of searches.
+- **Recommendations:** Feeds, playlists, and shopping suggestions optimize for engagement.
+- **Maps:** Routing and ETA predictions rely on traffic models and historical data.
+- **Cameras:** Portrait mode, night shots, and auto-enhancement are AI-powered guesses.
+- **Messaging:** Smart replies and auto-correct reduce effort but can flatten your voice.
+
+## Why It Feels So Helpful
+AI is strongest at three things:
+
+1. **Speed:** It removes repetitive steps.
+2. **Personalization:** It adapts to your habits.
+3. **Prediction:** It anticipates what you might need next.
+
+When AI stays within these lanes, it feels like a smart assistant, not a threat.
+
+## The Quiet Risks to Notice
+AI can also create subtle problems that build over time:
+
+- **Comfort filters:** Feeds show you more of what keeps you scrolling, not always what is best.
+- **Confident errors:** Auto-summaries and corrections can be wrong while sounding certain.
+- **Skill drift:** If AI does every task, your baseline skills can fade.
+
+## How to Stay in Control
+You do not need to reject AI. You just need habits that keep you in the driver's seat.
+
+- **Audit permissions:** Turn off location and microphone access when not needed.
+- **Use AI as a draft:** Treat suggestions as a starting point, not the final answer.
+- **Diversify inputs:** Follow a few sources directly to escape the feed bubble.
+- **Keep one skill manual:** Write, navigate, or edit photos without AI once in a while.
+
+## The Future: More Ambient, Less Visible
+AI will fade further into the background. That makes convenience higher, but also raises the stakes for transparency and choice. If you can still say "no" to a feature, you are in control.
+
+## Conclusion
+AI is already your co-pilot. It saves time and adds polish, but it can also steer your attention if you are not watching. The win is awareness and small habits that keep you in charge.
+
+## Quick Recap
+- AI touches search, feeds, maps, cameras, and messaging.
+- The big benefits are speed, personalization, and prediction.
+- The big risks are comfort filters and skill drift.
+- A few habits keep you in control.
+`,
+    readingTime: "7 min",
+    views: "0.6K",
+    date: "2026-02-12",
+    image: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1600&h=900&fit=crop&auto=format&q=80",
+    imageAlt: "Close-up of a circuit board",
+    heroImage: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1600&h=900&fit=crop&auto=format&q=80",
+    didYouKnow: "Your phone keyboard uses AI to predict the next word before you type it.",
+    surprisingFact: "Some camera apps process multiple frames in milliseconds to guess a single best photo.",
+    shareableQuote: "AI is not loud. It is quiet decisions happening in the background.",
+    pollQuestion: "Do you want more AI features in your daily apps?",
+    sources: [
+      { title: "Artificial Intelligence (AI)", url: "https://www.ibm.com/topics/artificial-intelligence", publisher: "IBM" },
+      { title: "AI Risk Management Framework", url: "https://www.nist.gov/itl/ai-risk-management-framework", publisher: "NIST" }
+    ],
+    lastUpdated: "2026-02-12",
+    faqs: [],
+    isFeatured: true,
+  },
+
+  {
+    id: "b3f1c2a6-55d3-4c6a-8f3a-6c2c0a9a3c11",
+    title: "How Recommendation Algorithms Shape Your Feed (and Your Mood)",
+    slug: "recommendation-algorithms-shape-your-feed",
+    category: "technology",
+    excerpt: "Your feed is not neutral. Learn how recommendation systems rank content, why it feels addictive, and how to reset your feed to serve you.",
+    content: `## Introduction
+When a feed feels endless, that is not an accident. Recommendation systems learn what keeps you engaged and serve more of it. This can be helpful, but it can also shape your mood and attention without you noticing.
+
+## The Focus Keyword: recommendation algorithms
+Recommendation algorithms are models that predict what you will click next based on your past behavior and similar users' actions.
+
+## How They Actually Work
+Most feeds combine three signals:
+
+- **Personal history:** What you watched, liked, or skipped.
+- **Content signals:** Topic, format, creator, and recency.
+- **Network effects:** What similar people engaged with.
+
+These models optimize for time spent or engagement, not necessarily for your well-being.
+
+## Why It Feels Addictive
+Feeds use variable rewards. You do not know what the next post will be, so you keep scrolling. That uncertainty keeps attention high.
+
+## The Comfort Filter Effect
+Over time, feeds show you more of what you already like. That can narrow your worldview and reduce exposure to new ideas.
+
+## How to Take Back Control
+- **Reset your interests:** Many apps let you clear history or hide topics.
+- **Follow intentionally:** Pick accounts you value, not just what the feed pushes.
+- **Add friction:** Disable autoplay or set a daily time limit.
+
+## Conclusion
+Recommendation systems are powerful because they learn fast. The best way to win is to be intentional about what you feed them.
+
+## Quick Recap
+- Feeds optimize for engagement, not your goals.
+- Variable rewards keep you scrolling.
+- Resetting interests can change what you see quickly.
+`,
+    readingTime: "6 min",
+    views: "0.4K",
+    date: "2026-02-12",
+    image: "https://images.unsplash.com/photo-1487014679447-9f8336841d58?w=1600&h=900&fit=crop&auto=format&q=80",
+    imageAlt: "Person using a laptop with notifications",
+    heroImage: "https://images.unsplash.com/photo-1487014679447-9f8336841d58?w=1600&h=900&fit=crop&auto=format&q=80",
+    didYouKnow: "Small changes in what you watch can reshape a feed in just a few days.",
+    surprisingFact: "Some platforms test multiple versions of a feed layout at once to maximize engagement.",
+    shareableQuote: "Your feed is not a mirror. It is a machine learning model.",
+    pollQuestion: "Have you ever reset a feed to improve your mood?",
+    sources: [
+      { title: "Internet and Technology", url: "https://www.pewresearch.org/internet/", publisher: "Pew Research Center" },
+      { title: "Privacy and Security Guidance", url: "https://www.ftc.gov/business-guidance/privacy-security", publisher: "FTC" }
+    ],
+    lastUpdated: "2026-02-12",
+    faqs: [],
+  },
+
+  {
+    id: "a2f9a1c7-7b9f-4c4b-9f5a-2f6e4b3a2f90",
+    title: "AI Safety for Regular People: Simple Habits That Prevent Big Mistakes",
+    slug: "ai-safety-for-regular-people",
+    category: "technology",
+    excerpt: "AI can be helpful and wrong at the same time. These simple habits help you avoid mistakes and keep control.",
+    content: `## Introduction
+AI can draft, summarize, and automate. But it can also make confident errors. You do not need to be a technical expert to use AI safely. You just need a few habits that protect you from the biggest risks.
+
+## The Focus Keyword: AI safety
+AI safety in daily use means verifying high-stakes outputs and protecting sensitive information.
+
+## The Three Biggest Risk Zones
+1. **Facts and citations:** AI may invent sources.
+2. **Sensitive data:** Anything private can leak if you paste it into a public tool.
+3. **Decisions with impact:** Legal, medical, and financial choices need human review.
+
+## Simple Habits That Work
+- **Verify critical facts:** Cross-check with primary sources.
+- **Avoid sensitive inputs:** Do not paste private data into public models.
+- **Keep a human in the loop:** Use AI for drafts, not final decisions.
+
+## The Two-Minute Check
+Before you trust an AI output, ask two questions:
+
+1. What could go wrong if this is wrong?
+2. How quickly can I verify the key claim?
+
+If the risk is high, do the verification. If it is low, move fast.
+
+## Conclusion
+AI safety is not fear. It is good judgment. A few habits can prevent most of the common mistakes.
+
+## Quick Recap
+- Treat AI as a draft.
+- Verify high-stakes claims.
+- Protect sensitive data.
+`,
+    readingTime: "5 min",
+    views: "0.5K",
+    date: "2026-02-12",
+    image: "https://images.unsplash.com/photo-1510511459019-5dda7724fd87?w=1600&h=900&fit=crop&auto=format&q=80",
+    imageAlt: "Person working on a laptop with code on screen",
+    heroImage: "https://images.unsplash.com/photo-1510511459019-5dda7724fd87?w=1600&h=900&fit=crop&auto=format&q=80",
+    didYouKnow: "Many AI tools clearly state they can produce incorrect or outdated information.",
+    surprisingFact: "A single incorrect citation can multiply quickly when copied across documents.",
+    shareableQuote: "AI safety is not fear. It is good judgment.",
+    pollQuestion: "Do you verify AI answers before using them?",
+    sources: [
+      { title: "AI Risk Management Framework", url: "https://www.nist.gov/itl/ai-risk-management-framework", publisher: "NIST" },
+      { title: "Digital Policy and Data", url: "https://www.oecd.org/digital/", publisher: "OECD" }
+    ],
+    lastUpdated: "2026-02-12",
+    faqs: [],
+  },
+
+  {
+    id: "0c9d1d4a-6df7-4f78-9f5c-9f2b1a6c7e21",
+    title: "AI at Work: Boost Productivity Without Losing Your Voice",
+    slug: "ai-at-work-boost-productivity-without-losing-your-voice",
+    category: "technology",
+    excerpt: "AI can speed up drafts and research, but it can also flatten your tone. Here is how to use it without losing the human edge.",
+    content: `## Introduction
+AI tools can write faster than you can. That is helpful for drafts, but dangerous if you let the tool speak for you. The goal is productivity without losing your voice.
+
+## The Focus Keyword: AI at work
+AI at work means using tools to draft, summarize, and plan while keeping human judgment in control.
+
+## Where AI Helps Most
+- **First drafts:** Emails, outlines, and summaries.
+- **Structure:** Checklists and project plans.
+- **Brainstorming:** Ideas to react to and refine.
+
+## The Common Traps
+- **Generic tone:** Your writing starts to sound the same.
+- **Unchecked errors:** AI can be confident and wrong.
+- **Over-automation:** Sensitive messages should remain human.
+
+## A Simple Workflow
+1. **Define the task.** One clear sentence.
+2. **Give context.** Audience, tone, and constraints.
+3. **Edit like a pro.** Rewrite the opening and closing lines in your own voice.
+4. **Verify anything risky.** Facts, numbers, or policy.
+
+## Conclusion
+AI at work is a multiplier, not a replacement. It makes you faster when you stay in control.
+
+## Quick Recap
+- Use AI for drafts, not final decisions.
+- Preserve your voice with human edits.
+- Verify high-stakes claims.
+`,
+    readingTime: "6 min",
+    views: "0.5K",
+    date: "2026-02-12",
+    image: "https://images.unsplash.com/photo-1553877522-43269d4ea984?w=1600&h=900&fit=crop&auto=format&q=80",
+    imageAlt: "Laptop with charts and productivity tools",
+    heroImage: "https://images.unsplash.com/photo-1553877522-43269d4ea984?w=1600&h=900&fit=crop&auto=format&q=80",
+    didYouKnow: "A small human edit at the end makes AI drafts sound more trustworthy.",
+    surprisingFact: "Teams that standardize prompts often reduce editing time by half.",
+    shareableQuote: "AI is a multiplier only when your judgment stays in charge.",
+    pollQuestion: "Have you used AI for work drafts?",
+    sources: [
+      { title: "Artificial Intelligence Insights", url: "https://www.mckinsey.com/featured-insights/artificial-intelligence", publisher: "McKinsey" },
+      { title: "Responsible AI", url: "https://www.microsoft.com/ai/responsible-ai", publisher: "Microsoft" }
+    ],
+    lastUpdated: "2026-02-12",
+    faqs: [],
+    isTrending: true,
+  },
+
+  {
     id: "e2e0b2b5-4b8c-4eb0-9f1c-6a7df5a0f6e1",
     title: "Blue Light at Night: What It Actually Does to Sleep",
     slug: "blue-light-at-night-what-it-actually-does-to-sleep",
