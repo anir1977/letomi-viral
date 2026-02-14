@@ -79,7 +79,7 @@ export function InArticleAd() {
   return (
     <div className="my-8">
       <AdSense
-        slot="XXXXXXXXXX"
+        slot="6755010687"
         format="auto"
         className="text-center"
         style={{ minHeight: '250px' }}
@@ -95,7 +95,7 @@ export function SidebarAd() {
   return (
     <div className="sticky top-4">
       <AdSense
-        slot="XXXXXXXXXX"
+        slot="6755010687"
         format="vertical"
         className="mb-6"
         style={{ minHeight: '600px' }}
@@ -111,7 +111,7 @@ export function BannerAd() {
   return (
     <div className="my-8">
       <AdSense
-        slot="XXXXXXXXXX"
+        slot="6755010687"
         format="horizontal"
         style={{ minHeight: '90px', maxHeight: '120px' }}
       />

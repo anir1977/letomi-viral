@@ -6,6 +6,7 @@ import SurprisinglyTrueSection from "@/app/components/SurprisinglyTrueSection";
 import SiteStats from "@/app/components/SiteStats";
 import HeroImageRotator from "@/app/components/HeroImageRotator";
 import HomeNewsletterCTA from "@/app/components/HomeNewsletterCTA";
+import { BannerAd } from "@/app/components/AdSense";
 
 export default function Home() {
   const trendingPosts = getTrendingPosts(6);
@@ -23,6 +24,8 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-black">
+      {/* Affichage de la bannière AdSense en haut de la page d'accueil */}
+      <BannerAd />
       <main>
         {/* Hero Section with Animated Background */}
         <section className="relative overflow-hidden">
