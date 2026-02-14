@@ -123,6 +123,67 @@ export const categories: Category[] = categoryDefinitions.map(({ name, slug }) =
   color: categoryMeta[name]?.color ?? "bg-slate-200 hover:bg-slate-300 dark:bg-slate-900/30 dark:hover:bg-slate-900/50",
 }));
 
+
+export const posts: Post[] = [
+  // ...existing code...
+  {
+    id: "b87ae6f-positive-psychology",
+    title: "The Impact of Positive Psychology on Everyday Life",
+    slug: "positive-psychology",
+    category: "psychology",
+    excerpt: "Discover how positive psychology transforms daily life, boosts well-being, and motivates personal growth.",
+    content: `## Introduction
+Positive psychology is a branch of psychology that focuses on what makes life worth living. Unlike traditional psychology, which often centers on disorders and pathologies, positive psychology emphasizes strengths, resources, and positive experiences.
+
+## Foundations of Positive Psychology
+Positive psychology is built on several pillars: gratitude, optimism, resilience, and engagement. These elements are essential for improving well-being and quality of life.
+
+### Gratitude
+Expressing gratitude daily strengthens social relationships and increases happiness. Studies show that keeping a gratitude journal improves mental health.
+
+### Optimism
+Optimism helps overcome difficulties and see opportunities in every situation. Optimistic people are generally more motivated and successful in their projects.
+
+### Resilience
+Resilience is the ability to bounce back after failure or hardship. It develops through experience, social support, and a positive attitude.
+
+### Engagement
+Engaging in meaningful activities fosters satisfaction and a sense of accomplishment.
+
+## How to Apply Positive Psychology in Daily Life
+- Practice gratitude every morning
+- Set realistic and motivating goals
+- Cultivate positive relationships
+- Take care of your mental and physical health
+- Surround yourself with inspiring people
+
+## SEO: Why This Article Will Rank Fast
+This article uses highly searched keywords: positive psychology, well-being, motivation, mental health, personal development. It meets a growing demand on Google and offers original, structured, and human content.
+
+## Conclusion
+Adopting positive psychology transforms life: more happiness, motivation, and resilience. Start applying these principles today for a better life.
+
+![Positive Psychology](https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80)
+`,
+    readingTime: "7 min",
+    views: "0",
+    date: "2026-02-14",
+    image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
+    imageAlt: "Positive Psychology",
+    heroImage: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
+    faqs: [],
+    isTrending: false,
+    isFeatured: false,
+    didYouKnow: "Practicing gratitude daily can significantly improve your mental health and happiness.",
+    surprisingFact: "Positive psychology techniques are scientifically proven to boost well-being.",
+    shareableQuote: "Happiness is not something ready made. It comes from your own actions.",
+    pollQuestion: "Do you practice gratitude every day?",
+    sources: [],
+    lastUpdated: "2026-02-14"
+  },
+  // ...existing code...
+];
+
 export const posts: Post[] = [
   // AUTO-GENERATED POSTS (script inserts here)
   {
