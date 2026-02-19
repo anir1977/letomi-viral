@@ -22,31 +22,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
 
-      - name: Install dependencies
-        run: npm install
-
-      - name: Publish per category
+      - name: Publish articles
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          OPENAI_MODEL: ${{ secrets.OPENAI_MODEL }}
-          OPENAI_IMAGE_MODEL: ${{ secrets.OPENAI_IMAGE_MODEL }}
-          NEWSAPI_KEY: ${{ secrets.NEWSAPI_KEY }}
-          SITE_URL: https://curiospark.org
-          PUBLISH_TIMEZONE: America/New_York
-          ARTICLES_PER_CATEGORY: 1
-          REQUIRE_SOURCES: "false"
-          MIN_MATCH_SCORE: 1
-          MIN_TOPIC_LENGTH: 12
-          SIMILARITY_THRESHOLD: 0.7
-          BLOCKLIST_TOPICS: ${{ secrets.BLOCKLIST_TOPICS }}
-          WRITING_TONE: professional
-          LENGTH_PRESETS: short,medium,long,medium
-          FACEBOOK_ENABLE: "false"
-          FACEBOOK_POST_LIMIT: 1
-          FACEBOOK_PAGE_ID: ${{ secrets.FACEBOOK_PAGE_ID }}
-          FACEBOOK_PAGE_ACCESS_TOKEN: ${{ secrets.FACEBOOK_PAGE_ACCESS_TOKEN }}
+          UNSPLASH_ACCESS_KEY: ${{ secrets.UNSPLASH_ACCESS_KEY }}
+          VERBOSE: 'false'
         run: |
           node ./scripts/auto-publish.mjs
 
