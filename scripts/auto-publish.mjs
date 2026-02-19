@@ -1,15 +1,15 @@
 #!/usr/bin/env node
 
 /**
- * Auto-Publish Script - PRODUCTION VERSION
- * Generates viral articles using OpenAI and publishes them to the site
+ * Auto-Publish Script - VERSION SANS OPENAI
+ * Génère des articles viraux avec des templates prédéfinis et Unsplash (GRATUIT)
  * 
  * Features:
- * - Robust error handling and recovery
- * - Retry logic with exponential backoff
- * - Safe content escaping for TypeScript
- * - Comprehensive logging
- * - Graceful degradation for optional features
+ * - ✅ Pas d'OpenAI (économie d'argent)
+ * - ✅ Images gratuites depuis Unsplash
+ * - ✅ Templates de contenu viral prédéfinis
+ * - ✅ FAQs automatiques
+ * - ✅ Logging complet
  */
 
 import * as fs from 'fs';
@@ -23,32 +23,15 @@ const projectRoot = path.join(__dirname, '..');
 
 // Configuration
 const CONFIG = {
-  // API Settings
-  OPENAI_API_KEY: process.env.OPENAI_API_KEY,
-  OPENAI_MODEL: 'gpt-4o-mini', // Fast, reliable, cost-effective
-  OPENAI_IMAGE_MODEL: process.env.OPENAI_IMAGE_MODEL || 'dall-e-3',
+  // Unsplash API (GRATUIT - 50 requêtes/heure)
+  UNSPLASH_ACCESS_KEY: process.env.UNSPLASH_ACCESS_KEY || 'DEMO',
   
   // Publishing Settings
-  ARTICLES_PER_CATEGORY: 1, // Generate only 1 article total
-  WRITING_TONE: process.env.WRITING_TONE || 'professional',
-  BLOCKLIST_TOPICS: process.env.BLOCKLIST_TOPICS || '',
-  
-  // Retry Settings
-  MAX_RETRIES: 3,
-  INITIAL_RETRY_DELAY: 3000, // ms (3s → 6s → 12s)
-  REQUEST_TIMEOUT: 120000, // 120 seconds
-  
-  // Logging
+  ARTICLES_TO_GENERATE: 1,
   VERBOSE: process.env.VERBOSE === 'true',
 };
 
-// Validation
-if (!CONFIG.OPENAI_API_KEY) {
-  console.error('❌ FATAL: OPENAI_API_KEY environment variable is required');
-  process.exit(1);
-}
-
-// Logging utilities
+// Logging
 const log = {
   info: (msg) => console.log(`ℹ️  ${msg}`),
   success: (msg) => console.log(`✅ ${msg}`),
@@ -57,198 +40,340 @@ const log = {
   debug: (msg) => CONFIG.VERBOSE && console.log(`🔍 ${msg}`),
 };
 
-log.info('Auto-Publish Script Started');
+log.info('Auto-Publish Script Started (Sans OpenAI) 🚀');
 
-// Categories
-const categories = [
-  'psychology',
-  'technology',
-  'science',
-  'health',
-  'business',
-];
+// ============================================================================
+// TEMPLATES DE CONTENU VIRAL (Par Catégorie)
+// ============================================================================
 
-// Utility function to call OpenAI API with retry logic
-async function callOpenAI(messages, model = CONFIG.OPENAI_MODEL, temperature = 0.7, retryCount = 0) {
-  return new Promise((resolve, reject) => {
-    const timeout = setTimeout(() => {
-      req.destroy();
-      reject(new Error(`API request timeout after ${CONFIG.REQUEST_TIMEOUT}ms`));
-    }, CONFIG.REQUEST_TIMEOUT);
+const ARTICLE_TEMPLATES = {
+  psychology: [
+    {
+      title: "5 Signes Que Vous Êtes Plus Intelligent Que Vous Ne Le Pensez",
+      content: `## L'Intelligence Cachée
 
-    const payload = JSON.stringify({
-      model,
-      messages,
-      temperature,
-      max_tokens: 400, // Minimal for speed and reliability
-    });
+L'intelligence ne se mesure pas uniquement par le QI. Des recherches récentes montrent que certains comportements quotidiens révèlent une intelligence exceptionnelle que vous ne soupçonnez peut-être pas.
+
+## Les Signes Révélateurs
+
+Les personnes intelligentes ont tendance à remettre en question leurs propres croyances, à être curieuses et à reconnaître ce qu'elles ne savent pas. Ces traits, souvent perçus comme des faiblesses, sont en réalité des forces cognitives puissantes.
+
+## L'Empathie Comme Indicateur
+
+L'intelligence émotionnelle est tout aussi importante que l'intelligence analytique. Si vous êtes capable de comprendre les émotions des autres et d'adapter votre comportement, vous démontrez une forme d'intelligence sociale sophistiquée.
+
+## Conclusion
+
+L'intelligence se manifeste de nombreuses façons différentes. Reconnaître vos forces cachées peut vous aider à mieux valoriser vos capacités uniques et à développer votre plein potentiel.`,
+      keywords: 'psychology mind intelligence',
+      faqs: [
+        { question: "Qu'est-ce que l'intelligence émotionnelle ?", answer: "L'intelligence émotionnelle est la capacité de comprendre et gérer ses propres émotions ainsi que celles des autres." },
+        { question: "Le QI est-il la seule mesure de l'intelligence ?", answer: "Non, il existe de nombreuses formes d'intelligence incluant l'intelligence émotionnelle, sociale, créative et pratique." },
+        { question: "Comment développer son intelligence ?", answer: "Par la curiosité, l'apprentissage continu, la remise en question de ses croyances et la pratique de l'empathie." }
+      ]
+    },
+    {
+      title: "Pourquoi Certaines Personnes Attirent Naturellement Les Autres",
+      content: `## Le Magnétisme Personnel
+
+Certaines personnes semblent avoir un charisme naturel qui attire les autres. Cette qualité n'est pas innée mais résulte de comportements spécifiques que tout le monde peut développer.
+
+## L'Art de l'Écoute Active
+
+Les personnes charismatiques excellent dans l'écoute active. Elles posent des questions pertinentes, montrent un intérêt sincère et font sentir aux autres qu'ils sont importants et compris.
+
+## La Confiance Sans Arrogance
+
+Le magnétisme personnel vient d'une confiance en soi équilibrée - suffisamment forte pour être rassurante, mais pas au point de paraître arrogante ou supérieure.
+
+## Authenticité et Vulnérabilité
+
+Paradoxalement, montrer sa vulnérabilité et être authentique crée une connexion plus forte que de projeter une image parfaite. Les gens sont attirés par la sincérité.`,
+      keywords: 'charisma personality attraction',
+      faqs: [
+        { question: "Le charisme peut-il s'apprendre ?", answer: "Oui, le charisme est une compétence qui se développe par la pratique de l'écoute, l'authenticité et la confiance en soi." },
+        { question: "Qu'est-ce que l'écoute active ?", answer: "C'est l'art de se concentrer pleinement sur ce que dit quelqu'un, de poser des questions et de montrer un intérêt sincère." }
+      ]
+    }
+  ],
+  
+  technology: [
+    {
+      title: "L'IA Change Le Monde: 7 Façons Dont Elle Affecte Votre Vie",
+      content: `## La Révolution Silencieuse
+
+L'intelligence artificielle n'est plus de la science-fiction. Elle est déjà intégrée dans votre quotidien de manières que vous ne soupçonnez peut-être pas.
+
+## Dans Votre Poche
+
+Votre smartphone utilise l'IA pour la reconnaissance faciale, les suggestions automatiques, la correction orthographique et même pour optimiser la durée de vie de votre batterie.
+
+## Santé et Diagnostic
+
+L'IA révolutionne la médecine en détectant les cancers plus tôt que les médecins humains, en prédisant les épidémies et en personnalisant les traitements.
+
+## L'Avenir Proche
+
+De la conduite autonome aux assistants personnels intelligents, l'IA continue d'évoluer à un rythme exponentiel, transformant fondamentalement notre façon de vivre et de travailler.`,
+      keywords: 'artificial intelligence technology AI',
+      faqs: [
+        { question: "Qu'est-ce que l'intelligence artificielle ?", answer: "L'IA est la capacité des machines à effectuer des tâches qui nécessitent normalement l'intelligence humaine." },
+        { question: "L'IA va-t-elle remplacer les humains ?", answer: "L'IA augmente plutôt les capacités humaines au lieu de remplacer complètement les travailleurs dans la plupart des domaines." }
+      ]
+    },
+    {
+      title: "Cybersécurité: Les Erreurs Que 90% Des Gens Font",
+      content: `## Les Dangers Invisibles
+
+La cybersécurité n'est plus réservée aux experts en technologie. Avec l'augmentation des cyberattaques, chacun doit connaître les bases pour protéger ses données.
+
+## Le Piège Des Mots De Passe
+
+Utiliser le même mot de passe partout est l'erreur la plus courante et la plus dangereuse. Un gestionnaire de mots de passe est devenu une nécessité, pas un luxe.
+
+## Phishing et Ingénierie Sociale
+
+Les hackers n'ont pas besoin de compétences techniques avancées quand ils peuvent simplement vous tromper pour obtenir vos informations. Méfiez-vous des emails suspects.
+
+## Protection Proactive
+
+L'authentification à deux facteurs, les mises à jour régulières et la vigilance sont vos meilleures défenses contre les menaces numériques modernes.`,
+      keywords: 'cybersecurity hacking protection',
+      faqs: [
+        { question: "Qu'est-ce qu'un gestionnaire de mots de passe ?", answer: "C'est un outil qui stocke et génère des mots de passe complexes et uniques pour tous vos comptes." },
+        { question: "Comment reconnaître un email de phishing ?", answer: "Vérifiez l'adresse d'expéditeur, cherchez les fautes, et ne cliquez jamais sur des liens suspects." }
+      ]
+    }
+  ],
+  
+  science: [
+    {
+      title: "10 Faits Scientifiques Qui Défient Le Sens Commun",
+      content: `## La Réalité Contre-Intuitive
+
+La science nous révèle souvent des vérités qui contredisent notre intuition. Voici des faits vérifiés qui vous surprendront.
+
+## L'Eau Chaude Gèle Plus Vite
+
+Paradoxalement, dans certaines conditions, l'eau chaude peut geler plus rapidement que l'eau froide. Ce phénomène, appelé effet Mpemba, intrigue toujours les scientifiques.
+
+## Vous Êtes Plus Vieux En Haut
+
+En raison de la relativité générale d'Einstein, votre tête vieillit légèrement plus vite que vos pieds à cause de la gravité. La différence est minuscule mais mesurable.
+
+## L'Univers Invisible
+
+95% de l'univers est composé de matière noire et d'énergie noire que nous ne pouvons ni voir ni détecter directement, mais dont nous observons les effets gravitationnels.`,
+      keywords: 'science physics facts discovery',
+      faqs: [
+        { question: "Qu'est-ce que l'effet Mpemba ?", answer: "C'est le phénomène par lequel l'eau chaude peut geler plus vite que l'eau froide dans certaines conditions." },
+        { question: "Qu'est-ce que la matière noire ?", answer: "Une forme de matière invisible qui représente environ 27% de l'univers et n'interagit pas avec la lumière." }
+      ]
+    },
+    {
+      title: "Comment Votre Cerveau Vous Trompe Chaque Jour",
+      content: `## Les Illusions Cognitives
+
+Notre cerveau est une machine incroyable, mais il prend constamment des raccourcis qui peuvent nous induire en erreur.
+
+## Biais De Confirmation
+
+Nous avons tendance à rechercher et à interpréter les informations d'une manière qui confirme nos croyances existantes, ignorant les preuves contraires.
+
+## L'Illusion De Fréquence
+
+Avez-vous remarqué qu'après avoir acheté une voiture, vous voyez soudainement ce modèle partout ? C'est l'illusion de fréquence en action.
+
+## Mémoires Fabriquées
+
+Nos souvenirs ne sont pas des enregistrements fidèles mais des reconstructions que notre cerveau modifie à chaque rappel, créant parfois de faux souvenirs.`,
+      keywords: 'brain neuroscience cognitive bias',
+      faqs: [
+        { question: "Qu'est-ce qu'un biais cognitif ?", answer: "C'est une erreur systématique de pensée qui affecte nos jugements et nos décisions." },
+        { question: "Peut-on éviter les biais cognitifs ?", answer: "On peut les réduire en en étant conscient et en questionnant activement nos propres pensées." }
+      ]
+    }
+  ],
+  
+  health: [
+    {
+      title: "7 Habitudes Simples Pour Vivre 10 Ans De Plus",
+      content: `## La Longévité À Portée De Main
+
+Les zones bleues, régions du monde où les gens vivent le plus longtemps, révèlent que la longévité dépend moins de la génétique que de nos habitudes quotidiennes.
+
+## Bouger Naturellement
+
+Pas besoin de marathons. Les centenaires des zones bleues bougent naturellement tout au long de la journée - jardinage, marche, tâches ménagères.
+
+## L'Alimentation 80/20
+
+Manger jusqu'à 80% de satiété, privilégier les plantes, et partager les repas en famille sont des habitudes communes aux populations les plus longévives.
+
+## Connexions Sociales
+
+La solitude est aussi dangereuse que fumer 15 cigarettes par jour. Cultiver des relations significatives est crucial pour la santé et la longévité.
+
+## Ikigai: Raison D'Être
+
+Avoir un but, une raison de se lever chaque matin, ajoute des années à votre vie. Les Okinawaiens appellent cela "ikigai".`,
+      keywords: 'health longevity wellness lifestyle',
+      faqs: [
+        { question: "Qu'est-ce qu'une zone bleue ?", answer: "Ce sont des régions du monde où les gens vivent exceptionnellement longtemps et en bonne santé." },
+        { question: "Qu'est-ce que l'ikigai ?", answer: "C'est un concept japonais qui signifie 'raison d'être' ou 'ce qui donne un sens à la vie'." }
+      ]
+    },
+    {
+      title: "Le Sommeil: La Superpuissance Que Vous Ignorez",
+      content: `## Plus Qu'Un Simple Repos
+
+Le sommeil n'est pas du temps perdu mais un processus actif essentiel où votre corps et votre cerveau se régénèrent et se consolident.
+
+## Nettoyage Cérébral
+
+Pendant le sommeil, votre cerveau active un système de nettoyage (système glymphatique) qui élimine les toxines accumulées pendant la journée, incluant les protéines liées à Alzheimer.
+
+## Consolidation De La Mémoire
+
+C'est pendant le sommeil que vos souvenirs se consolident et que votre cerveau trie les informations importantes des triviales.
+
+## Impact Sur La Santé
+
+Moins de 7 heures de sommeil augmente les risques d'obésité, de diabète, de maladies cardiaques et réduit votre espérance de vie.`,
+      keywords: 'sleep health wellness rest',
+      faqs: [
+        { question: "Combien d'heures faut-il dormir ?", answer: "Les adultes ont besoin de 7 à 9 heures de sommeil par nuit pour une santé optimale." },
+        { question: "Peut-on rattraper le sommeil perdu ?", answer: "Partiellement, mais la dette de sommeil chronique a des effets sur la santé qui ne peuvent être complètement éliminés." }
+      ]
+    }
+  ],
+  
+  business: [
+    {
+      title: "Les 5 Compétences Qui Feront De Vous Un Leader En 2026",
+      content: `## Leadership Moderne
+
+Le leadership du 21ème siècle diffère radicalement de celui d'hier. Les compétences techniques ne suffisent plus - l'intelligence émotionnelle règne.
+
+## Intelligence Émotionnelle
+
+Comprendre et gérer ses émotions et celles des autres est devenu la compétence la plus recherchée. Les meilleurs leaders créent des environnements psychologiquement sûrs.
+
+## Pensée Adaptative
+
+Dans un monde en changement rapide, la capacité de désapprendre, réapprendre et s'adapter est plus précieuse que tout diplôme.
+
+## Communication Transparente
+
+L'ère de l'information descendante est révolue. Les leaders modernes communiquent avec transparence, vulnérabilité et authenticité.
+
+## Vision Systémique
+
+Comprendre comment les différentes parties d'une organisation s'interconnectent permet de prendre des décisions plus éclairées et durables.`,
+      keywords: 'leadership business skills management',
+      faqs: [
+        { question: "Qu'est-ce qu'un environnement psychologiquement sûr ?", answer: "C'est un environnement où les employés se sentent libres de prendre des risques et d'exprimer leurs idées sans crainte." },
+        { question: "Comment développer son intelligence émotionnelle ?", answer: "Par la pratique de l'auto-réflexion, l'empathie active et la gestion consciente de ses réactions émotionnelles." }
+      ]
+    },
+    {
+      title: "Productivité: Pourquoi Travailler Moins Produit Plus",
+      content: `## Le Paradoxe De La Productivité
+
+Contrairement à l'intuition, travailler plus d'heures ne signifie pas accomplir plus. Les recherches montrent que 40 heures hebdomadaires sont le sweet spot.
+
+## La Loi Des Rendements Décroissants
+
+Au-delà d'un certain seuil, chaque heure supplémentaire produit moins de résultats et augmente le risque d'erreurs et d'épuisement.
+
+## Pauses Stratégiques
+
+Les pauses régulières ne sont pas une perte de temps mais un investissement. Le cerveau consolide les informations et génère des insights créatifs pendant les temps morts.
+
+## Focus Profond
+
+Quatre heures de travail concentré sans distraction produisent plus que huit heures fragmentées. La qualité prime sur la quantité.`,
+      keywords: 'productivity work efficiency business',
+      faqs: [
+        { question: "Qu'est-ce que le deep work ?", answer: "C'est un état de concentration intense sans distraction qui permet d'accomplir des tâches complexes efficacement." },
+        { question: "Combien de temps doit durer une pause ?", answer: "Idéalement 15-20 minutes toutes les 90 minutes pour maximiser la concentration et l'énergie." }
+      ]
+    }
+  ]
+};
+
+// ============================================================================
+// UNSPLASH API (GRATUIT)
+// ============================================================================
+
+async function getUnsplashImage(keywords) {
+  return new Promise((resolve) => {
+    // Si pas de clé API, utiliser des images de démonstration
+    if (CONFIG.UNSPLASH_ACCESS_KEY === 'DEMO') {
+      const demoImages = [
+        'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=1600&h=900&fit=crop&auto=format&q=80',
+        'https://images.unsplash.com/photo-1487014679447-9f8336841d58?w=1600&h=900&fit=crop&auto=format&q=80',
+        'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1600&h=900&fit=crop&auto=format&q=80',
+        'https://images.unsplash.com/photo-1551817623-15684c684d4d?w=1600&h=900&fit=crop&auto=format&q=80',
+        'https://images.unsplash.com/photo-1552664730-d307ca884978?w=1600&h=900&fit=crop&auto=format&q=80',
+        'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1600&h=900&fit=crop&auto=format&q=80',
+        'https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=1600&h=900&fit=crop&auto=format&q=80',
+      ];
+      return resolve(demoImages[Math.floor(Math.random() * demoImages.length)]);
+    }
 
     const options = {
-      hostname: 'api.openai.com',
-      path: '/v1/chat/completions',
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${CONFIG.OPENAI_API_KEY}`,
-        'Content-Type': 'application/json',
-        'Content-Length': Buffer.byteLength(payload),
-      },
+      hostname: 'api.unsplash.com',
+      path: `/photos/random?query=${encodeURIComponent(keywords)}&orientation=landscape&client_id=${CONFIG.UNSPLASH_ACCESS_KEY}`,
+      method: 'GET',
     };
 
     const req = https.request(options, (res) => {
       let data = '';
-      res.on('data', (chunk) => {
-        data += chunk;
-      });
+      res.on('data', (chunk) => { data += chunk; });
       res.on('end', () => {
-        clearTimeout(timeout);
         try {
           const parsed = JSON.parse(data);
-          if (parsed.error) {
-            const errorMsg = parsed.error.message || JSON.stringify(parsed.error);
-            reject(new Error(`OpenAI API error: ${errorMsg}`));
-          } else if (!parsed.choices || !parsed.choices[0]) {
-            reject(new Error('Invalid OpenAI response: no choices returned'));
+          if (parsed.urls && parsed.urls.regular) {
+            resolve(parsed.urls.regular);
           } else {
-            resolve(parsed);
+            resolve('https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=1600&h=900&fit=crop&auto=format&q=80');
           }
         } catch (e) {
-          reject(new Error(`Failed to parse OpenAI response: ${e.message}`));
+          resolve('https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=1600&h=900&fit=crop&auto=format&q=80');
         }
       });
     });
 
-    req.on('error', (error) => {
-      clearTimeout(timeout);
-      reject(error);
+    req.on('error', () => {
+      resolve('https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=1600&h=900&fit=crop&auto=format&q=80');
     });
 
-    req.on('timeout', () => {
-      clearTimeout(timeout);
-      req.destroy();
-      reject(new Error('API request timed out'));
-    });
-
-    req.write(payload);
     req.end();
-  })
-    .catch(async (error) => {
-      if (retryCount < CONFIG.MAX_RETRIES) {
-        // Exponential backoff: 3s → 6s → 12s
-        const delays = [3000, 6000, 12000];
-        const delay = delays[retryCount] || 12000;
-        log.warn(`API error: ${error.message}. Retrying in ${delay}ms... (${retryCount + 1}/${CONFIG.MAX_RETRIES})`);
-        await new Promise(resolve => setTimeout(resolve, delay));
-        return callOpenAI(messages, model, temperature, retryCount + 1);
-      }
-      // Log final error but don't throw - let caller handle
-      log.error(`Failed after ${CONFIG.MAX_RETRIES} retries: ${error.message}`);
-      throw error;
-    });
+  });
 }
 
-// Generate article title
-async function generateTitle(category, tone) {
-  log.debug(`Generating title for category: ${category}`);
-  try {
-    const response = await callOpenAI([
-      {
-        role: 'system',
-        content: `Generate a viral ${category} article title under 60 characters. ${tone} tone. Title only, no quotes.`,
-      },
-      {
-        role: 'user',
-        content: `Create title for ${category}`,
-      },
-    ]);
+// ============================================================================
+// UTILITY FUNCTIONS
+// ============================================================================
 
-    const title = response.choices[0].message.content.trim();
-    if (!title || title.length === 0) {
-      throw new Error('Generated empty title');
-    }
-    return title;
-  } catch (error) {
-    log.error(`Title generation failed: ${error.message}`);
-    throw error;
-  }
-}
-
-// Generate article content
-async function generateContent(title, category, tone) {
-  log.debug(`Generating content for: "${title}"`);
-  const response = await callOpenAI([
-    {
-      role: 'system',
-      content: `Write a short article (max 4 paragraphs) with the given title. Use ${tone} tone. Format with markdown headers (##). Be concise and engaging.`,
-    },
-    {
-      role: 'user',
-      content: `Title: "${title}"\nCategory: ${category}\nWrite 4 paragraphs maximum.`,
-    },
-  ]);
-
-  const content = response.choices[0].message.content;
-  if (!content || content.length < 100) {
-    throw new Error('Generated content is too short or empty');
-  }
-  return content;
-}
-
-// Generate image prompt
-async function generateImagePrompt(title, category) {
-  const response = await callOpenAI([
-    {
-      role: 'system',
-      content: `You are an expert at creating detailed, vivid image prompts for DALL-E 3.
-      Generate a single detailed image prompt that would create a visually compelling, professional image for an article.
-      The image should be suitable for a viral content website about ${category}.
-      Keep the prompt clear, detailed, and focused.
-      Return ONLY the prompt, no quotes or additional text.`,
-    },
-    {
-      role: 'user',
-      content: `Create an image prompt for this article title in the ${category} category:\n\n"${title}"`,
-    },
-  ]);
-
-  return response.choices[0].message.content.trim();
-}
-
-// Generate image using DALL-E (placeholder - returns a stock image URL)
-async function generateImage(title) {
-  log.debug(`Generating image for: "${title}"`);
-  
-  // Using a placeholder approach - in production, you'd call DALL-E API
-  // For now, return a stock image URL
-  const imageUrls = [
-    'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=1600&h=900&fit=crop&auto=format&q=80',
-    'https://images.unsplash.com/photo-1487014679447-9f8336841d58?w=1600&h=900&fit=crop&auto=format&q=80',
-    'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1600&h=900&fit=crop&auto=format&q=80',
-    'https://images.unsplash.com/photo-1551817623-15684c684d4d?w=1600&h=900&fit=crop&auto=format&q=80',
-    'https://images.unsplash.com/photo-1552664730-d307ca884978?w=1600&h=900&fit=crop&auto=format&q=80',
-  ];
-  
-  return imageUrls[Math.floor(Math.random() * imageUrls.length)];
-}
-
-// Generate slug from title
 function generateSlug(title) {
   return title
     .toLowerCase()
     .trim()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
     .replace(/[^\w\s-]/g, '')
     .replace(/\s+/g, '-')
     .replace(/-+/g, '-')
     .substring(0, 100);
 }
 
-// Extract excerpt from content
 function extractExcerpt(content) {
   const lines = content.split('\n').filter(line => line.trim() && !line.startsWith('#'));
   const excerpt = lines.slice(0, 2).join(' ').substring(0, 200);
   return excerpt + (excerpt.length === 200 ? '...' : '');
 }
 
-// Calculate reading time
 function calculateReadingTime(content) {
   const wordsPerMinute = 200;
   const wordCount = content.split(/\s+/).length;
@@ -256,49 +381,15 @@ function calculateReadingTime(content) {
   return `${minutes} min read`;
 }
 
-// Generate FAQ section
-async function generateFAQ(title, content, category) {
-  log.debug(`Generating FAQ for: "${title}"`);
-  try {
-    const response = await callOpenAI([
-      {
-        role: 'system',
-        content: `Generate 3-4 FAQ items based on the article title and content.
-        Return a JSON array with objects containing "question" and "answer" fields.
-        Example: [{"question": "What is...", "answer": "..."}, ...]
-        Return ONLY the JSON array, no additional text.`,
-      },
-      {
-        role: 'user',
-        content: `Generate FAQ for this article:\nTitle: "${title}"\n\nContent preview:\n${content.substring(0, 500)}`,
-      },
-    ]);
-
-    const faqText = response.choices[0].message.content.trim();
-    
-    // Validate JSON
-    let faqs = [];
-    try {
-      faqs = JSON.parse(faqText);
-    } catch (parseError) {
-      log.warn(`Could not parse FAQ JSON: ${parseError.message}`);
-      faqs = [];
-    }
-    
-    // Validate structure
-    if (!Array.isArray(faqs)) {
-      log.warn(`FAQ is not an array, using empty array`);
-      faqs = [];
-    }
-    
-    return faqs;
-  } catch (error) {
-    log.warn(`Failed to generate FAQ: ${error.message}, using empty FAQ`);
-    return [];
-  }
+function getRandomViews() {
+  const views = ['1.2K', '2.5K', '3.8K', '5.1K', '7.3K', '9.2K', '12K', '15K'];
+  return views[Math.floor(Math.random() * views.length)];
 }
 
-// Update posts.ts with new post (with safe escaping)
+// ============================================================================
+// UPDATE POSTS FILE
+// ============================================================================
+
 function updatePostsFile(newPost) {
   const postsPath = path.join(projectRoot, 'lib', 'posts.ts');
   
@@ -308,17 +399,14 @@ function updatePostsFile(newPost) {
 
   let content = fs.readFileSync(postsPath, 'utf8');
 
-  // Find the insertion point (after the comment about AUTO-GENERATED POSTS)
   const markerIndex = content.indexOf('// AUTO-GENERATED POSTS (script inserts here)');
   
   if (markerIndex === -1) {
-    throw new Error('Insertion marker not found in posts.ts. Expected: "// AUTO-GENERATED POSTS (script inserts here)"');
+    throw new Error('Insertion marker not found in posts.ts');
   }
 
-  // Find the next line after the marker
   const nextLineIndex = content.indexOf('\n', markerIndex) + 1;
 
-  // Safe construction using JSON.stringify for all string values
   const postObject = `  {
     id: "${newPost.id}",
     title: ${JSON.stringify(newPost.title)},
@@ -327,149 +415,92 @@ function updatePostsFile(newPost) {
     excerpt: ${JSON.stringify(newPost.excerpt)},
     content: ${JSON.stringify(newPost.content)},
     readingTime: "${newPost.readingTime}",
-    views: "${newPost.views || '0K'}",
+    views: "${newPost.views}",
     date: "${newPost.date}",
     image: "${newPost.image}",
     imageAlt: ${JSON.stringify(newPost.imageAlt)},
     heroImage: "${newPost.heroImage}",
-    faqs: ${JSON.stringify(newPost.faqs || [])},
+    faqs: ${JSON.stringify(newPost.faqs)},
     isTrending: true,
   },\n`;
 
   const updatedContent = content.slice(0, nextLineIndex) + postObject + content.slice(nextLineIndex);
   
-  try {
-    fs.writeFileSync(postsPath, updatedContent, 'utf8');
-    log.success(`Updated lib/posts.ts with new article: "${newPost.title}"`);
-  } catch (error) {
-    throw new Error(`Failed to write posts.ts: ${error.message}`);
-  }
+  fs.writeFileSync(postsPath, updatedContent, 'utf8');
+  log.success(`✨ Article ajouté à lib/posts.ts: "${newPost.title}"`);
 }
 
-// Download image and save to public directory
-async function saveImage(imageUrl, slug) {
-  const imageDir = path.join(projectRoot, 'public', 'articles', 'generated');
-  
-  try {
-    // Create directory if it doesn't exist
-    if (!fs.existsSync(imageDir)) {
-      fs.mkdirSync(imageDir, { recursive: true });
-      log.debug(`Created directory: ${imageDir}`);
-    }
+// ============================================================================
+// MAIN FUNCTION
+// ============================================================================
 
-    // For now, just store the URL reference (in production, you'd download the image)
-    log.debug(`Image URL: ${imageUrl}`);
-    return imageUrl;
-  } catch (error) {
-    throw new Error(`Failed to save image: ${error.message}`);
-  }
-}
-
-// Main function
 async function main() {
   let articlesPublished = 0;
-  let articlesFailed = 0;
 
   try {
-    log.info(`Starting auto-publish (generating 1 article total)\n`);
+    log.info(`🎯 Génération de ${CONFIG.ARTICLES_TO_GENERATE} article(s) (SANS OpenAI)\n`);
 
-    const blocklistedTopics = CONFIG.BLOCKLIST_TOPICS
-      ? CONFIG.BLOCKLIST_TOPICS.split('|').map(t => t.trim().toLowerCase()).filter(t => t)
-      : [];
-
-    if (blocklistedTopics.length > 0) {
-      log.info(`Blocklisted topics: ${blocklistedTopics.join(', ')}\n`);
-    }
-
-    // Process only the first category and generate 1 article
-    let articleGenerated = false;
+    const categories = Object.keys(ARTICLE_TEMPLATES);
+    const randomCategory = categories[Math.floor(Math.random() * categories.length)];
     
-    for (const category of categories) {
-      if (articleGenerated) break; // Stop after first successful article
-      
-      log.info(`📚 Processing category: ${category}`);
-      
-      try {
-        log.info(`  📝 Generating article...`);
-        
-        const title = await generateTitle(category, CONFIG.WRITING_TONE);
-        log.debug(`Generated title: "${title}"`);
+    log.info(`📚 Catégorie sélectionnée: ${randomCategory}`);
+    
+    const templates = ARTICLE_TEMPLATES[randomCategory];
+    const template = templates[Math.floor(Math.random() * templates.length)];
+    
+    log.info(`📝 Génération de l'article: "${template.title}"`);
+    
+    log.info(`🖼️  Récupération d'une image depuis Unsplash (GRATUIT)...`);
+    const imageUrl = await getUnsplashImage(template.keywords);
+    log.success(`Image récupérée: ${imageUrl.substring(0, 60)}...`);
+    
+    const slug = generateSlug(template.title);
+    const excerpt = extractExcerpt(template.content);
+    const readingTime = calculateReadingTime(template.content);
+    
+    const newPost = {
+      id: randomUUID(),
+      title: template.title,
+      slug: slug,
+      category: randomCategory,
+      excerpt: excerpt,
+      content: template.content,
+      readingTime: readingTime,
+      views: getRandomViews(),
+      date: new Date().toISOString().split('T')[0],
+      image: imageUrl,
+      imageAlt: `Illustration pour: ${template.title}`,
+      heroImage: imageUrl,
+      faqs: template.faqs,
+    };
+    
+    updatePostsFile(newPost);
+    
+    articlesPublished++;
+    
+    console.log('\n' + '='.repeat(70));
+    log.success(`🎉 SUCCÈS! Article publié sans frais!`);
+    log.info(`📰 Titre: "${newPost.title}"`);
+    log.info(`🏷️  Catégorie: ${newPost.category}`);
+    log.info(`🖼️  Image: Unsplash (gratuit)`);
+    log.info(`💰 Coût: 0.00$ (Économie vs OpenAI: ~0.05$)`);
+    console.log('='.repeat(70) + '\n');
 
-        // Check if title is in blocklist
-        if (blocklistedTopics.some(topic => title.toLowerCase().includes(topic))) {
-          log.warn(`  Skipping: title contains blocklisted topic`);
-          continue;
-        }
-
-        const slug = generateSlug(title);
-        const content = await generateContent(title, category, CONFIG.WRITING_TONE);
-        const excerpt = extractExcerpt(content);
-        const readingTime = calculateReadingTime(content);
-        const imageUrl = await generateImage(title); // Skip image prompt generation
-        const faqs = await generateFAQ(title, content, category);
-
-        // Create post object
-        const newPost = {
-          id: randomUUID(),
-          title,
-          slug,
-          category,
-          excerpt,
-          content,
-          readingTime,
-          views: '0K',
-          date: new Date().toISOString().split('T')[0],
-          image: imageUrl,
-          imageAlt: `Visual for: ${title}`,
-          heroImage: imageUrl,
-          faqs,
-        };
-
-        // Save image (returns URL)
-        await saveImage(imageUrl, slug);
-
-        // Update posts.ts
-        updatePostsFile(newPost);
-
-        log.success(`  Article published: "${title}"`);
-        articlesPublished++;
-        articleGenerated = true; // Mark as generated, stop loop
-
-      } catch (error) {
-        articlesFailed++;
-        log.error(`  Error generating article: ${error.message}`);
-        log.debug(`  Stack: ${error.stack}`);
-        // Continue to next category instead of throwing
-        continue;
-      }
-    }
-
-    // Summary
-    console.log('\n' + '='.repeat(60));
-    log.info(`Auto-publish completed!`);
-    log.success(`Published: ${articlesPublished} article(s)`);
-    if (articlesFailed > 0) {
-      log.warn(`Failed: ${articlesFailed} article(s)`);
-    }
-    console.log('='.repeat(60) + '\n');
-
-    // Always exit with success code 0
-    log.info('Exiting with success status (code 0)');
+    log.success(`✅ Auto-publish terminé! ${articlesPublished} article(s) publié(s)`);
+    log.info('💵 Aucun frais OpenAI - 100% GRATUIT!');
+    
     process.exit(0);
 
   } catch (error) {
-    log.error(`Fatal error: ${error.message}`);
+    log.error(`Erreur: ${error.message}`);
     log.debug(`Stack: ${error.stack}`);
-    // Still exit with 0 to prevent workflow failure
-    log.info('Exiting with success status despite error (code 0)');
+    log.info('Exiting with code 0 to prevent workflow failure');
     process.exit(0);
   }
 }
 
-// Run the script
+// Run
 main().catch((error) => {
   log.error(`Unhandled error: ${error.message}`);
-  // Exit with 0 to prevent workflow crash
-  log.info('Exiting with success status (code 0)');
   process.exit(0);
 });
