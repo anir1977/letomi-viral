@@ -34,8 +34,8 @@ jobs:
         run: |
           git config user.name "curiospark-bot"
           git config user.email "bot@curiospark.com"
-          git add lib/posts.ts public/articles/generated
-          git commit -m "chore: auto publish viral articles" || echo "No changes"
+          git add -A
+          git commit -m "chore: auto publish viral articles" || echo "No changes to commit"
 
       - name: Push changes
         run: |
