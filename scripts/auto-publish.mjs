@@ -26,8 +26,9 @@ const CONFIG = {
   // Unsplash API (GRATUIT - 50 requêtes/heure)
   UNSPLASH_ACCESS_KEY: process.env.UNSPLASH_ACCESS_KEY || 'DEMO',
   
-  // Publishing Settings
-  ARTICLES_TO_GENERATE: 1,
+  // Publishing Settings - 1 article par catégorie
+  ARTICLES_PER_CATEGORY: 1,
+  DAYS_BETWEEN_ARTICLES: [0, 1, 1, 2, 2], // Espacer sur 5-7 jours (naturel)
   VERBOSE: process.env.VERBOSE === 'true',
 };
 
@@ -549,52 +550,67 @@ async function main() {
   let articlesPublished = 0;
 
   try {
-    log.info(`🎯 Génération de ${CONFIG.ARTICLES_TO_GENERATE} article(s) (SANS OpenAI)\n`);
-
     const categories = Object.keys(ARTICLE_TEMPLATES);
-    const randomCategory = categories[Math.floor(Math.random() * categories.length)];
+    const totalArticles = categories.length;
     
-    log.info(`📚 Catégorie sélectionnée: ${randomCategory}`);
+    log.info(`🎯 Génération de ${totalArticles} articles (1 par catégorie) (SANS OpenAI)\n`);
     
-    const templates = ARTICLE_TEMPLATES[randomCategory];
-    const template = templates[Math.floor(Math.random() * templates.length)];
+    // Mélanger les catégories pour plus de naturel
+    const shuffledCategories = categories.sort(() => Math.random() - 0.5);
     
-    log.info(`📝 Génération de l'article: "${template.title}"`);
+    let currentDate = new Date();
     
-    log.info(`🖼️  Récupération d'une image depuis Unsplash (GRATUIT)...`);
-    const imageUrl = await getUnsplashImage(template.keywords);
-    log.success(`Image récupérée: ${imageUrl.substring(0, 60)}...`);
-    
-    const slug = generateSlug(template.title);
-    const excerpt = extractExcerpt(template.content);
-    const readingTime = calculateReadingTime(template.content);
-    
-    const newPost = {
-      id: randomUUID(),
-      title: template.title,
-      slug: slug,
-      category: randomCategory,
-      excerpt: excerpt,
-      content: template.content,
-      readingTime: readingTime,
-      views: getRandomViews(),
-      date: new Date().toISOString().split('T')[0],
-      image: imageUrl,
-      imageAlt: `Illustration pour: ${template.title}`,
-      heroImage: imageUrl,
-      faqs: template.faqs,
-    };
-    
-    updatePostsFile(newPost);
-    
-    articlesPublished++;
+    for (let i = 0; i < shuffledCategories.length; i++) {
+      const category = shuffledCategories[i];
+      const templates = ARTICLE_TEMPLATES[category];
+      const template = templates[Math.floor(Math.random() * templates.length)];
+      
+      log.info(`\n📚 Catégorie ${i + 1}/${totalArticles}: ${category}`);
+      log.info(`📝 Génération de l'article: "${template.title}"`);
+      
+      log.info(`🖼️  Récupération d'une image depuis Unsplash (GRATUIT)...`);
+      const imageUrl = await getUnsplashImage(template.keywords);
+      log.success(`Image récupérée: ${imageUrl.substring(0, 60)}...`);
+      
+      const slug = generateSlug(template.title);
+      const excerpt = extractExcerpt(template.content);
+      const readingTime = calculateReadingTime(template.content);
+      
+      // Espacer les articles sur plusieurs jours de manière naturelle
+      if (i > 0) {
+        const daysToAdd = CONFIG.DAYS_BETWEEN_ARTICLES[i - 1];
+        currentDate = new Date(currentDate.getTime() + daysToAdd * 24 * 60 * 60 * 1000);
+      }
+      
+      const newPost = {
+        id: randomUUID(),
+        title: template.title,
+        slug: slug,
+        category: category,
+        excerpt: excerpt,
+        content: template.content,
+        readingTime: readingTime,
+        views: getRandomViews(),
+        date: currentDate.toISOString().split('T')[0],
+        image: imageUrl,
+        imageAlt: `Illustration pour: ${template.title}`,
+        heroImage: imageUrl,
+        faqs: template.faqs,
+      };
+      
+      updatePostsFile(newPost);
+      articlesPublished++;
+      
+      log.success(`✅ Article ${i + 1}/${totalArticles} publié: "${newPost.title}"`);
+      log.debug(`   📅 Date: ${newPost.date} (espacé naturellement)`);
+    }
     
     console.log('\n' + '='.repeat(70));
-    log.success(`🎉 SUCCÈS! Article publié sans frais!`);
-    log.info(`📰 Titre: "${newPost.title}"`);
-    log.info(`🏷️  Catégorie: ${newPost.category}`);
-    log.info(`🖼️  Image: Unsplash (gratuit)`);
-    log.info(`💰 Coût: 0.00$ (Économie vs OpenAI: ~0.05$)`);
+    log.success(`🎉 SUCCÈS! ${articlesPublished} articles publiés sans frais!`);
+    log.info(`📊 Répartition: 1 article par catégorie`);
+    log.info(`⏰ Articles espacés sur 5-7 jours (naturel pour Google)`);
+    log.info(`🖼️  Images: Unsplash (gratuit)`);
+    log.info(`💰 Coût total: 0.00$ (Économie vs OpenAI: ~$${(articlesPublished * 0.05).toFixed(2)})`);
     console.log('='.repeat(70) + '\n');
 
     log.success(`✅ Auto-publish terminé! ${articlesPublished} article(s) publié(s)`);
