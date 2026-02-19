@@ -128,6 +128,22 @@ export const categories: Category[] = categoryDefinitions.map(({ name, slug }) =
 export const posts: Post[] = [
   // AUTO-GENERATED POSTS (script inserts here)
   {
+    id: "baa0c0e4-1ccb-4a64-afae-eb7e558bb25e",
+    title: "Productivité: Pourquoi Travailler Moins Produit Plus",
+    slug: "productivite-pourquoi-travailler-moins-produit-plus",
+    category: "business",
+    excerpt: "Contrairement à l'intuition, travailler plus d'heures ne signifie pas accomplir plus. Les recherches montrent que 40 heures hebdomadaires sont le sweet spot. Au-delà d'un certain seuil, chaque heure s...",
+    content: "## Le Paradoxe De La Productivité\n\nContrairement à l'intuition, travailler plus d'heures ne signifie pas accomplir plus. Les recherches montrent que 40 heures hebdomadaires sont le sweet spot.\n\n## La Loi Des Rendements Décroissants\n\nAu-delà d'un certain seuil, chaque heure supplémentaire produit moins de résultats et augmente le risque d'erreurs et d'épuisement.\n\n## Pauses Stratégiques\n\nLes pauses régulières ne sont pas une perte de temps mais un investissement. Le cerveau consolide les informations et génère des insights créatifs pendant les temps morts.\n\n## Focus Profond\n\nQuatre heures de travail concentré sans distraction produisent plus que huit heures fragmentées. La qualité prime sur la quantité.",
+    readingTime: "1 min read",
+    views: "12K",
+    date: "2026-02-19",
+    image: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1600&h=900&fit=crop&auto=format&q=80",
+    imageAlt: "Illustration pour: Productivité: Pourquoi Travailler Moins Produit Plus",
+    heroImage: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=1600&h=900&fit=crop&auto=format&q=80",
+    faqs: [{"question":"Qu'est-ce que le deep work ?","answer":"C'est un état de concentration intense sans distraction qui permet d'accomplir des tâches complexes efficacement."},{"question":"Combien de temps doit durer une pause ?","answer":"Idéalement 15-20 minutes toutes les 90 minutes pour maximiser la concentration et l'énergie."}],
+    isTrending: true,
+  },
+  {
     id: "7f80f44e-047a-41eb-b501-e66aca2d2d73",
     title: "The Psychology of Navy Basketball: How the Mind Shapes Performance",
     slug: "the-psychology-of-navy-basketball-how-the-mind-shapes-perfor",
