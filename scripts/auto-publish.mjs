@@ -25,7 +25,7 @@ const projectRoot = path.join(__dirname, '..');
 const CONFIG = {
   // API Settings
   OPENAI_API_KEY: process.env.OPENAI_API_KEY,
-  OPENAI_MODEL: 'gpt-3.5-turbo', // Fast and cost-effective
+  OPENAI_MODEL: 'gpt-4o-mini', // Fast, reliable, cost-effective
   OPENAI_IMAGE_MODEL: process.env.OPENAI_IMAGE_MODEL || 'dall-e-3',
   
   // Publishing Settings
@@ -35,8 +35,8 @@ const CONFIG = {
   
   // Retry Settings
   MAX_RETRIES: 3,
-  INITIAL_RETRY_DELAY: 1000, // ms (1s → 3s → 6s)
-  REQUEST_TIMEOUT: 60000, // 60 seconds
+  INITIAL_RETRY_DELAY: 3000, // ms (3s → 6s → 12s)
+  REQUEST_TIMEOUT: 120000, // 120 seconds
   
   // Logging
   VERBOSE: process.env.VERBOSE === 'true',
@@ -80,7 +80,7 @@ async function callOpenAI(messages, model = CONFIG.OPENAI_MODEL, temperature = 0
       model,
       messages,
       temperature,
-      max_tokens: 800, // Reduced for cost and speed
+      max_tokens: 400, // Minimal for speed and reliability
     });
 
     const options = {
@@ -133,13 +133,15 @@ async function callOpenAI(messages, model = CONFIG.OPENAI_MODEL, temperature = 0
   })
     .catch(async (error) => {
       if (retryCount < CONFIG.MAX_RETRIES) {
-        // Exponential backoff: 1s → 3s → 6s
-        const delays = [1000, 3000, 6000];
-        const delay = delays[retryCount] || 6000;
+        // Exponential backoff: 3s → 6s → 12s
+        const delays = [3000, 6000, 12000];
+        const delay = delays[retryCount] || 12000;
         log.warn(`API error: ${error.message}. Retrying in ${delay}ms... (${retryCount + 1}/${CONFIG.MAX_RETRIES})`);
         await new Promise(resolve => setTimeout(resolve, delay));
         return callOpenAI(messages, model, temperature, retryCount + 1);
       }
+      // Log final error but don't throw - let caller handle
+      log.error(`Failed after ${CONFIG.MAX_RETRIES} retries: ${error.message}`);
       throw error;
     });
 }
@@ -147,25 +149,27 @@ async function callOpenAI(messages, model = CONFIG.OPENAI_MODEL, temperature = 0
 // Generate article title
 async function generateTitle(category, tone) {
   log.debug(`Generating title for category: ${category}`);
-  const response = await callOpenAI([
-    {
-      role: 'system',
-      content: `You are a creative article title generator. Generate a single compelling, viral article title for the ${category} category. 
-      The title should be intriguing, emotionally engaging, and encourage clicks. Keep it under 70 characters.
-      Use tone: ${tone}.
-      Return ONLY the title, no quotes or additional text.`,
-    },
-    {
-      role: 'user',
-      content: `Generate a viral article title for the ${category} category`,
-    },
-  ]);
+  try {
+    const response = await callOpenAI([
+      {
+        role: 'system',
+        content: `Generate a viral ${category} article title under 60 characters. ${tone} tone. Title only, no quotes.`,
+      },
+      {
+        role: 'user',
+        content: `Create title for ${category}`,
+      },
+    ]);
 
-  const title = response.choices[0].message.content.trim();
-  if (!title || title.length === 0) {
-    throw new Error('Generated empty title');
+    const title = response.choices[0].message.content.trim();
+    if (!title || title.length === 0) {
+      throw new Error('Generated empty title');
+    }
+    return title;
+  } catch (error) {
+    log.error(`Title generation failed: ${error.message}`);
+    throw error;
   }
-  return title;
 }
 
 // Generate article content
@@ -174,24 +178,16 @@ async function generateContent(title, category, tone) {
   const response = await callOpenAI([
     {
       role: 'system',
-      content: `You are a professional article writer. Write an engaging, well-structured article with the provided title.
-      The article should be around 1500 words, include multiple sections with proper markdown formatting.
-      Include:
-      - An engaging introduction
-      - 3-4 main sections with headers
-      - Interesting facts and insights
-      - A conclusion
-      Use tone: ${tone}
-      Format as markdown with proper headers (##, ###).`,
+      content: `Write a short article (max 4 paragraphs) with the given title. Use ${tone} tone. Format with markdown headers (##). Be concise and engaging.`,
     },
     {
       role: 'user',
-      content: `Write a ${tone} article with this title for the ${category} category:\n\n"${title}"`,
+      content: `Title: "${title}"\nCategory: ${category}\nWrite 4 paragraphs maximum.`,
     },
   ]);
 
   const content = response.choices[0].message.content;
-  if (!content || content.length < 200) {
+  if (!content || content.length < 100) {
     throw new Error('Generated content is too short or empty');
   }
   return content;
