@@ -4,7 +4,7 @@ import { categories, getTrendingPosts, getFeaturedPosts, getShortReads, getRecen
 import PostBadge from "@/app/components/PostBadge";
 import SurprisinglyTrueSection from "@/app/components/SurprisinglyTrueSection";
 import SiteStats from "@/app/components/SiteStats";
-import HeroImageRotator from "@/app/components/HeroImageRotator";
+import HomeHeroSection from "@/app/components/HomeHeroSection";
 import HomeNewsletterCTA from "@/app/components/HomeNewsletterCTA";
 import { BannerAd } from "@/app/components/AdSense";
 
@@ -27,44 +27,7 @@ export default function Home() {
       {/* Affichage de la bannière AdSense en haut de la page d'accueil */}
       <BannerAd />
       <main>
-        {/* Hero Section with Animated Background */}
-        <section className="relative overflow-hidden">
-          {/* Animated Background Image */}
-          <div className="absolute inset-0 z-0">
-            <div className="absolute inset-0 bg-gradient-to-b from-purple-900/40 via-blue-900/30 to-black/60 z-10"></div>
-            <HeroImageRotator />
-            {/* Floating Particles Effect */}
-            <div className="absolute inset-0 z-20 overflow-hidden">
-              <div className="particle particle-1"></div>
-              <div className="particle particle-2"></div>
-              <div className="particle particle-3"></div>
-              <div className="particle particle-4"></div>
-              <div className="particle particle-5"></div>
-            </div>
-          </div>
-
-          {/* Hero Content */}
-          <div className="container mx-auto px-4 py-20 md:py-32 text-left sm:text-center relative z-30">
-            <h1 className="text-4xl sm:text-5xl md:text-7xl font-bold text-white mb-4 md:mb-6 animate-fade-in-up drop-shadow-2xl leading-tight">
-              Short Facts. <br />
-              <span className="bg-gradient-to-r from-yellow-300 via-pink-400 to-purple-400 bg-clip-text text-transparent animate-gradient-shift">
-                Big Curiosity.
-              </span>
-            </h1>
-            <p className="text-base md:text-xl text-gray-200 max-w-none sm:max-w-2xl sm:mx-auto mb-6 md:mb-8 animate-fade-in-up animation-delay-200 drop-shadow-lg px-0 sm:px-4">
-              Discover fascinating facts that will change how you see the world. 
-              One curiosity at a time.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-start sm:justify-center animate-fade-in-up animation-delay-400 px-0 sm:px-4">
-              <Link href="/trending" className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-6 md:px-8 py-2.5 md:py-3 rounded-full font-semibold transition transform hover:scale-105 shadow-lg hover:shadow-purple-500/50 text-sm md:text-base">
-                Explore Now ✨
-              </Link>
-              <Link href="/about" className="bg-white/10 backdrop-blur-md border-2 border-white/30 hover:border-white/60 hover:bg-white/20 text-white px-6 md:px-8 py-2.5 md:py-3 rounded-full font-semibold transition transform hover:scale-105 shadow-lg text-sm md:text-base">
-                Learn More
-              </Link>
-            </div>
-          </div>
-        </section>
+        <HomeHeroSection />
 
         {/* Site Stats */}
         <section className="container mx-auto px-4 py-8">
