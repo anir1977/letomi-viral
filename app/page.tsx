@@ -76,12 +76,12 @@ export default function Home() {
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-6 md:mb-8 text-center">
             Explore Categories
           </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {categories.map((category) => (
               <Link
                 key={category.slug}
                 href={`/category/${category.slug}`}
-                className={`${category.color} rounded-xl md:rounded-2xl p-5 md:p-6 transition transform hover:scale-105`}
+                className="group bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl md:rounded-2xl p-5 md:p-6 shadow-sm hover:shadow-lg transition transform hover:scale-[1.02] h-full flex flex-col"
               >
                 <div className="mb-2 md:mb-3">
                   {category.image ? (
@@ -90,7 +90,7 @@ export default function Home() {
                       alt={category.imageAlt || category.name}
                       width={56}
                       height={56}
-                      className="rounded-full object-cover shadow-sm"
+                      className="rounded-full object-cover shadow-sm ring-2 ring-white/80 dark:ring-gray-900/60"
                     />
                   ) : (
                     <div className="w-14 h-14 rounded-full bg-white/70 flex items-center justify-center text-lg font-semibold text-gray-700">
@@ -98,6 +98,10 @@ export default function Home() {
                     </div>
                   )}
                 </div>
+                <span className="inline-flex items-center gap-2 text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1.5">
+                  <span className={`inline-block h-2.5 w-2.5 rounded-full ${category.color}`} aria-hidden="true" />
+                  Category
+                </span>
                 <h3 className="text-lg md:text-xl font-semibold text-gray-900 dark:text-white mb-1.5 md:mb-2">
                   {category.name}
                 </h3>
