@@ -70,11 +70,6 @@ export default function RootLayout({
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9750203778031302"
           crossOrigin="anonymous"
         />
-        {/* Balise canonique Next.js */}
-        <link
-          rel="canonical"
-          href={typeof window !== "undefined" ? window.location.origin + window.location.pathname : SITE_URL}
-        />
       </head>
       <body className={`${manrope.variable} ${fraunces.variable} antialiased`}>
         <ReadingProgress />

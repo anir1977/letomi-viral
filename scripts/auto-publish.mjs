@@ -110,7 +110,7 @@ Artificial intelligence isn't coming - it's already here, woven into the fabric 
 
 That smartphone alarm that wakes you up? It's powered by machine learning algorithms that track your sleep patterns, optimize wake times, and even adjust based on your calendar. But that's just the beginning. As you scroll through your morning news feed, sophisticated AI curates every article, video, and advertisement you see - not randomly, but based on thousands of data points about your interests, behavior, and engagement patterns.
 
-Your phone's keyboard predicts your next word with uncanny accuracy because it's learned from millions of your previous messages. autocorrectThe photo enhancement that makes your morning selfie pop? That's computational photography powered by neural networks trained on billions of images.
+Your phone's keyboard predicts your next word with uncanny accuracy because it's learned from millions of your previous messages. Autocorrect makes this possible. The photo enhancement that makes your morning selfie pop? That's computational photography powered by neural networks trained on billions of images.
 
 ## Commute: Navigation Systems That Think Ahead
 
@@ -134,7 +134,7 @@ AI systems analyze your fitness tracker data to provide personalized health reco
 
 Your evening entertainment is entirely AI-curated. Streaming services don't just recommend shows you might like - they use sophisticated algorithms analyzing viewing habits of millions to predict with remarkable accuracy what will keep you engaged. The thumbnails you see are even personalized - different users see different images for the same show based on what's most likely to appeal to them.
 
-Music streaming services create personalized playlists by analyzing not just what you've listened to, but the時間 of day, your mood indicators, and even what similar listeners enjoy. The algorithm knows whether you want energizing workout music or relaxing evening jazz before you do.
+Music streaming services create personalized playlists by analyzing not just what you've listened to, but the time of day, your mood indicators, and even what similar listeners enjoy. The algorithm knows whether you want energizing workout music or relaxing evening jazz before you do.
 
 ## Shopping: The Persuasion Engine
 
