@@ -8,7 +8,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "publish:auto": "node scripts/auto-publish.mjs"
+    "publish:auto": "node scripts/auto-publish.mjs",
+    "social": "node scripts/auto-social.mjs",
+    "ping": "node scripts/ping-search-engines.mjs",
+    "promote": "node scripts/generate-promotion.mjs"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
