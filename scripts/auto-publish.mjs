@@ -96,6 +96,22 @@ function ensureUniqueSlug(baseSlug, existingSlugs) {
   return `${baseSlug}-${counter}`;
 }
 
+function mapTopicToCategory(topicCategory) {
+  const normalized = String(topicCategory || '').toLowerCase().trim();
+
+  const mapping = {
+    history: 'Science',
+    psychology: 'Human Behavior',
+    'human-behavior': 'Human Behavior',
+    technology: 'Technology',
+    health: 'Health',
+    space: 'Space',
+    nature: 'Nature',
+  };
+
+  return mapping[normalized] || 'Science';
+}
+
 function calculateReadingTime(content) {
   const wordsPerMinute = 200;
   const wordCount = content.split(/\s+/).length;
@@ -567,7 +583,7 @@ async function main() {
       id: randomUUID(),
       title,
       slug,
-      category: topic.category,
+      category: mapTopicToCategory(topic.category),
       description,
       keywords,
       author: CONFIG.AUTHOR_NAME,
