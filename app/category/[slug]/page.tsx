@@ -69,7 +69,9 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
 
 export default function CategoryPage({ params }: CategoryPageProps) {
   const category = getCategoryBySlug(params.slug);
-  const posts = getPostsByCategory(params.slug);
+  const posts = Array.from(
+    new Map(getPostsByCategory(params.slug).map((post) => [post.slug, post])).values()
+  );
 
   if (!category) {
     notFound();

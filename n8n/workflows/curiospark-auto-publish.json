@@ -1,0 +1,130 @@
+{
+  "name": "CurioSpark - Auto Publish Daily",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8 * * *"
+            }
+          ]
+        }
+      },
+      "id": "cron_daily",
+      "name": "Daily 08:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        220,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "command": "set -e; PROJECT_DIR=\"\"; for d in \"$N8N_PROJECT_DIR\" \"/workspaces/letomi-viral\" \"/root/letomi-viral\" \"/home/node/letomi-viral\" \"/opt/letomi-viral\"; do if [ -n \"$d\" ] && [ -f \"$d/package.json\" ]; then PROJECT_DIR=\"$d\"; break; fi; done; if [ -z \"$PROJECT_DIR\" ]; then echo \"Project directory not found. Set N8N_PROJECT_DIR env var (example: /root/letomi-viral).\"; exit 1; fi; cd \"$PROJECT_DIR\"; npm run publish:auto"
+      },
+      "id": "publish_auto",
+      "name": "Run publish:auto",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        500,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "command": "set -e; PROJECT_DIR=\"\"; for d in \"$N8N_PROJECT_DIR\" \"/workspaces/letomi-viral\" \"/root/letomi-viral\" \"/home/node/letomi-viral\" \"/opt/letomi-viral\"; do if [ -n \"$d\" ] && [ -f \"$d/package.json\" ]; then PROJECT_DIR=\"$d\"; break; fi; done; if [ -z \"$PROJECT_DIR\" ]; then echo \"Project directory not found. Set N8N_PROJECT_DIR env var (example: /root/letomi-viral).\"; exit 1; fi; cd \"$PROJECT_DIR\"; npm run seo:check"
+      },
+      "id": "seo_check",
+      "name": "Run seo:check",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        790,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "command": "set -e; PROJECT_DIR=\"\"; for d in \"$N8N_PROJECT_DIR\" \"/workspaces/letomi-viral\" \"/root/letomi-viral\" \"/home/node/letomi-viral\" \"/opt/letomi-viral\"; do if [ -n \"$d\" ] && [ -f \"$d/package.json\" ]; then PROJECT_DIR=\"$d\"; break; fi; done; if [ -z \"$PROJECT_DIR\" ]; then echo \"Project directory not found. Set N8N_PROJECT_DIR env var (example: /root/letomi-viral).\"; exit 1; fi; cd \"$PROJECT_DIR\"; npm run ping"
+      },
+      "id": "ping_search",
+      "name": "Run ping",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1080,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "return [{ json: { status: 'success', message: 'CurioSpark pipeline finished successfully', timestamp: new Date().toISOString() } }];"
+      },
+      "id": "success_summary",
+      "name": "Success Summary",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1370,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Daily 08:00": {
+      "main": [
+        [
+          {
+            "node": "Run publish:auto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run publish:auto": {
+      "main": [
+        [
+          {
+            "node": "Run seo:check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run seo:check": {
+      "main": [
+        [
+          {
+            "node": "Run ping",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run ping": {
+      "main": [
+        [
+          {
+            "node": "Success Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {},
+  "versionId": "curiospark-auto-publish-v1"
+}

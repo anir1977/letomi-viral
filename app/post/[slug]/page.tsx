@@ -36,9 +36,10 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
     ? `${post.title} | ${brandSuffix}`
     : `${post.title} 🤯 | ${brandSuffix}`;
 
+  const summary = post.description || post.excerpt;
   const baseDescription = post.didYouKnow
-    ? `${post.didYouKnow} ${post.excerpt} Click to discover the full fascinating truth!`
-    : `${post.excerpt} You won't believe what science has discovered!`;
+    ? `${post.didYouKnow} ${summary} Click to discover the full fascinating truth!`
+    : `${summary} You won't believe what science has discovered!`;
   const viralDescription = isTechnology
     ? `Technology insight: ${baseDescription}`
     : baseDescription;
@@ -46,9 +47,12 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
   const publishedTime = new Date(post.date).toISOString();
   const modifiedTime = new Date(post.lastUpdated || post.date).toISOString();
   const ogImage = toAbsoluteUrl(post.image || "/og-default.svg");
-  const keywords = isTechnology
-    ? ["technology", "AI", "innovation", "future tech", "tech trends", post.title]
-    : undefined;
+  const keywords = post.keywords && post.keywords.length > 0
+    ? post.keywords
+    : isTechnology
+      ? ["technology", "AI", "innovation", "future tech", "tech trends", post.title]
+      : undefined;
+  const authorName = post.author || "CurioSpark Editorial Team";
 
   return {
     title: viralTitle,
@@ -59,24 +63,24 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
     },
     authors: [
       {
-        name: "CurioSpark Editorial Team",
+        name: authorName,
         url: `${SITE_URL}/author/editorial-team`,
       },
     ],
     openGraph: {
       title: viralTitle,
-      description: post.excerpt,
+      description: summary,
       url: postUrl,
       images: [ogImage],
       type: "article",
       publishedTime,
       modifiedTime,
-      authors: ["CurioSpark Editorial Team"],
+      authors: [authorName],
     },
     twitter: {
       card: "summary_large_image",
       title: viralTitle,
-      description: post.excerpt,
+      description: summary,
       images: [ogImage],
     },
   };

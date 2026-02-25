@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 };
 
 export default function TrendingPage() {
-  const posts = getAllPosts();
+  const posts = Array.from(new Map(getAllPosts().map((post) => [post.slug, post])).values());
   
   // Sort by views (descending)
   const trendingPosts = [...posts].sort((a, b) => {

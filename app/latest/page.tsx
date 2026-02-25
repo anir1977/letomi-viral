@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 };
 
 export default function LatestPage() {
-  const posts = getAllPosts();
+  const posts = Array.from(new Map(getAllPosts().map((post) => [post.slug, post])).values());
   
   // Sort by date (newest first)
   const latestPosts = [...posts].sort((a, b) => 

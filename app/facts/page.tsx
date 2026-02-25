@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 };
 
 export default function FactsPage() {
-  const posts = getAllPosts();
+  const posts = Array.from(new Map(getAllPosts().map((post) => [post.slug, post])).values());
 
   const breadcrumbItems = [
     { label: 'Home', href: '/' },

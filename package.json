@@ -11,7 +11,10 @@
     "publish:auto": "node scripts/auto-publish.mjs",
     "social": "node scripts/auto-social.mjs",
     "ping": "node scripts/ping-search-engines.mjs",
-    "promote": "node scripts/generate-promotion.mjs"
+    "promote": "node scripts/generate-promotion.mjs",
+    "seo:check": "node scripts/check-indexation-redirects.mjs",
+    "posts:dedupe": "node scripts/cleanup-duplicate-posts.mjs",
+    "n8n:deploy": "node scripts/n8n-deploy-workflow.mjs"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",

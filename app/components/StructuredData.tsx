@@ -43,13 +43,13 @@ export default function StructuredData({ post, category, basePath, isHomePage }:
     "@context": "https://schema.org",
     "@type": "BlogPosting",
     headline: post.title,
-    description: post.excerpt,
+    description: post.description || post.excerpt,
     image: [absoluteImage],
     datePublished: post.date,
     dateModified: post.lastUpdated || post.date,
     author: {
       "@type": "Organization",
-      name: "CurioSpark Editorial Team",
+      name: post.author || "CurioSpark Editorial Team",
       url: `${SITE_URL}/author/editorial-team`
     },
     publisher: {

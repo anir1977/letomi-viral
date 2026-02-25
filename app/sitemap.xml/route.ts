@@ -1,4 +1,4 @@
-import { categories, posts } from "@/lib/posts";
+import { categories, getAllPosts } from "@/lib/posts";
 import { SITE_URL } from "@/lib/site";
 
 const baseUrl = SITE_URL;
@@ -27,6 +27,7 @@ function toIsoDate(value?: string) {
 
 export async function GET() {
   const lastmod = new Date().toISOString();
+  const posts = getAllPosts();
 
   const staticPaths = [
     "/",
