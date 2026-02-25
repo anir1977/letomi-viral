@@ -137,15 +137,19 @@ const categoryDefinitions = [
 
 ];
 
-export const categories: Category[] = categoryDefinitions.map(({ name, slug }) => ({
-  name,
-  slug,
-  image: categoryMeta[name]?.image,
-  imageAlt: categoryMeta[name]?.imageAlt ?? `${name} category`,
-  icon: categoryMeta[name]?.icon,
-  description: categoryMeta[name]?.description ?? "Curated insights and curious discoveries",
-  color: categoryMeta[name]?.color ?? "bg-slate-200 hover:bg-slate-300 dark:bg-slate-900/30 dark:hover:bg-slate-900/50",
-}));
+export const categories: Category[] = categoryDefinitions.map(({ name, slug }) => {
+  const categoryKey = name ?? slug;
+
+  return {
+    name: categoryKey,
+    slug,
+    image: categoryMeta[categoryKey]?.image,
+    imageAlt: categoryMeta[categoryKey]?.imageAlt ?? `${categoryKey} category`,
+    icon: categoryMeta[categoryKey]?.icon,
+    description: categoryMeta[categoryKey]?.description ?? "Curated insights and curious discoveries",
+    color: categoryMeta[categoryKey]?.color ?? "bg-slate-200 hover:bg-slate-300 dark:bg-slate-900/30 dark:hover:bg-slate-900/50",
+  };
+});
 
 
 
