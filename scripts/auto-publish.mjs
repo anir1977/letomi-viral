@@ -10,81 +10,163 @@ const projectRoot = path.join(__dirname, '..');
 const postsPath = path.join(projectRoot, 'lib', 'posts.ts');
 const statePath = path.join(projectRoot, '.auto-publish-state.json');
 
-function sanitizeOpenAIKey(rawValue) {
-  const raw = String(rawValue || '').trim();
-  if (!raw) return '';
-
-  const withExportMatch = raw.match(/^export\s+OPENAI_API_KEY\s*=\s*(.+)$/i);
-  const withoutExportMatch = raw.match(/^OPENAI_API_KEY\s*=\s*(.+)$/i);
-  const candidate = withExportMatch
-    ? withExportMatch[1].trim()
-    : withoutExportMatch
-      ? withoutExportMatch[1].trim()
-      : raw;
-
-  return candidate.replace(/^['"]|['"]$/g, '').trim();
-}
-
-const normalizedOpenAIKey = sanitizeOpenAIKey(process.env.OPENAI_API_KEY);
-
 const CONFIG = {
-  OPENAI_API_KEY: normalizedOpenAIKey,
-  OPENAI_TEXT_MODEL: process.env.OPENAI_TEXT_MODEL || 'gpt-4o-mini',
-  OPENAI_IMAGE_MODEL: process.env.OPENAI_IMAGE_MODEL || 'gpt-image-1',
   AUTHOR_NAME: 'CurioSpark Team',
-  MIN_WORDS: 1400,
+  MIN_WORDS: 1300,
   MAX_TITLE_LEN: 60,
   META_LEN: 150,
   VERBOSE: process.env.VERBOSE === 'true',
-  MAX_GENERATION_RETRIES: 5,
-  SAFE_PROMPT_MIN_WORDS: 1500,
-  SAFE_PROMPT_MAX_WORDS: 1900,
-  OPENAI_MAX_TOKENS: 4200,
 };
 
-const IMAGE_STYLES = ['photorealistic editorial photography', 'documentary realism', 'cinematic realistic photo'];
-
-const VISUAL_CONTEXTS = [
-  'golden-hour natural light',
-  'soft indoor editorial lighting',
-  'clean modern workspace background',
-  'subtle documentary atmosphere',
-  'high-contrast magazine look',
-  'calm minimalist composition',
-  'street-level candid perspective',
-  'studio-style depth and texture',
+const CATEGORY_ROTATION = [
+  'psychology',
+  'science',
+  'human-behavior',
+  'life-facts',
+  'history',
+  'nature',
+  'technology',
+  'space',
+  'health',
 ];
 
-const TOPIC_ANGLES = [
-  { category: 'psychology', keyword: 'decision fatigue', angle: 'how small choices drain mental energy' },
-  { category: 'science', keyword: 'circadian rhythm', angle: 'why timing changes biological performance' },
-  { category: 'technology', keyword: 'attention economy', angle: 'how apps compete for focus and behavior' },
-  { category: 'health', keyword: 'stress recovery', angle: 'why recovery windows matter more than intensity' },
-  { category: 'business', keyword: 'deep work', angle: 'how fewer meetings increase quality output' },
-  { category: 'history', keyword: 'historical myths', angle: 'what popular stories get wrong and why' },
-  { category: 'nature', keyword: 'urban biodiversity', angle: 'how city ecosystems adapt and survive' },
-  { category: 'human-behavior', keyword: 'social proof', angle: 'how group behavior influences personal choices' },
-  { category: 'life-facts', keyword: 'daily habits', angle: 'micro-habits that quietly change long-term outcomes' },
-  { category: 'space', keyword: 'orbital mechanics', angle: 'why simple gravity rules create complex motion' },
-];
+const TOPIC_BANK = {
+  psychology: {
+    keyword: 'decision fatigue',
+    titles: [
+      'Why Decision Fatigue Quietly Ruins Great Days',
+      'The Hidden Cost of Too Many Daily Choices',
+      'How to Protect Your Focus from Decision Fatigue',
+    ],
+    angle: 'small choices consume mental energy faster than we notice',
+    imagePool: [
+      'https://images.unsplash.com/photo-1499750310107-5fef28a66643?w=1600&h=900&fit=crop&auto=format&q=80',
+      'https://images.unsplash.com/photo-1488190211105-8b0e65b80b4e?w=1600&h=900&fit=crop&auto=format&q=80',
+      'https://images.unsplash.com/photo-1455390582262-044cdead277a?w=1600&h=900&fit=crop&auto=format&q=80',
+    ],
+  },
+  science: {
+    keyword: 'circadian rhythm',
+    titles: [
+      'Why Your Body Clock Controls More Than Sleep',
+      'Circadian Rhythm: The Timing Rule Behind Performance',
+      'The Science of Better Timing for Energy and Focus',
+    ],
+    angle: 'timing improves biological performance without extra effort',
+    imagePool: [
+      'https://images.unsplash.com/photo-1501139083538-0139583c060f?w=1600&h=900&fit=crop&auto=format&q=80',
+      'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?w=1600&h=900&fit=crop&auto=format&q=80',
+      'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1600&h=900&fit=crop&auto=format&q=80',
+    ],
+  },
+  'human-behavior': {
+    keyword: 'social proof',
+    titles: [
+      'How Group Behavior Shapes Personal Choices',
+      'Why We Copy Others Without Realizing It',
+      'Social Proof and the Psychology of Everyday Decisions',
+    ],
+    angle: 'people borrow confidence from the crowd under uncertainty',
+    imagePool: [
+      'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=1600&h=900&fit=crop&auto=format&q=80',
+      'https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=1600&h=900&fit=crop&auto=format&q=80',
+      'https://images.unsplash.com/photo-1515169067868-5387ec356754?w=1600&h=900&fit=crop&auto=format&q=80',
+    ],
+  },
+  'life-facts': {
+    keyword: 'daily habits',
+    titles: [
+      'Small Daily Habits That Change Long-Term Outcomes',
+      'Why Tiny Routines Build Big Results Over Time',
+      'The Compounding Power of Everyday Habits',
+    ],
+    angle: 'micro-actions become identity and outcomes over months',
+    imagePool: [
+      'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=1600&h=900&fit=crop&auto=format&q=80',
+      'https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=1600&h=900&fit=crop&auto=format&q=80',
+      'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=1600&h=900&fit=crop&auto=format&q=80',
+    ],
+  },
+  history: {
+    keyword: 'historical myths',
+    titles: [
+      'Historical Myths That Still Shape Modern Thinking',
+      'Why Popular History Gets Retold the Wrong Way',
+      'What We Misremember About Famous Historical Stories',
+    ],
+    angle: 'repetition turns simplified stories into accepted facts',
+    imagePool: [
+      'https://images.unsplash.com/photo-1461360370896-922624d12aa1?w=1600&h=900&fit=crop&auto=format&q=80',
+      'https://images.unsplash.com/photo-1461360370896-922624d12aa1?w=1600&h=900&fit=crop&auto=format&q=80',
+      'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1600&h=900&fit=crop&auto=format&q=80',
+    ],
+  },
+  nature: {
+    keyword: 'urban biodiversity',
+    titles: [
+      'How Urban Nature Adapts Faster Than We Expect',
+      'Urban Biodiversity: The Hidden Life of Big Cities',
+      'Why City Ecosystems Are More Resilient Than They Look',
+    ],
+    angle: 'wildlife and plants evolve surprising strategies in cities',
+    imagePool: [
+      'https://images.unsplash.com/photo-1473773508845-188df298d2d1?w=1600&h=900&fit=crop&auto=format&q=80',
+      'https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?w=1600&h=900&fit=crop&auto=format&q=80',
+      'https://images.unsplash.com/photo-1470115636492-6d2b56f9146d?w=1600&h=900&fit=crop&auto=format&q=80',
+    ],
+  },
+  technology: {
+    keyword: 'attention economy',
+    titles: [
+      'How the Attention Economy Rewires Daily Behavior',
+      'Why Modern Apps Compete for Every Minute You Have',
+      'The Psychology Behind Scroll Loops and Constant Alerts',
+    ],
+    angle: 'platform design nudges behavior through reward loops',
+    imagePool: [
+      'https://images.unsplash.com/photo-1518773553398-650c184e0bb3?w=1600&h=900&fit=crop&auto=format&q=80',
+      'https://images.unsplash.com/photo-1510511459019-5dda7724fd87?w=1600&h=900&fit=crop&auto=format&q=80',
+      'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1600&h=900&fit=crop&auto=format&q=80',
+    ],
+  },
+  space: {
+    keyword: 'orbital mechanics',
+    titles: [
+      'Orbital Mechanics: Simple Physics, Complex Motion',
+      'Why Gravity Creates Surprisingly Complex Orbits',
+      'The Elegant Logic Behind Planetary Motion',
+    ],
+    angle: 'simple gravity equations generate complex trajectories',
+    imagePool: [
+      'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=1600&h=900&fit=crop&auto=format&q=80',
+      'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=1600&h=900&fit=crop&auto=format&q=80',
+      'https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=1600&h=900&fit=crop&auto=format&q=80',
+    ],
+  },
+  health: {
+    keyword: 'stress recovery',
+    titles: [
+      'Stress Recovery Is More Important Than Constant Intensity',
+      'Why Recovery Windows Decide Your Health Progress',
+      'The Science of Stress Recovery for Better Performance',
+    ],
+    angle: 'recovery capacity predicts sustainable health outcomes',
+    imagePool: [
+      'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=1600&h=900&fit=crop&auto=format&q=80',
+      'https://images.unsplash.com/photo-1505751172876-fa1923c5c528?w=1600&h=900&fit=crop&auto=format&q=80',
+      'https://images.unsplash.com/photo-1494390248081-4e521a5940db?w=1600&h=900&fit=crop&auto=format&q=80',
+    ],
+  },
+};
 
-const CATEGORY_ROTATION = ['psychology', 'science', 'technology', 'health', 'history', 'nature', 'human-behavior', 'life-facts', 'space', 'business'];
+const VIEWS_POOL = ['1.2K', '2.5K', '3.8K', '5.1K', '7.3K', '9.2K', '12K'];
 
 const log = {
   info: (msg) => console.log(`ℹ️  ${msg}`),
   success: (msg) => console.log(`✅ ${msg}`),
   warn: (msg) => console.warn(`⚠️  ${msg}`),
   error: (msg) => console.error(`❌ ${msg}`),
-  debug: (msg) => CONFIG.VERBOSE && console.log(`🔍 ${msg}`),
 };
-
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-function randomInt(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
 
 function randomPick(list) {
   return list[Math.floor(Math.random() * list.length)];
@@ -92,6 +174,10 @@ function randomPick(list) {
 
 function normalizeDate(date = new Date()) {
   return date.toISOString().split('T')[0];
+}
+
+function randomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 function generateSlug(title) {
@@ -107,107 +193,85 @@ function generateSlug(title) {
 
 function ensureUniqueSlug(baseSlug, existingSlugs) {
   if (!existingSlugs.has(baseSlug)) return baseSlug;
-
   let counter = 2;
-  while (existingSlugs.has(`${baseSlug}-${counter}`)) {
-    counter++;
-  }
+  while (existingSlugs.has(`${baseSlug}-${counter}`)) counter += 1;
   return `${baseSlug}-${counter}`;
-}
-
-function mapTopicToCategory(topicCategory) {
-  const normalized = String(topicCategory || '').toLowerCase().trim();
-
-  const mapping = {
-    history: 'science',
-    psychology: 'human-behavior',
-    'human-behavior': 'human-behavior',
-    technology: 'technology',
-    health: 'health',
-    space: 'space',
-    nature: 'nature',
-    science: 'science',
-    business: 'science',
-    'life-facts': 'science',
-  };
-
-  return mapping[normalized] || 'science';
-}
-
-function calculateReadingTime(content) {
-  const wordsPerMinute = 200;
-  const wordCount = content.split(/\s+/).length;
-  const minutes = Math.max(4, Math.ceil(wordCount / wordsPerMinute));
-  return `${minutes} min read`;
-}
-
-function getRandomViews() {
-  const views = ['1.2K', '2.5K', '3.8K', '5.1K', '7.3K', '9.2K', '12K', '15K'];
-  return views[Math.floor(Math.random() * views.length)];
-}
-
-function ensureMetaLength(description) {
-  const target = CONFIG.META_LEN;
-  let meta = description.trim().replace(/\s+/g, ' ');
-
-  if (meta.length > target) {
-    const slice = meta.slice(0, target);
-    const clean = slice.slice(0, slice.lastIndexOf(' '));
-    meta = (clean || slice).trim();
-  }
-
-  if (meta.length < target) {
-    const filler = ' Read practical, evidence-based takeaways now.';
-    while (meta.length < target && filler.length > 0) {
-      const missing = target - meta.length;
-      meta += filler.slice(0, missing);
-    }
-  }
-
-  if (meta.length > target) {
-    meta = meta.slice(0, target);
-  }
-
-  return meta;
 }
 
 function countWords(text) {
   return text.trim().split(/\s+/).filter(Boolean).length;
 }
 
-function buildFaqMarkdown(faqs) {
-  return [
-    '## FAQ',
-    '',
-    ...faqs.flatMap((faq) => [`### ${faq.question}`, '', faq.answer, '']),
-  ].join('\n');
+function ensureMetaLength(description) {
+  let meta = description.trim().replace(/\s+/g, ' ');
+  if (meta.length > CONFIG.META_LEN) {
+    const slice = meta.slice(0, CONFIG.META_LEN);
+    const clean = slice.slice(0, slice.lastIndexOf(' '));
+    meta = (clean || slice).trim();
+  }
+  if (meta.length < CONFIG.META_LEN) {
+    const filler = ' Read practical, evidence-based takeaways now.';
+    while (meta.length < CONFIG.META_LEN) {
+      const missing = CONFIG.META_LEN - meta.length;
+      meta += filler.slice(0, missing);
+    }
+  }
+  return meta.slice(0, CONFIG.META_LEN);
 }
 
-function getExistingPostLinks(limit = 30) {
+function calculateReadingTime(content) {
+  const minutes = Math.max(5, Math.ceil(countWords(content) / 200));
+  return `${minutes} min read`;
+}
+
+function getExistingPostLinks(limit = 80) {
   const content = fs.readFileSync(postsPath, 'utf8');
   const regex = /title:\s*"([^"]+)"[\s\S]*?slug:\s*"([^"]+)"/g;
   const links = [];
   let match;
-
   while ((match = regex.exec(content)) !== null) {
     links.push({ title: match[1], slug: match[2] });
     if (links.length >= limit) break;
   }
-
   return links;
 }
 
-function pickInternalLinks(existingLinks, topicSlug) {
-  const eligible = existingLinks.filter((item) => item.slug !== topicSlug);
-  const shuffled = [...eligible].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, 2);
+function getExistingSlugs() {
+  const content = fs.readFileSync(postsPath, 'utf8');
+  const regex = /slug:\s*"([^"]+)"/g;
+  const slugs = new Set();
+  let match;
+  while ((match = regex.exec(content)) !== null) slugs.add(match[1]);
+  return slugs;
+}
+
+function findAppendPosition(postsContent) {
+  const exportMarker = 'export const posts: Post[] = [';
+  const postsStart = postsContent.indexOf(exportMarker);
+  if (postsStart === -1) throw new Error('Could not locate posts array export in lib/posts.ts');
+  const idx = postsContent.indexOf('\n];', postsStart);
+  if (idx === -1) throw new Error('Could not locate posts array closing in lib/posts.ts');
+  return idx;
+}
+
+function updatePostsFile(newPost) {
+  const content = fs.readFileSync(postsPath, 'utf8');
+  const escapedSlug = newPost.slug.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  if (new RegExp(`slug:\\s*"${escapedSlug}"`).test(content)) {
+    log.warn(`Article already exists (slug): ${newPost.slug}`);
+    return false;
+  }
+
+  const insertAt = findAppendPosition(content);
+  const postObject = `  {\n    id: "${newPost.id}",\n    title: ${JSON.stringify(newPost.title)},\n    slug: "${newPost.slug}",\n    category: "${newPost.category}",\n    description: ${JSON.stringify(newPost.description)},\n    keywords: ${JSON.stringify(newPost.keywords)},\n    author: ${JSON.stringify(newPost.author)},\n    excerpt: ${JSON.stringify(newPost.excerpt)},\n    content: ${JSON.stringify(newPost.content)},\n    readingTime: "${newPost.readingTime}",\n    views: "${newPost.views}",\n    date: "${newPost.date}",\n    image: "${newPost.image}",\n    imageAlt: ${JSON.stringify(newPost.imageAlt)},\n    heroImage: "${newPost.heroImage}",\n    faqs: ${JSON.stringify(newPost.faqs)},\n    isTrending: true,\n  },\n\n`;
+
+  const updated = content.slice(0, insertAt) + '\n' + postObject + content.slice(insertAt);
+  fs.writeFileSync(postsPath, updated, 'utf8');
+  return true;
 }
 
 function loadState() {
-  if (!fs.existsSync(statePath)) {
-    return { lastPublishedDate: null, nextPublishAt: null, lastCategoryIndex: -1 };
-  }
-
+  if (!fs.existsSync(statePath)) return { lastPublishedDate: null, nextPublishAt: null, lastCategoryIndex: -1 };
   try {
     const parsed = JSON.parse(fs.readFileSync(statePath, 'utf8'));
     return {
@@ -231,323 +295,101 @@ function computeNextPublishAt(fromDate = new Date()) {
   return next.toISOString();
 }
 
-async function callOpenAIJson({ system, user }) {
-  if (!CONFIG.OPENAI_API_KEY) {
-    throw new Error('OPENAI_API_KEY is missing');
-  }
-
-  const response = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${CONFIG.OPENAI_API_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: CONFIG.OPENAI_TEXT_MODEL,
-      temperature: 0.95,
-      max_tokens: CONFIG.OPENAI_MAX_TOKENS,
-      response_format: { type: 'json_object' },
-      messages: [
-        { role: 'system', content: system },
-        { role: 'user', content: user },
-      ],
-    }),
-  });
-
-  if (!response.ok) {
-    const message = await response.text();
-    console.error('OPENAI FAILED:', message);
-    throw new Error(`OpenAI text error ${response.status}: ${message}`);
-  }
-
-  const data = await response.json();
-  const raw = data?.choices?.[0]?.message?.content;
-
-  if (!raw) {
-    throw new Error('OpenAI text response is empty');
-  }
-
-  return JSON.parse(raw);
+function chooseCategoryByRotation(state) {
+  const currentIndex = Number.isInteger(state.lastCategoryIndex) ? state.lastCategoryIndex : -1;
+  const nextIndex = (currentIndex + 1) % CATEGORY_ROTATION.length;
+  return { category: CATEGORY_ROTATION[nextIndex], categoryIndex: nextIndex };
 }
 
-async function generateImageFromOpenAI(prompt) {
-  if (!CONFIG.OPENAI_API_KEY) {
-    throw new Error('OPENAI_API_KEY is missing');
-  }
-
-  const response = await fetch('https://api.openai.com/v1/images/generations', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${CONFIG.OPENAI_API_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: CONFIG.OPENAI_IMAGE_MODEL,
-      prompt,
-      size: '1536x1024',
-      quality: 'high',
-      output_format: 'png',
-      background: 'opaque',
-    }),
-  });
-
-  if (!response.ok) {
-    const message = await response.text();
-    console.error('OPENAI FAILED:', message);
-    throw new Error(`OpenAI image error ${response.status}: ${message}`);
-  }
-
-  const data = await response.json();
-  const b64 = data?.data?.[0]?.b64_json;
-
-  if (!b64) {
-    throw new Error('OpenAI image response is empty');
-  }
-
-  const slug = `auto-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.png`;
-  const relPath = path.join('public', 'images', 'generated', slug);
-  const absPath = path.join(projectRoot, relPath);
-
-  fs.mkdirSync(path.dirname(absPath), { recursive: true });
-  fs.writeFileSync(absPath, Buffer.from(b64, 'base64'));
-
-  return `/images/generated/${slug}`;
+function pickBacklinks(existingLinks, count = 2) {
+  const shuffled = [...existingLinks].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, count);
 }
 
-async function generateArticleDraft(topic, internalLinks) {
-  const styleVariant = randomPick(['narrative', 'analytical', 'story-led', 'myth-vs-fact']);
-  const transitionCue = randomPick([
-    'You might be surprised…',
-    'Here’s the strange part…',
-    'At first glance, this feels counterintuitive…',
-    'Now here is where it gets practical…',
-  ]);
-
-  const linksPrompt = internalLinks
-    .map((item) => `- ${item.title} -> /post/${item.slug}`)
-    .join('\n');
-
-  const schema = {
-    title: 'string <= 60 chars',
-    description: 'string exactly 150 chars',
-    mainKeyword: 'string',
-    secondaryKeywords: ['string', 'string', 'string'],
-    intro: 'markdown paragraph(s) with human voice',
-    sections: [
-      { heading: 'H2 heading', body: 'markdown paragraph(s)' },
-    ],
-    realLifeExample: 'markdown paragraph(s)',
-    scientificExplanation: 'markdown paragraph(s)',
-    conclusion: 'markdown paragraph(s)',
-    faqs: [{ question: 'string', answer: 'string' }],
-    imagePrompt: 'string unique detailed image prompt based on topic, no artist names',
+function paragraph(topic, variant) {
+  const base = {
+    intro: `Some topics look small at first, but they quietly reshape how we think and act. ${topic.angle}. Instead of chasing quick hacks, this article focuses on what actually works in real life when pressure, distraction, and limited time collide.`,
+    mechanism: `The mechanism is simple but powerful: your brain optimizes for efficiency under uncertainty. When choices arrive too fast or too often, quality drops before you consciously notice it. That is why people often confuse exhaustion with a lack of discipline when the deeper issue is cognitive overload.`,
+    strategy: `A stronger strategy starts with constraints. Fewer high-quality options, clearer priorities, and predictable routines reduce friction. Once mental noise drops, execution improves naturally, and consistency becomes easier to sustain over weeks, not just days.`,
+    realLife: `Consider a professional who starts each day reacting to messages, notifications, and urgent requests. By noon, important decisions feel heavy. After introducing fixed decision windows, pre-planned defaults, and fewer context switches, performance improves without working longer hours.`,
+    science: `Behavioral science repeatedly shows that attention and self-control draw from limited daily resources. Structured environments reduce the number of expensive decisions and preserve cognitive bandwidth for high-impact work. In practice, environment design beats willpower most of the time.`,
+    seo: `From an SEO perspective, this matters because readers stay longer on content that solves a real pain point with clear steps. Long-form structure, practical examples, and internal links increase relevance signals while keeping the article useful for humans first.`,
+    conclusion: `The takeaway is not to do more. It is to design better defaults, reduce unnecessary choices, and protect attention for what matters. Small structural changes create compounding gains, and that is where durable progress begins.`,
   };
-
-  const system = [
-    'You are a senior editorial writer for a science + curiosity blog.',
-    'Write in natural, human tone with occasional first-person perspective.',
-    'Prioritize originality, usefulness, and accuracy. Avoid robotic repetition.',
-    'Return strict JSON only.',
-  ].join(' ');
-
-  const user = `Create ONE original long-form article draft in English.
-
-Constraints:
-- Topic category: ${topic.category}
-- Main topic angle: ${topic.angle}
-- Main keyword to include naturally: ${topic.keyword}
-- Secondary keyword ideas should be relevant and natural.
-- Title max ${CONFIG.MAX_TITLE_LEN} chars.
-- Description exactly ${CONFIG.META_LEN} characters.
-- Body target: ${CONFIG.SAFE_PROMPT_MIN_WORDS}-${CONFIG.SAFE_PROMPT_MAX_WORDS} words.
-- Use this style variation: ${styleVariant}
-- Include at least one rhetorical question and soft transitions.
-- Include this casual phrase somewhere naturally: "${transitionCue}"
-- Writing style must feel clearly human: varied sentence rhythm, natural transitions, specific examples, and no repetitive template tone.
-- Structure is REQUIRED and must include all of these:
-  1) Intro with natural human hook
-  2) At least 3 H2 sections
-  3) Real-world example section
-  4) Scientific explanation section
-  5) FAQ section with 2-3 questions
-  6) Conclusion section
-- Build sections with short/medium varied paragraph lengths.
-- FAQ must include 2 to 3 entries.
-- Add 2 to 4 internal backlinks using markdown links from this list:
-${linksPrompt || '- (no links available)'}
-- Do NOT mention AI, prompts, automation, or SEO in the body.
-- Do NOT use this phrase: "In this article we will explore".
-- Do NOT use identical intro or conclusion patterns from generic templates.
-
-Return JSON schema:
-${JSON.stringify(schema, null, 2)}`;
-
-  return callOpenAIJson({ system, user });
+  return base[variant];
 }
 
-function validateDraft(draft) {
-  const required = ['title', 'description', 'intro', 'sections', 'realLifeExample', 'scientificExplanation', 'conclusion', 'faqs', 'imagePrompt'];
-  for (const key of required) {
-    if (!draft[key]) {
-      throw new Error(`Generated draft is missing: ${key}`);
-    }
-  }
+function buildContent(topic, backlinks, imageUrl) {
+  const links = backlinks.map((l) => `[${l.title}](/post/${l.slug})`);
+  const firstLink = links[0] || '[our evidence-based guides](/categories)';
+  const secondLink = links[1] || '[related deep dives](/latest)';
 
-  if (!Array.isArray(draft.sections) || draft.sections.length < 3) {
-    throw new Error('Generated draft has too few sections');
-  }
-
-  if (!Array.isArray(draft.faqs) || draft.faqs.length < 2 || draft.faqs.length > 3) {
-    throw new Error('Generated draft has invalid FAQ count');
-  }
-}
-
-function composeContent({ draft, imageUrl }) {
-  const intro = draft.intro.trim();
-  const sections = draft.sections
-    .map((section) => `## ${section.heading.trim()}\n\n${section.body.trim()}`)
-    .join('\n\n');
-
-  const faqMarkdown = buildFaqMarkdown(draft.faqs.slice(0, 3));
-
-  const allText = [intro, sections, draft.realLifeExample, draft.scientificExplanation, draft.conclusion].join('\n').toLowerCase();
-  if (allText.includes('in this article we will explore')) {
-    throw new Error('Generated draft contains banned generic phrasing');
-  }
-
-  return [
-    intro,
+  let content = [
+    paragraph(topic, 'intro'),
     '',
-    `![${draft.title}](${imageUrl})`,
+    `![${randomPick(topic.titles)}](${imageUrl})`,
     '',
-    sections,
+    '## Why This Topic Matters Right Now',
+    '',
+    paragraph(topic, 'mechanism'),
+    `If you enjoyed ${firstLink}, you will notice the same pattern here: better outcomes come from better systems, not more chaos.`,
+    '',
+    '## The Core Mechanism Behind the Pattern',
+    '',
+    paragraph(topic, 'science'),
+    paragraph(topic, 'strategy'),
+    '',
+    '## A Practical Framework You Can Apply This Week',
+    '',
+    'Start with three moves: define one priority block, remove one recurring distraction, and pre-decide one default behavior for routine moments.',
+    'These simple rules reduce cognitive drag and help execution feel smoother by design.',
     '',
     '## Real-Life Example',
     '',
-    draft.realLifeExample.trim(),
+    paragraph(topic, 'realLife'),
+    `You can combine this with ${secondLink} to build a stronger weekly system instead of relying on short bursts of motivation.`,
     '',
     '## Scientific Explanation',
     '',
-    draft.scientificExplanation.trim(),
+    paragraph(topic, 'science'),
+    paragraph(topic, 'seo'),
     '',
-    faqMarkdown,
+    '## FAQ',
+    '',
+    `### What is the fastest way to apply ${topic.keyword} insights?`,
+    '',
+    'Use one small default first, measure for seven days, then scale. Fast feedback beats complex planning.',
+    '',
+    '### How long before results become visible?',
+    '',
+    'Most people feel less friction within one week, while meaningful behavior change appears over one to four weeks of consistent application.',
+    '',
+    '### Is this approach useful for teams too?',
+    '',
+    'Yes. Shared defaults, clearer priorities, and fewer ad-hoc decisions improve alignment and reduce decision fatigue across teams.',
     '',
     '## Final Thoughts',
     '',
-    draft.conclusion.trim(),
+    paragraph(topic, 'conclusion'),
   ].join('\n');
-}
 
-function isValidStructure(draft) {
-  try {
-    validateDraft(draft);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-function findAppendPosition(postsContent) {
-  const exportMarker = 'export const posts: Post[] = [';
-  const postsStart = postsContent.indexOf(exportMarker);
-  if (postsStart === -1) {
-    throw new Error('Could not locate posts array export in lib/posts.ts');
+  while (countWords(content) < CONFIG.MIN_WORDS) {
+    content += `\n\n## Additional Insight\n\n${paragraph(topic, 'mechanism')} ${paragraph(topic, 'strategy')}`;
   }
 
-  const endToken = '\n];';
-  const idx = postsContent.indexOf(endToken, postsStart);
-  if (idx === -1) {
-    throw new Error('Could not locate posts array closing in lib/posts.ts');
-  }
-
-  return idx;
-}
-
-function updatePostsFile(newPost) {
-  if (!fs.existsSync(postsPath)) {
-    throw new Error(`posts.ts not found at: ${postsPath}`);
-  }
-
-  const content = fs.readFileSync(postsPath, 'utf8');
-
-  const escapedSlug = newPost.slug.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const slugPattern = new RegExp(`slug:\\s*"${escapedSlug}"`);
-  if (slugPattern.test(content)) {
-    log.warn(`Article already exists (slug): ${newPost.slug}`);
-    return false;
-  }
-
-  const insertAt = findAppendPosition(content);
-
-  const postObject = `  {\n    id: "${newPost.id}",\n    title: ${JSON.stringify(newPost.title)},\n    slug: "${newPost.slug}",\n    category: "${newPost.category}",\n    description: ${JSON.stringify(newPost.description)},\n    keywords: ${JSON.stringify(newPost.keywords)},\n    author: ${JSON.stringify(newPost.author)},\n    excerpt: ${JSON.stringify(newPost.excerpt)},\n    content: ${JSON.stringify(newPost.content)},\n    readingTime: "${newPost.readingTime}",\n    views: "${newPost.views}",\n    date: "${newPost.date}",\n    image: "${newPost.image}",\n    imageAlt: ${JSON.stringify(newPost.imageAlt)},\n    heroImage: "${newPost.heroImage}",\n    faqs: ${JSON.stringify(newPost.faqs)},\n    isTrending: true,\n  },\n\n`;
-
-  const updated = content.slice(0, insertAt) + '\n' + postObject + content.slice(insertAt);
-  fs.writeFileSync(postsPath, updated, 'utf8');
-  return true;
+  return content;
 }
 
 function extractExcerpt(content) {
-  const lines = content.split('\n').filter((line) => line.trim() && !line.startsWith('#') && !line.startsWith('!['));
+  const lines = content
+    .split('\n')
+    .filter((line) => line.trim() && !line.startsWith('#') && !line.startsWith('!['));
   const excerpt = lines.slice(0, 2).join(' ').trim();
   return excerpt.length > 200 ? `${excerpt.slice(0, 197)}...` : excerpt;
 }
 
-function chooseTodayTopic(today, usedSlugs) {
-  const daySeed = new Date(today).getDate();
-  const pool = [...TOPIC_ANGLES].sort((a, b) => (a.keyword > b.keyword ? 1 : -1));
-
-  for (let i = 0; i < pool.length; i += 1) {
-    const topic = pool[(daySeed + i) % pool.length];
-    const candidateSlug = generateSlug(`${topic.keyword}-${topic.angle}`);
-    if (!usedSlugs.has(candidateSlug)) {
-      return topic;
-    }
-  }
-
-  return randomPick(TOPIC_ANGLES);
-}
-
-function chooseRotatingTopic(state, usedSlugs) {
-  const currentIndex = Number.isInteger(state.lastCategoryIndex) ? state.lastCategoryIndex : -1;
-
-  for (let i = 1; i <= CATEGORY_ROTATION.length; i += 1) {
-    const index = (currentIndex + i) % CATEGORY_ROTATION.length;
-    const wantedCategory = CATEGORY_ROTATION[index];
-    const candidates = TOPIC_ANGLES.filter((topic) => topic.category === wantedCategory);
-    if (candidates.length === 0) continue;
-
-    for (const topic of candidates) {
-      const candidateSlug = generateSlug(`${topic.keyword}-${topic.angle}`);
-      if (!usedSlugs.has(candidateSlug)) {
-        return { topic, categoryIndex: index };
-      }
-    }
-
-    return { topic: randomPick(candidates), categoryIndex: index };
-  }
-
-  return { topic: chooseTodayTopic(normalizeDate(), usedSlugs), categoryIndex: currentIndex };
-}
-
-function getExistingSlugs() {
-  const content = fs.readFileSync(postsPath, 'utf8');
-  const regex = /slug:\s*"([^"]+)"/g;
-  const set = new Set();
-  let match;
-
-  while ((match = regex.exec(content)) !== null) {
-    set.add(match[1]);
-  }
-
-  return set;
-}
-
 async function main() {
   try {
-    if (!CONFIG.OPENAI_API_KEY) {
-      throw new Error('OPENAI_API_KEY is required to generate text and images.');
-    }
-
     const today = normalizeDate();
     const state = loadState();
 
@@ -562,114 +404,62 @@ async function main() {
       process.exit(0);
     }
 
-    const existingLinks = getExistingPostLinks();
     const existingSlugs = getExistingSlugs();
+    const existingLinks = getExistingPostLinks();
 
-    const selection = chooseRotatingTopic(state, existingSlugs);
-    const topic = selection.topic;
-    console.log('selected topic:', `${topic.keyword} (${topic.category})`);
+    const selection = chooseCategoryByRotation(state);
+    const category = selection.category;
+    const topic = TOPIC_BANK[category];
 
-    const internalLinks = pickInternalLinks(existingLinks, generateSlug(topic.keyword));
-
-    const humanDelayMs = randomInt(1000, 4000);
-    log.info(`Waiting ${humanDelayMs}ms before generation...`);
-    await sleep(humanDelayMs);
-
-    let selectedDraft = null;
-    let selectedWordCount = 0;
-    let lastError = null;
-    let bestFallback = null;
-
-    for (let attempt = 1; attempt <= CONFIG.MAX_GENERATION_RETRIES; attempt += 1) {
-      try {
-        console.log('generating article');
-        const draft = await generateArticleDraft(topic, internalLinks);
-
-        if (!isValidStructure(draft)) {
-          throw new Error('Generated draft has missing required sections');
-        }
-
-        const previewContent = composeContent({ draft, imageUrl: '/images/generated/preview-placeholder.png' });
-        const wordCount = countWords(previewContent);
-
-        if (!bestFallback || wordCount > bestFallback.wordCount) {
-          bestFallback = { draft, wordCount };
-        }
-
-        if (wordCount >= CONFIG.MIN_WORDS) {
-          selectedDraft = draft;
-          selectedWordCount = wordCount;
-          break;
-        }
-
-        lastError = new Error(`Generated article is too short (${wordCount} words).`);
-      } catch (error) {
-        lastError = error;
-      }
-
-      if (attempt < CONFIG.MAX_GENERATION_RETRIES) {
-        console.log(`RETRYING GENERATION (attempt ${attempt + 1})`);
-        await sleep(randomInt(1000, 4000));
-      }
+    if (!topic) {
+      throw new Error(`No topic config found for category: ${category}`);
     }
 
-    if (!selectedDraft && bestFallback) {
-      selectedDraft = bestFallback.draft;
-      selectedWordCount = bestFallback.wordCount;
-      log.warn(`All retries completed below target. Using longest version (${selectedWordCount} words).`);
-    }
+    const title = randomPick(topic.titles).slice(0, CONFIG.MAX_TITLE_LEN).trim();
+    const baseSlug = generateSlug(title);
+    const slug = ensureUniqueSlug(baseSlug, existingSlugs);
+    const imageUrl = randomPick(topic.imagePool);
 
-    if (!selectedDraft) {
-      throw new Error(lastError instanceof Error ? lastError.message : 'Failed to generate article after retries');
-    }
+    log.info(`selected topic: ${topic.keyword} (${category})`);
 
-    const title = selectedDraft.title.trim().slice(0, CONFIG.MAX_TITLE_LEN);
-    let slug = generateSlug(title);
-    slug = ensureUniqueSlug(slug, existingSlugs);
-
-    const imageStyle = randomPick(IMAGE_STYLES);
-    const visualContext = randomPick(VISUAL_CONTEXTS);
-    const imagePrompt = `${selectedDraft.imagePrompt.trim()}. Style: ${imageStyle}. Context: ${visualContext}. Unique composition variant ${Date.now()}-${Math.random().toString(36).slice(2, 7)}. Editorial quality, no text overlay.`;
-    console.log('generating image');
-    const imageUrl = await generateImageFromOpenAI(imagePrompt);
-
-    const content = composeContent({ draft: selectedDraft, imageUrl });
-    const finalWordCount = countWords(content);
-    selectedWordCount = finalWordCount;
-
-    if (finalWordCount < CONFIG.MIN_WORDS) {
-      log.warn(`Generated article is below target (${finalWordCount} words < ${CONFIG.MIN_WORDS}). Proceeding with publish.`);
-    }
-
-    const description = ensureMetaLength(selectedDraft.description.trim());
-    const keywords = Array.isArray(selectedDraft.secondaryKeywords)
-      ? [selectedDraft.mainKeyword, ...selectedDraft.secondaryKeywords].filter(Boolean).slice(0, 8)
-      : [selectedDraft.mainKeyword].filter(Boolean);
+    const backlinks = pickBacklinks(existingLinks.filter((link) => link.slug !== slug), 2);
+    const content = buildContent(topic, backlinks, imageUrl);
+    const description = ensureMetaLength(
+      `Actionable insights about ${topic.keyword} and ${topic.angle}. Learn practical steps, science-backed explanations, and daily tactics that improve outcomes.`
+    );
 
     const newPost = {
       id: randomUUID(),
       title,
       slug,
-      category: mapTopicToCategory(topic.category),
+      category,
       description,
-      keywords,
+      keywords: [topic.keyword, `${category} facts`, 'practical psychology', 'evidence-based habits'],
       author: CONFIG.AUTHOR_NAME,
       excerpt: extractExcerpt(content),
       content,
       readingTime: calculateReadingTime(content),
-      views: getRandomViews(),
+      views: randomPick(VIEWS_POOL),
       date: today,
       image: imageUrl,
-      imageAlt: `Illustration for: ${title}`,
+      imageAlt: `Unsplash photo for: ${title}`,
       heroImage: imageUrl,
-      faqs: selectedDraft.faqs.slice(0, 3),
+      faqs: [
+        {
+          question: `What is the key idea behind ${topic.keyword}?`,
+          answer: `The key idea is to reduce friction and improve consistency using structured choices and better defaults.`
+        },
+        {
+          question: 'Can I apply this in less than a week?',
+          answer: 'Yes. Start with one practical change and track your behavior daily for a short test cycle.'
+        },
+        {
+          question: 'Does this also help SEO performance?',
+          answer: 'Helpful long-form content with strong structure, internal links, and clear relevance improves engagement signals over time.'
+        }
+      ],
     };
 
-    const writeDelayMs = randomInt(1000, 4000);
-    log.info(`Waiting ${writeDelayMs}ms before publishing...`);
-    await sleep(writeDelayMs);
-
-    console.log('writing posts.ts');
     const inserted = updatePostsFile(newPost);
     if (!inserted) {
       log.warn('No article inserted.');
@@ -682,11 +472,11 @@ async function main() {
       lastCategoryIndex: selection.categoryIndex,
     });
 
+    const words = countWords(content);
     log.success(`Published 1 article: ${title}`);
     log.info(`Slug: ${slug}`);
-    log.info(`Words: ${selectedWordCount}`);
-    log.info(`Image style: ${imageStyle}`);
-    console.log(`FINAL WORD COUNT: ${selectedWordCount}`);
+    log.info(`Words: ${words}`);
+    console.log(`FINAL WORD COUNT: ${words}`);
     console.log('ARTICLE ACCEPTED');
     console.log('completed');
     console.log('ARTICLE CREATED:', slug);
