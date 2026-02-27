@@ -373,8 +373,42 @@ function buildContent(topic, backlinks, imageUrl) {
     paragraph(topic, 'conclusion'),
   ].join('\n');
 
+  const extensionBlocks = [
+    {
+      heading: 'Implementation Mistakes to Avoid',
+      body: 'A common mistake is trying to optimize everything at once. Start with one constraint, one schedule change, and one measurable behavior. Simpler implementation creates faster feedback and fewer drop-offs.'
+    },
+    {
+      heading: 'A 7-Day Practical Plan',
+      body: 'Day 1 to 2: observe your current pattern. Day 3 to 5: apply one structural change. Day 6 to 7: measure what improved and what still feels heavy. This short loop creates momentum without overwhelm.'
+    },
+    {
+      heading: 'Why This Works in Real Life',
+      body: 'Most people fail from friction, not from lack of intelligence. When defaults are clear, the brain spends less energy on low-value choices and preserves focus for higher-value actions.'
+    },
+    {
+      heading: 'Long-Term Compounding Effect',
+      body: 'Small behavior improvements compound over months. Better timing, fewer distractions, and stronger routines seem modest today, but they produce measurable output and calmer execution later.'
+    },
+    {
+      heading: 'Team and Family Application',
+      body: 'The same logic applies in teams and households: shared defaults, cleaner planning windows, and fewer last-minute decisions reduce stress and improve consistency for everyone involved.'
+    },
+    {
+      heading: 'Final Action Checklist',
+      body: 'Choose one default to simplify, one distraction to remove, and one review checkpoint every week. Keep it realistic, track progress, and improve gradually instead of forcing drastic changes.'
+    },
+  ];
+
+  let extensionIndex = 0;
   while (countWords(content) < CONFIG.MIN_WORDS) {
-    content += `\n\n## Additional Insight\n\n${paragraph(topic, 'mechanism')} ${paragraph(topic, 'strategy')}`;
+    const block = extensionBlocks[extensionIndex % extensionBlocks.length];
+    content += `\n\n## ${block.heading}\n\n${block.body}`;
+    extensionIndex += 1;
+
+    if (extensionIndex > extensionBlocks.length + 2) {
+      content += `\n\n${paragraph(topic, 'strategy')}`;
+    }
   }
 
   return content;
