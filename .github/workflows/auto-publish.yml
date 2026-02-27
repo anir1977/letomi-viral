@@ -35,6 +35,18 @@ jobs:
             exit 1
           fi
 
+          case "$OPENAI_API_KEY" in
+            export\ OPENAI_API_KEY=*|OPENAI_API_KEY=*)
+              echo "OPENAI_API_KEY secret format is invalid. Save only the raw key value like sk-proj-..."
+              exit 1
+              ;;
+          esac
+
+          if [[ "$OPENAI_API_KEY" != sk-* ]]; then
+            echo "OPENAI_API_KEY does not look like a valid OpenAI key (must start with sk-)"
+            exit 1
+          fi
+
       - name: Publish articles
         run: |
           node ./scripts/auto-publish.mjs

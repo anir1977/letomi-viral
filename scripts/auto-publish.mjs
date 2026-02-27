@@ -14,8 +14,14 @@ function sanitizeOpenAIKey(rawValue) {
   const raw = String(rawValue || '').trim();
   if (!raw) return '';
 
-  const exportMatch = raw.match(/^export\s+OPENAI_API_KEY\s*=\s*(.+)$/i);
-  const candidate = exportMatch ? exportMatch[1].trim() : raw;
+  const withExportMatch = raw.match(/^export\s+OPENAI_API_KEY\s*=\s*(.+)$/i);
+  const withoutExportMatch = raw.match(/^OPENAI_API_KEY\s*=\s*(.+)$/i);
+  const candidate = withExportMatch
+    ? withExportMatch[1].trim()
+    : withoutExportMatch
+      ? withoutExportMatch[1].trim()
+      : raw;
+
   return candidate.replace(/^['"]|['"]$/g, '').trim();
 }
 
