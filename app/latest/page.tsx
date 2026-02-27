@@ -8,6 +8,10 @@ import { Clock } from 'lucide-react';
 export const metadata: Metadata = {
   title: '🆕 Latest Facts - Just Published | CurioSpark',
   description: 'Explore our newest fascinating facts, just published. Be the first to discover mind-blowing truths and share them with the world.',
+  robots: {
+    index: false,
+    follow: true,
+  },
   openGraph: {
     title: '🆕 Latest Facts - Just Published | CurioSpark',
     description: 'Explore our newest fascinating facts. Be the first to discover mind-blowing truths.',

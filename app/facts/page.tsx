@@ -7,6 +7,10 @@ import Breadcrumb from '@/app/components/Breadcrumb';
 export const metadata: Metadata = {
   title: '📚 All Facts - CurioSpark',
   description: 'Browse our complete collection of fascinating, verified facts across science, history, nature, and culture. Discover mind-blowing truths backed by research.',
+  robots: {
+    index: false,
+    follow: true,
+  },
   openGraph: {
     title: '📚 All Facts - Complete Collection | CurioSpark',
     description: 'Browse our complete collection of fascinating, verified facts across science, history, nature, and culture.',

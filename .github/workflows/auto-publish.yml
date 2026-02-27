@@ -2,7 +2,7 @@ name: Auto Publish
 
 on:
   schedule:
-    - cron: "15 13 * * *" # 8:15 AM America/New_York
+    - cron: "17 * * * *"
   workflow_dispatch:
 
 permissions:
@@ -12,7 +12,11 @@ permissions:
 jobs:
   publish:
     runs-on: ubuntu-latest
-
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      OPENAI_TEXT_MODEL: gpt-4o-mini
+      OPENAI_IMAGE_MODEL: gpt-image-1
+      VERBOSE: 'false'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -24,12 +28,16 @@ jobs:
         with:
           node-version: 20
 
+      - name: Validate OpenAI secret
+        run: |
+          if [ -z "$OPENAI_API_KEY" ]; then
+            echo "OPENAI_API_KEY secret is missing or empty"
+            exit 1
+          fi
+
       - name: Publish articles
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          UNSPLASH_ACCESS_KEY: ${{ secrets.UNSPLASH_ACCESS_KEY }}
-          VERBOSE: 'false'
-        run: node ./scripts/auto-publish.mjs
+        run: |
+          node ./scripts/auto-publish.mjs
 
       - name: Commit changes
         run: |

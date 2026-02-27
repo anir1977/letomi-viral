@@ -32,13 +32,10 @@ export async function GET() {
   const staticPaths = [
     "/",
     "/categories",
-    "/latest",
-    "/trending",
     "/about",
     "/about/editorial-process",
     "/about/fact-checking",
     "/author/editorial-team",
-    "/facts",
     "/contact",
     "/privacy-policy",
     "/terms-of-service",

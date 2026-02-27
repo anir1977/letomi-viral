@@ -8,6 +8,10 @@ import { TrendingUp } from 'lucide-react';
 export const metadata: Metadata = {
   title: '🔥 Trending Facts - Most Popular | CurioSpark',
   description: 'Discover the most popular and trending facts right now. See what thousands of curious minds are reading and sharing today.',
+  robots: {
+    index: false,
+    follow: true,
+  },
   openGraph: {
     title: '🔥 Trending Facts - Most Popular | CurioSpark',
     description: 'Discover the most popular and trending facts right now. See what thousands are reading.',

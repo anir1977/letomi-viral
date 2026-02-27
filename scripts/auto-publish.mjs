@@ -10,22 +10,33 @@ const projectRoot = path.join(__dirname, '..');
 const postsPath = path.join(projectRoot, 'lib', 'posts.ts');
 const statePath = path.join(projectRoot, '.auto-publish-state.json');
 
+function sanitizeOpenAIKey(rawValue) {
+  const raw = String(rawValue || '').trim();
+  if (!raw) return '';
+
+  const exportMatch = raw.match(/^export\s+OPENAI_API_KEY\s*=\s*(.+)$/i);
+  const candidate = exportMatch ? exportMatch[1].trim() : raw;
+  return candidate.replace(/^['"]|['"]$/g, '').trim();
+}
+
+const normalizedOpenAIKey = sanitizeOpenAIKey(process.env.OPENAI_API_KEY);
+
 const CONFIG = {
-  OPENAI_API_KEY: process.env.OPENAI_API_KEY || '',
+  OPENAI_API_KEY: normalizedOpenAIKey,
   OPENAI_TEXT_MODEL: process.env.OPENAI_TEXT_MODEL || 'gpt-4o-mini',
   OPENAI_IMAGE_MODEL: process.env.OPENAI_IMAGE_MODEL || 'gpt-image-1',
   AUTHOR_NAME: 'CurioSpark Team',
-  MIN_WORDS: 900,
+  MIN_WORDS: 1400,
   MAX_TITLE_LEN: 60,
   META_LEN: 150,
   VERBOSE: process.env.VERBOSE === 'true',
   MAX_GENERATION_RETRIES: 5,
-  SAFE_PROMPT_MIN_WORDS: 1100,
-  SAFE_PROMPT_MAX_WORDS: 1300,
+  SAFE_PROMPT_MIN_WORDS: 1500,
+  SAFE_PROMPT_MAX_WORDS: 1900,
   OPENAI_MAX_TOKENS: 4200,
 };
 
-const IMAGE_STYLES = ['photorealistic', 'cinematic', 'illustration', 'minimal vector'];
+const IMAGE_STYLES = ['photorealistic editorial photography', 'documentary realism', 'cinematic realistic photo'];
 
 const VISUAL_CONTEXTS = [
   'golden-hour natural light',
@@ -50,6 +61,8 @@ const TOPIC_ANGLES = [
   { category: 'life-facts', keyword: 'daily habits', angle: 'micro-habits that quietly change long-term outcomes' },
   { category: 'space', keyword: 'orbital mechanics', angle: 'why simple gravity rules create complex motion' },
 ];
+
+const CATEGORY_ROTATION = ['psychology', 'science', 'technology', 'health', 'history', 'nature', 'human-behavior', 'life-facts', 'space', 'business'];
 
 const log = {
   info: (msg) => console.log(`ℹ️  ${msg}`),
@@ -100,16 +113,19 @@ function mapTopicToCategory(topicCategory) {
   const normalized = String(topicCategory || '').toLowerCase().trim();
 
   const mapping = {
-    history: 'Science',
-    psychology: 'Human Behavior',
-    'human-behavior': 'Human Behavior',
-    technology: 'Technology',
-    health: 'Health',
-    space: 'Space',
-    nature: 'Nature',
+    history: 'science',
+    psychology: 'human-behavior',
+    'human-behavior': 'human-behavior',
+    technology: 'technology',
+    health: 'health',
+    space: 'space',
+    nature: 'nature',
+    science: 'science',
+    business: 'science',
+    'life-facts': 'science',
   };
 
-  return mapping[normalized] || 'Science';
+  return mapping[normalized] || 'science';
 }
 
 function calculateReadingTime(content) {
@@ -183,21 +199,30 @@ function pickInternalLinks(existingLinks, topicSlug) {
 
 function loadState() {
   if (!fs.existsSync(statePath)) {
-    return { lastPublishedDate: null };
+    return { lastPublishedDate: null, nextPublishAt: null, lastCategoryIndex: -1 };
   }
 
   try {
     const parsed = JSON.parse(fs.readFileSync(statePath, 'utf8'));
     return {
       lastPublishedDate: parsed.lastPublishedDate || null,
+      nextPublishAt: parsed.nextPublishAt || null,
+      lastCategoryIndex: Number.isInteger(parsed.lastCategoryIndex) ? parsed.lastCategoryIndex : -1,
     };
   } catch {
-    return { lastPublishedDate: null };
+    return { lastPublishedDate: null, nextPublishAt: null, lastCategoryIndex: -1 };
   }
 }
 
 function saveState(state) {
   fs.writeFileSync(statePath, JSON.stringify(state, null, 2), 'utf8');
+}
+
+function computeNextPublishAt(fromDate = new Date()) {
+  const next = new Date(fromDate);
+  next.setUTCDate(next.getUTCDate() + 1);
+  next.setUTCHours(randomInt(6, 22), randomInt(0, 59), 0, 0);
+  return next.toISOString();
 }
 
 async function callOpenAIJson({ system, user }) {
@@ -332,6 +357,7 @@ Constraints:
 - Use this style variation: ${styleVariant}
 - Include at least one rhetorical question and soft transitions.
 - Include this casual phrase somewhere naturally: "${transitionCue}"
+- Writing style must feel clearly human: varied sentence rhythm, natural transitions, specific examples, and no repetitive template tone.
 - Structure is REQUIRED and must include all of these:
   1) Intro with natural human hook
   2) At least 3 H2 sections
@@ -341,7 +367,7 @@ Constraints:
   6) Conclusion section
 - Build sections with short/medium varied paragraph lengths.
 - FAQ must include 2 to 3 entries.
-- Add at least 1 internal link using markdown links from this list:
+- Add 2 to 4 internal backlinks using markdown links from this list:
 ${linksPrompt || '- (no links available)'}
 - Do NOT mention AI, prompts, automation, or SEO in the body.
 - Do NOT use this phrase: "In this article we will explore".
@@ -416,8 +442,14 @@ function isValidStructure(draft) {
 }
 
 function findAppendPosition(postsContent) {
+  const exportMarker = 'export const posts: Post[] = [';
+  const postsStart = postsContent.indexOf(exportMarker);
+  if (postsStart === -1) {
+    throw new Error('Could not locate posts array export in lib/posts.ts');
+  }
+
   const endToken = '\n];';
-  const idx = postsContent.indexOf(endToken);
+  const idx = postsContent.indexOf(endToken, postsStart);
   if (idx === -1) {
     throw new Error('Could not locate posts array closing in lib/posts.ts');
   }
@@ -469,6 +501,28 @@ function chooseTodayTopic(today, usedSlugs) {
   return randomPick(TOPIC_ANGLES);
 }
 
+function chooseRotatingTopic(state, usedSlugs) {
+  const currentIndex = Number.isInteger(state.lastCategoryIndex) ? state.lastCategoryIndex : -1;
+
+  for (let i = 1; i <= CATEGORY_ROTATION.length; i += 1) {
+    const index = (currentIndex + i) % CATEGORY_ROTATION.length;
+    const wantedCategory = CATEGORY_ROTATION[index];
+    const candidates = TOPIC_ANGLES.filter((topic) => topic.category === wantedCategory);
+    if (candidates.length === 0) continue;
+
+    for (const topic of candidates) {
+      const candidateSlug = generateSlug(`${topic.keyword}-${topic.angle}`);
+      if (!usedSlugs.has(candidateSlug)) {
+        return { topic, categoryIndex: index };
+      }
+    }
+
+    return { topic: randomPick(candidates), categoryIndex: index };
+  }
+
+  return { topic: chooseTodayTopic(normalizeDate(), usedSlugs), categoryIndex: currentIndex };
+}
+
 function getExistingSlugs() {
   const content = fs.readFileSync(postsPath, 'utf8');
   const regex = /slug:\s*"([^"]+)"/g;
@@ -491,6 +545,12 @@ async function main() {
     const today = normalizeDate();
     const state = loadState();
 
+    const nowIso = new Date().toISOString();
+    if (state.nextPublishAt && nowIso < state.nextPublishAt) {
+      log.info(`Not publish window yet. Next publish at ${state.nextPublishAt}`);
+      process.exit(0);
+    }
+
     if (state.lastPublishedDate === today) {
       log.info(`Already published today (${today}). Skipping.`);
       process.exit(0);
@@ -499,7 +559,8 @@ async function main() {
     const existingLinks = getExistingPostLinks();
     const existingSlugs = getExistingSlugs();
 
-    const topic = chooseTodayTopic(today, existingSlugs);
+    const selection = chooseRotatingTopic(state, existingSlugs);
+    const topic = selection.topic;
     console.log('selected topic:', `${topic.keyword} (${topic.category})`);
 
     const internalLinks = pickInternalLinks(existingLinks, generateSlug(topic.keyword));
@@ -609,7 +670,11 @@ async function main() {
       process.exit(0);
     }
 
-    saveState({ lastPublishedDate: today });
+    saveState({
+      lastPublishedDate: today,
+      nextPublishAt: computeNextPublishAt(new Date()),
+      lastCategoryIndex: selection.categoryIndex,
+    });
 
     log.success(`Published 1 article: ${title}`);
     log.info(`Slug: ${slug}`);
