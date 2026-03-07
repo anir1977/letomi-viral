@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { getCategoryBySlug, getRelatedPosts, type Category, type FAQ, type Post, type Source } from "@/lib/posts";
+import { getCategoryBySlug, getRelatedPosts, getTrendingPosts, type Category, type FAQ, type Post, type Source } from "@/lib/posts";
 import { generateInlineLinkSuggestions, insertInternalLinks } from "@/lib/internalLinks";
 import PostBadge from "@/app/components/PostBadge";
 import TableOfContents from "@/app/components/TableOfContents";
@@ -150,7 +150,7 @@ export default function ArticleLayout({
   const resolvedSharePath = basePath || sharePath;
   const resolvedRelatedItems: RelatedItem[] | undefined = relatedItems || (resolvedPost
     ? getRelatedPosts(resolvedPost.slug)
-        .slice(0, 3)
+        .slice(0, 5)
         .map((relatedPost): RelatedItem => {
           const relatedCategory = getCategoryBySlug(relatedPost.category);
 
@@ -168,6 +168,26 @@ export default function ArticleLayout({
           };
         })
     : undefined);
+
+  const readNextItems: RelatedItem[] = resolvedPost
+    ? getTrendingPosts(8)
+        .filter((item) => item.slug !== resolvedPost.slug)
+        .slice(0, 3)
+        .map((item) => {
+          const itemCategory = getCategoryBySlug(item.category);
+          return {
+            slug: item.slug,
+            title: item.title,
+            excerpt: item.excerpt,
+            image: item.image,
+            imageAlt: item.imageAlt,
+            readingTime: item.readingTime,
+            categoryLabel: itemCategory?.name,
+            isTrending: item.isTrending,
+            isFeatured: item.isFeatured,
+          };
+        })
+    : [];
   const resolvedBreadcrumb = breadcrumb || (
     resolvedPost && displayCategory?.slug ? (
       <Breadcrumb
@@ -373,6 +393,41 @@ export default function ArticleLayout({
                     </h3>
                     <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-2">
                       {relatedItem.excerpt}
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {readNextItems.length > 0 && (
+          <section className="max-w-5xl mx-auto mt-16">
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-8">
+              Read Next
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {readNextItems.map((item) => (
+                <Link
+                  key={item.slug}
+                  href={`/post/${item.slug}`}
+                  className="bg-white dark:bg-gray-900 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-800 hover:shadow-lg transition"
+                >
+                  <div className="relative w-full h-40">
+                    <Image
+                      src={item.image}
+                      alt={item.imageAlt}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                    />
+                  </div>
+                  <div className="p-4">
+                    <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-2 leading-tight line-clamp-2">
+                      {item.title}
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-2">
+                      {item.excerpt}
                     </p>
                   </div>
                 </Link>

@@ -41,7 +41,7 @@ export default function StructuredData({ post, category, basePath, isHomePage }:
 
   const articleSchema = {
     "@context": "https://schema.org",
-    "@type": "BlogPosting",
+    "@type": "Article",
     headline: post.title,
     description: post.description || post.excerpt,
     image: [absoluteImage],
@@ -60,10 +60,7 @@ export default function StructuredData({ post, category, basePath, isHomePage }:
         url: toAbsoluteUrl(SITE_LOGO_PATH)
       }
     },
-    mainEntityOfPage: {
-      "@type": "WebPage",
-      "@id": articleUrl
-    },
+    mainEntityOfPage: articleUrl,
     wordCount: post.content.split(' ').length,
     articleBody: post.content.substring(0, 500)
   };

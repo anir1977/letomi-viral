@@ -1,4 +1,4 @@
-import { categories, getAllPosts } from "@/lib/posts";
+import { getAllPosts } from "@/lib/posts";
 import { SITE_URL } from "@/lib/site";
 
 const baseUrl = SITE_URL;
@@ -28,27 +28,11 @@ function toIsoDate(value?: string) {
 export async function GET() {
   const lastmod = new Date().toISOString();
   const posts = getAllPosts();
-
-  const staticPaths = [
-    "/",
-    "/categories",
-    "/about",
-    "/about/editorial-process",
-    "/about/fact-checking",
-    "/author/editorial-team",
-    "/contact",
-    "/privacy-policy",
-    "/terms-of-service",
-  ];
-
-  const categoryPaths = categories.map((category) => `/category/${category.slug}`);
-  const staticUrls = staticPaths.map((path) => toUrlEntry(path, lastmod));
-  const categoryUrls = categoryPaths.map((path) => toUrlEntry(path, lastmod));
   const postUrls = posts.map((post) => {
     const updatedAt = toIsoDate(post.lastUpdated) || toIsoDate(post.date) || lastmod;
     return toUrlEntry(`/post/${post.slug}`, updatedAt);
   });
-  const urls = [...staticUrls, ...categoryUrls, ...postUrls].join("\n");
+  const urls = postUrls.join("\n");
 
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   description: SITE_DESCRIPTION,
   keywords: "facts, curiosities, psychology, science, human behavior, life facts, knowledge",
   alternates: {
-    canonical: "/",
+    canonical: SITE_URL,
   },
   robots: {
     index: true,
@@ -64,6 +64,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <link rel="canonical" href="https://curiospark.org" />
+        <meta name="robots" content="index, follow" />
         {/* Google AdSense Script */}
         <script
           async

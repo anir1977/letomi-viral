@@ -55,12 +55,12 @@ export function generateInlineLinkSuggestions(
     });
   });
 
-  // Return unique suggestions, max 3
+  // Return unique suggestions, max 4
   const unique = suggestions
     .filter((item, index, self) => 
       index === self.findIndex(t => t.slug === item.slug)
     )
-    .slice(0, 3);
+    .slice(0, 4);
     
   return unique;
 }
@@ -112,8 +112,11 @@ export function insertInternalLinks(
   suggestions: InlineLinkSuggestion[]
 ): string {
   let updatedContent = content;
+  const usedSlugs = new Set<string>();
   
   suggestions.forEach(suggestion => {
+    if (usedSlugs.has(suggestion.slug)) return;
+
     // Only replace first occurrence to avoid over-linking
     const escapedKeyword = escapeRegExp(suggestion.keyword);
     const regex = new RegExp(`\\b(${escapedKeyword})\\b`, 'i');
@@ -122,6 +125,7 @@ export function insertInternalLinks(
     if (match) {
       const link = `[${match[1]}](/post/${suggestion.slug})`;
       updatedContent = updatedContent.replace(regex, link);
+      usedSlugs.add(suggestion.slug);
     }
   });
   

@@ -30,33 +30,17 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
     };
   }
 
-  const isTechnology = post.category === "technology";
-  const brandSuffix = isTechnology ? "CurioSpark Technology" : "CurioSpark";
-  const viralTitle = post.title.includes("?")
-    ? `${post.title} | ${brandSuffix}`
-    : `${post.title} 🤯 | ${brandSuffix}`;
-
-  const summary = post.description || post.excerpt;
-  const baseDescription = post.didYouKnow
-    ? `${post.didYouKnow} ${summary} Click to discover the full fascinating truth!`
-    : `${summary} You won't believe what science has discovered!`;
-  const viralDescription = isTechnology
-    ? `Technology insight: ${baseDescription}`
-    : baseDescription;
+  const summary = post.excerpt || post.description;
   const postUrl = `${SITE_URL}/post/${post.slug}`;
   const publishedTime = new Date(post.date).toISOString();
   const modifiedTime = new Date(post.lastUpdated || post.date).toISOString();
   const ogImage = toAbsoluteUrl(post.image || "/og-default.svg");
-  const keywords = post.keywords && post.keywords.length > 0
-    ? post.keywords
-    : isTechnology
-      ? ["technology", "AI", "innovation", "future tech", "tech trends", post.title]
-      : undefined;
+  const keywords = post.keywords && post.keywords.length > 0 ? post.keywords : undefined;
   const authorName = post.author || "CurioSpark Editorial Team";
 
   return {
-    title: viralTitle,
-    description: viralDescription.slice(0, 160),
+    title: post.title,
+    description: summary,
     keywords,
     alternates: {
       canonical: postUrl,
@@ -68,9 +52,10 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
       },
     ],
     openGraph: {
-      title: viralTitle,
+      title: post.title,
       description: summary,
       url: postUrl,
+      siteName: "Curiospark",
       images: [ogImage],
       type: "article",
       publishedTime,
@@ -79,9 +64,13 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
     },
     twitter: {
       card: "summary_large_image",
-      title: viralTitle,
+      title: post.title,
       description: summary,
       images: [ogImage],
+    },
+    robots: {
+      index: true,
+      follow: true,
     },
   };
 }

@@ -5447,37 +5447,38 @@ export function getRelatedPosts(postSlug: string, limit: number = 3): Post[] {
     health: ["science", "psychology", "human-behavior"],
   };
 
-  const sortByRecent = (list: Post[]) =>
-    [...list].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-
   const allPosts = getAllPosts();
+  const currentKeywords = new Set((currentPost.keywords || []).map((keyword) => keyword.toLowerCase()));
 
-  const sameCategoryPosts = sortByRecent(
-    allPosts.filter(post => post.category === currentPost.category && post.slug !== postSlug)
-  );
+  const scored = allPosts
+    .filter((post) => post.slug !== postSlug)
+    .map((post) => {
+      const postKeywords = (post.keywords || []).map((keyword) => keyword.toLowerCase());
+      const keywordOverlap = postKeywords.reduce((total, keyword) => (
+        currentKeywords.has(keyword) ? total + 1 : total
+      ), 0);
 
-  const relatedCategoryPosts = sortByRecent(
-    allPosts.filter(post =>
-      post.slug !== postSlug &&
-      post.category !== currentPost.category &&
-      (relatedCategories[currentPost.category] || []).includes(post.category)
-    )
-  );
+      let score = keywordOverlap * 3;
 
-  const otherPosts = sortByRecent(
-    allPosts.filter(post =>
-      post.slug !== postSlug &&
-      post.category !== currentPost.category &&
-      !(relatedCategories[currentPost.category] || []).includes(post.category)
-    )
-  );
+      if (post.category === currentPost.category) {
+        score += 8;
+      } else if ((relatedCategories[currentPost.category] || []).includes(post.category)) {
+        score += 4;
+      }
 
-  const combined = [...sameCategoryPosts, ...relatedCategoryPosts, ...otherPosts];
-  const unique = combined.filter((post, index, self) =>
-    index === self.findIndex(item => item.slug === post.slug)
-  );
+      const recencyScore = new Date(post.date).getTime() / 1_000_000_000_000;
 
-  return unique.slice(0, limit);
+      return { post, score, recencyScore };
+    })
+    .sort((a, b) => {
+      if (b.score !== a.score) {
+        return b.score - a.score;
+      }
+      return b.recencyScore - a.recencyScore;
+    })
+    .map((item) => item.post);
+
+  return scored.slice(0, limit);
 }
 
 export function getCategoryBySlug(slug: string): Category | undefined {

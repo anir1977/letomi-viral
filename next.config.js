@@ -20,6 +20,22 @@ const nextConfig = {
         has: [
           {
             type: 'host',
+            value: 'curiospark.org',
+          },
+          {
+            type: 'header',
+            key: 'x-forwarded-proto',
+            value: 'http',
+          },
+        ],
+        destination: 'https://curiospark.org/:path*',
+        permanent: true,
+      },
+      {
+        source: '/:path*',
+        has: [
+          {
+            type: 'host',
             value: 'www.curiospark.org',
           },
         ],
