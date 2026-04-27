@@ -61,14 +61,16 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const adsenseEnabled = process.env.NEXT_PUBLIC_ENABLE_ADSENSE === "true";
+  const adsenseScriptEnabled =
+    process.env.NEXT_PUBLIC_ADSENSE_SITE_VERIFICATION === "true" ||
+    process.env.NEXT_PUBLIC_ENABLE_ADSENSE === "true";
 
   return (
     <html lang="en">
       <head>
         <link rel="canonical" href="https://curiospark.org" />
         <meta name="robots" content="index, follow" />
-        {adsenseEnabled && (
+        {adsenseScriptEnabled && (
           <script
             async
             src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9750203778031302"
