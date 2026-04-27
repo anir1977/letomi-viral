@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { categories, getTrendingPosts, getFeaturedPosts, getShortReads, getRecentPosts, getPostsWithSurprisingFacts, getPostsWithDidYouKnow } from "@/lib/posts";
+import { categories, getFeaturedPosts, getPostsWithDidYouKnow, getPostsWithSurprisingFacts, getRecentPosts, getShortReads, getTrendingPosts } from "@/lib/posts";
 import PostBadge from "@/app/components/PostBadge";
 import SurprisinglyTrueSection from "@/app/components/SurprisinglyTrueSection";
 import SiteStats from "@/app/components/SiteStats";
@@ -23,46 +23,44 @@ export default function Home() {
   }));
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-black">
-      {/* Affichage de la bannière AdSense en haut de la page d'accueil */}
+    <div className="editorial-shell min-h-screen">
       <BannerAd />
       <main>
         <HomeHeroSection />
 
-        {/* Site Stats */}
-        <section className="container mx-auto px-4 py-8">
+        <section className="section-wrap py-8">
           <SiteStats />
         </section>
 
-        {/* Did You Know Strip */}
         {didYouKnowPosts.length > 0 && (
-          <section className="container mx-auto px-4 py-8">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
-                💡 Did You Know
-              </h2>
-              <Link href="/facts" className="text-purple-600 hover:text-purple-700 font-semibold text-sm md:text-base">
-                See all →
+          <section className="section-wrap py-10">
+            <div className="mb-5 flex items-end justify-between gap-4">
+              <div>
+                <p className="section-kicker">Quick context</p>
+                <h2 className="mt-2 text-2xl font-bold text-slate-950 md:text-3xl">Did you know</h2>
+              </div>
+              <Link href="/facts" className="text-link">
+                See all
               </Link>
             </div>
             <div className="dyk-marquee">
-              <div className="absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-white to-transparent dark:from-gray-900 pointer-events-none"></div>
-              <div className="absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-white to-transparent dark:from-gray-900 pointer-events-none"></div>
+              <div className="absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-[#f7f5ef] to-transparent pointer-events-none"></div>
+              <div className="absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-[#f7f5ef] to-transparent pointer-events-none"></div>
               <div className="dyk-track pb-2">
                 {[...didYouKnowPosts, ...didYouKnowPosts].map((post, index) => (
                   <Link
                     key={`${post.id}-${index}`}
                     href={`/post/${post.slug}`}
-                    className="min-w-[260px] max-w-[320px] bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 hover:shadow-lg transition"
+                    className="min-w-[280px] max-w-[340px] rounded-lg border border-slate-200 bg-white p-4 transition hover:border-teal-200"
                   >
-                    <p className="text-xs uppercase tracking-wide text-purple-600 dark:text-purple-300 font-semibold mb-2">
+                    <p className="section-kicker mb-2">
                       Did You Know
                     </p>
-                    <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed mb-3">
+                    <p className="text-sm text-slate-600 leading-6 mb-3">
                       {post.didYouKnow}
                     </p>
-                    <div className="text-xs text-purple-600 dark:text-purple-300 font-semibold">
-                      {post.title} →
+                    <div className="text-xs font-bold text-slate-950">
+                      {post.title}
                     </div>
                   </Link>
                 ))}
@@ -71,41 +69,41 @@ export default function Home() {
           </section>
         )}
 
-        {/* Categories Section */}
-        <section className="container mx-auto px-4 py-12 md:py-16">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-6 md:mb-8 text-center">
-            Explore Categories
-          </h2>
+        <section className="section-wrap py-14 md:py-20">
+          <div className="mb-8">
+            <p className="section-kicker">Browse by subject</p>
+            <h2 className="section-title mt-2">Explore categories</h2>
+            <p className="section-subtitle">A focused library of topics built for scanning, reading, and returning later.</p>
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {categories.map((category) => (
               <Link
                 key={category.slug}
                 href={`/category/${category.slug}`}
-                className="group bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl md:rounded-2xl p-5 md:p-6 shadow-sm hover:shadow-lg transition transform hover:scale-[1.02] h-full flex flex-col"
+                className="article-card h-full p-5 md:p-6"
               >
-                <div className="mb-2 md:mb-3">
+                <div className="mb-4">
                   {category.image ? (
                     <Image
                       src={category.image}
                       alt={category.imageAlt || category.name}
                       width={56}
                       height={56}
-                      className="rounded-full object-cover shadow-sm ring-2 ring-white/80 dark:ring-gray-900/60"
+                      className="rounded-md object-cover"
                     />
                   ) : (
-                    <div className="w-14 h-14 rounded-full bg-white/70 flex items-center justify-center text-lg font-semibold text-gray-700">
+                    <div className="w-14 h-14 rounded-md bg-slate-100 flex items-center justify-center text-lg font-bold text-slate-700">
                       {category.name.slice(0, 1)}
                     </div>
                   )}
                 </div>
-                <span className="inline-flex items-center gap-2 text-xs font-semibold text-gray-600 dark:text-gray-300 mb-1.5">
-                  <span className={`inline-block h-2.5 w-2.5 rounded-full ${category.color}`} aria-hidden="true" />
+                <span className="section-kicker mb-2">
                   Category
                 </span>
-                <h3 className="text-lg md:text-xl font-semibold text-gray-900 dark:text-white mb-1.5 md:mb-2">
+                <h3 className="text-lg md:text-xl font-bold text-slate-950 mb-2">
                   {category.name}
                 </h3>
-                <p className="text-sm md:text-base text-gray-600 dark:text-gray-400 line-clamp-2">
+                <p className="text-sm md:text-base leading-6 text-slate-600 line-clamp-2">
                   {category.description}
                 </p>
               </Link>
@@ -113,14 +111,14 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Trending Facts Section */}
-        <section className="container mx-auto px-4 py-12 md:py-16">
-          <div className="flex items-center justify-between mb-6 md:mb-8">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
-              🔥 Trending Now
-            </h2>
-            <Link href="/trending" className="text-purple-600 hover:text-purple-700 font-semibold text-sm md:text-base">
-              View All →
+        <section className="section-wrap py-14 md:py-20">
+          <div className="mb-8 flex items-end justify-between gap-4">
+            <div>
+              <p className="section-kicker">Editorial selection</p>
+              <h2 className="section-title mt-2">Editor's picks</h2>
+            </div>
+            <Link href="/trending" className="text-link">
+              View all
             </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
@@ -128,7 +126,7 @@ export default function Home() {
               <Link
                 key={post.id}
                 href={`/post/${post.slug}`}
-                className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 hover:shadow-lg transition transform hover:scale-105"
+                className="article-card"
               >
                 <div className="relative w-full h-44 md:h-48">
                   <Image
@@ -141,21 +139,21 @@ export default function Home() {
                 </div>
                 <div className="p-4 md:p-6">
                   <div className="flex items-center gap-2 mb-2 md:mb-3 flex-wrap">
-                    <span className="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 text-xs font-semibold px-2.5 py-1 rounded-full">
+                    <span className="quiet-pill">
                       {categories.find(c => c.slug === post.category)?.name}
                     </span>
-                    <span className="text-gray-500 dark:text-gray-400 text-xs md:text-sm">
+                    <span className="text-slate-500 text-xs md:text-sm">
                       {post.readingTime}
                     </span>
                     <PostBadge isTrending={post.isTrending} isFeatured={post.isFeatured} />
                   </div>
-                  <h3 className="text-base md:text-lg font-semibold text-gray-900 dark:text-white mb-2 md:mb-3 leading-tight line-clamp-2">
+                  <h3 className="text-base md:text-lg font-bold text-slate-950 mb-2 md:mb-3 leading-tight line-clamp-2">
                     {post.title}
                   </h3>
-                  <div className="flex items-center justify-between text-xs md:text-sm text-gray-500 dark:text-gray-400">
-                    <span>👁️ {post.views} views</span>
-                    <span className="text-purple-600 hover:text-purple-700 font-semibold">
-                      Read →
+                  <div className="flex items-center justify-between text-xs md:text-sm text-slate-500">
+                    <span>{post.date}</span>
+                    <span className="font-bold text-teal-700">
+                      Read
                     </span>
                   </div>
                 </div>
@@ -166,18 +164,18 @@ export default function Home() {
 
         {/* Editor's Picks Section */}
         {featuredPosts.length > 0 && (
-          <section className="container mx-auto px-4 py-12 md:py-16 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/10 dark:to-blue-900/10 rounded-2xl md:rounded-3xl">
-            <div className="flex items-center justify-between mb-6 md:mb-8">
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
-                ⭐ Editor's Picks
-              </h2>
+          <section className="border-y border-slate-200 bg-white py-14 md:py-20">
+            <div className="section-wrap">
+            <div className="mb-8">
+              <p className="section-kicker">Recommended reading</p>
+              <h2 className="section-title mt-2">Featured articles</h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
               {featuredPosts.map((post) => (
                 <Link
                   key={post.id}
                   href={`/post/${post.slug}`}
-                  className="group bg-white dark:bg-gray-800 rounded-xl overflow-hidden border-2 border-purple-200 dark:border-purple-800 hover:border-purple-400 dark:hover:border-purple-600 hover:shadow-xl transition transform hover:scale-105"
+                  className="article-card group"
                 >
                   <div className="relative w-full h-44 md:h-56">
                     <Image
@@ -187,34 +185,35 @@ export default function Home() {
                       className="object-cover group-hover:scale-110 transition duration-300"
                       sizes="(max-width: 768px) 100vw, 33vw"
                     />
-                    <div className="absolute top-3 right-3 md:top-4 md:right-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white text-xs font-bold px-2.5 py-1 md:px-3 rounded-full">
+                    <div className="absolute top-3 right-3 md:top-4 md:right-4 rounded-full bg-white/95 px-2.5 py-1 text-xs font-bold text-slate-950 shadow-sm">
                       FEATURED
                     </div>
                   </div>
                   <div className="p-4 md:p-6">
                     <div className="flex items-center gap-2 mb-2 md:mb-3">
-                      <span className="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 text-xs font-semibold px-2.5 py-1 rounded-full">
+                      <span className="quiet-pill">
                         {categories.find(c => c.slug === post.category)?.name}
                       </span>
-                      <span className="text-gray-500 dark:text-gray-400 text-xs md:text-sm">
+                      <span className="text-slate-500 text-xs md:text-sm">
                         {post.readingTime}
                       </span>
                     </div>
-                    <h3 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white mb-2 leading-tight line-clamp-2">
+                    <h3 className="text-lg md:text-xl font-bold text-slate-950 mb-2 leading-tight line-clamp-2">
                       {post.title}
                     </h3>
-                    <p className="text-gray-600 dark:text-gray-400 text-sm mb-3 md:mb-4 line-clamp-2">
+                    <p className="text-slate-600 text-sm leading-6 mb-3 md:mb-4 line-clamp-2">
                       {post.excerpt}
                     </p>
                     <div className="flex items-center justify-between text-xs md:text-sm">
-                      <span className="text-gray-500 dark:text-gray-400">👁️ {post.views} views</span>
-                      <span className="text-purple-600 font-semibold">
-                        Read More →
+                      <span className="text-slate-500">Updated {post.lastUpdated || post.date}</span>
+                      <span className="font-bold text-teal-700">
+                        Read more
                       </span>
                     </div>
                   </div>
                 </Link>
               ))}
+            </div>
             </div>
           </section>
         )}
@@ -225,13 +224,14 @@ export default function Home() {
         )}
 
         {/* Short Reads Section */}
-        <section className="container mx-auto px-4 py-12 md:py-16">
-          <div className="flex items-center justify-between mb-6 md:mb-8">
+        <section className="section-wrap py-14 md:py-20">
+          <div className="mb-8">
+            <p className="section-kicker">Short reads</p>
             <div>
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
-                ⏱️ Quick Reads
+              <h2 className="section-title mt-2">
+                Quick reads
               </h2>
-              <p className="text-gray-600 dark:text-gray-400 mt-1 md:mt-2 text-sm md:text-base">Perfect for your coffee break</p>
+              <p className="section-subtitle">Compact articles for when you want a useful idea quickly.</p>
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
@@ -242,7 +242,7 @@ export default function Home() {
                 <Link
                   key={post.id}
                   href={`/post/${post.slug}`}
-                  className="bg-white dark:bg-gray-800 rounded-xl p-4 md:p-6 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition transform hover:scale-105"
+                  className="article-card p-4 md:p-5"
                 >
                   <div className="flex items-start gap-3 md:gap-4">
                     <div className="flex-shrink-0 w-16 h-16 md:w-20 md:h-20 relative rounded-lg overflow-hidden">
@@ -256,15 +256,15 @@ export default function Home() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1.5 md:mb-2">
-                        <span className="text-xs bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 font-semibold px-2 py-0.5 md:py-1 rounded">
+                        <span className="quiet-pill">
                           {post.readingTime}
                         </span>
                         <PostBadge isTrending={post.isTrending} isFeatured={post.isFeatured} />
                       </div>
-                      <h3 className="text-sm md:text-base font-bold text-gray-900 dark:text-white mb-1.5 md:mb-2 leading-tight line-clamp-2">
+                      <h3 className="text-sm md:text-base font-bold text-slate-950 mb-1.5 md:mb-2 leading-tight line-clamp-2">
                         {post.title}
                       </h3>
-                      <p className="text-gray-600 dark:text-gray-400 text-xs md:text-sm flex items-center gap-2">
+                      <p className="text-slate-500 text-xs md:text-sm flex items-center gap-2">
                         {categoryInfo?.image ? (
                           <Image
                             src={categoryInfo.image}
@@ -289,13 +289,14 @@ export default function Home() {
         </section>
 
         {/* Latest Articles */}
-        <section className="container mx-auto px-4 py-12 md:py-16 bg-gray-50 dark:bg-gray-900/50 rounded-2xl md:rounded-3xl">
-          <div className="flex items-center justify-between mb-6 md:mb-8">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
-              🆕 Latest Discoveries
-            </h2>
-            <Link href="/latest" className="text-purple-600 hover:text-purple-700 font-semibold text-sm md:text-base">
-              View All →
+        <section className="section-wrap py-14 md:py-20">
+          <div className="mb-8 flex items-end justify-between gap-4">
+            <div>
+              <p className="section-kicker">Recently updated</p>
+              <h2 className="section-title mt-2">Latest discoveries</h2>
+            </div>
+            <Link href="/latest" className="text-link">
+              View all
             </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
@@ -303,7 +304,7 @@ export default function Home() {
               <Link
                 key={post.id}
                 href={`/post/${post.slug}`}
-                className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 hover:shadow-lg transition flex flex-col sm:flex-row"
+                className="article-card flex flex-col sm:flex-row"
               >
                 <div className="relative w-full sm:w-36 md:w-40 h-48 sm:h-full flex-shrink-0">
                   <Image
@@ -316,23 +317,23 @@ export default function Home() {
                 </div>
                 <div className="p-4 md:p-6 flex-1">
                   <div className="flex items-center gap-2 mb-2 flex-wrap">
-                    <span className="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 text-xs font-semibold px-2.5 py-1 rounded-full">
+                    <span className="quiet-pill">
                       {categories.find(c => c.slug === post.category)?.name}
                     </span>
-                    <span className="text-gray-500 dark:text-gray-400 text-xs">
+                    <span className="text-slate-500 text-xs">
                       {new Date(post.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                     </span>
                   </div>
-                  <h3 className="text-base md:text-lg font-bold text-gray-900 dark:text-white mb-2 leading-tight line-clamp-2">
+                  <h3 className="text-base md:text-lg font-bold text-slate-950 mb-2 leading-tight line-clamp-2">
                     {post.title}
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm mb-3 line-clamp-2 hidden sm:block">
+                  <p className="text-slate-600 text-sm leading-6 mb-3 line-clamp-2 hidden sm:block">
                     {post.excerpt}
                   </p>
-                  <div className="flex items-center gap-3 text-xs md:text-sm text-gray-500 dark:text-gray-400">
+                  <div className="flex items-center gap-3 text-xs md:text-sm text-slate-500">
                     <span>{post.readingTime}</span>
                     <span>•</span>
-                    <span>👁️ {post.views}</span>
+                    <span>{post.date}</span>
                   </div>
                 </div>
               </Link>
@@ -341,12 +342,8 @@ export default function Home() {
         </section>
 
         {/* CTA Section */}
-        <section className="container mx-auto px-4 py-12 md:py-20">
-          <div className="relative overflow-hidden rounded-2xl md:rounded-3xl border border-white/15 bg-gradient-to-r from-indigo-700 via-blue-700 to-cyan-700 p-8 md:p-12 text-center text-white shadow-2xl">
-            <div className="pointer-events-none absolute -top-24 -right-24 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
-            <div className="pointer-events-none absolute -bottom-28 -left-28 h-72 w-72 rounded-full bg-cyan-300/20 blur-3xl" />
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.18),transparent_60%)]" />
-
+        <section className="section-wrap py-14 md:py-20">
+          <div className="rounded-lg border border-slate-200 bg-slate-950 p-8 text-center text-white md:p-12">
             <HomeNewsletterCTA />
           </div>
         </section>

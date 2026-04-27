@@ -1,4 +1,4 @@
-import { TrendingUp, Star } from 'lucide-react';
+import { Star, TrendingUp } from 'lucide-react';
 
 interface PostBadgeProps {
   isTrending?: boolean;
@@ -12,15 +12,15 @@ export default function PostBadge({ isTrending, isFeatured, className = '' }: Po
   return (
     <div className={`flex gap-2 ${className}`}>
       {isTrending && (
-        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-gradient-to-r from-orange-500 to-pink-500 text-white shadow-sm">
+        <span className="inline-flex items-center gap-1 rounded-full border border-teal-200 bg-teal-50 px-2.5 py-1 text-xs font-bold text-teal-800">
           <TrendingUp className="w-3 h-3" />
-          Trending
+          Selected
         </span>
       )}
       {isFeatured && (
-        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-gradient-to-r from-purple-500 to-blue-500 text-white shadow-sm">
+        <span className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-xs font-bold text-amber-800">
           <Star className="w-3 h-3" />
-          Readers' Favorite
+          Featured
         </span>
       )}
     </div>

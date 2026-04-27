@@ -34,7 +34,7 @@ export default function CategoriesPage() {
             Explore All Categories
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-400 text-center mb-12">
-            Dive into fascinating topics and discover mind-blowing facts across different areas of knowledge.
+            Dive into clear explanations across different areas of knowledge.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

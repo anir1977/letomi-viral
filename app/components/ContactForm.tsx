@@ -7,13 +7,22 @@ export default function ContactForm() {
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+    const subject = String(formData.get("subject") || "CurioSpark message");
+    const name = String(formData.get("name") || "");
+    const email = String(formData.get("email") || "");
+    const message = String(formData.get("message") || "");
+    const body = encodeURIComponent(`${message}\n\nFrom: ${name}\nEmail: ${email}`);
+
+    window.location.href = `mailto:info@curiospark.org?subject=${encodeURIComponent(subject)}&body=${body}`;
     setSubmitted(true);
   };
 
   if (submitted) {
     return (
       <div className="rounded-xl bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200/70 dark:border-emerald-700/60 p-6 text-emerald-800 dark:text-emerald-100">
-        Thanks for reaching out. Your message has been received and we'll respond shortly.
+        Your email app should open with the message ready to send. You can also write directly to info@curiospark.org.
       </div>
     );
   }
@@ -27,6 +36,7 @@ export default function ContactForm() {
           </label>
           <input
             id="contact-name"
+            name="name"
             type="text"
             required
             className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-purple-200/60 dark:focus:ring-purple-500/30"
@@ -39,6 +49,7 @@ export default function ContactForm() {
           </label>
           <input
             id="contact-email"
+            name="email"
             type="email"
             required
             className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-purple-200/60 dark:focus:ring-purple-500/30"
@@ -53,6 +64,7 @@ export default function ContactForm() {
         </label>
         <input
           id="contact-subject"
+          name="subject"
           type="text"
           required
           className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-purple-200/60 dark:focus:ring-purple-500/30"
@@ -66,6 +78,7 @@ export default function ContactForm() {
         </label>
         <textarea
           id="contact-message"
+          name="message"
           required
           rows={6}
           className="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-4 py-3 text-gray-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-purple-200/60 dark:focus:ring-purple-500/30"

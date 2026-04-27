@@ -127,7 +127,6 @@ export default function ArticleLayout({
   const resolvedExcerpt = resolvedPost?.excerpt || (resolvedPost as { description?: string } | undefined)?.description || excerpt || "";
   const resolvedSlug = resolvedPost?.slug || slug || "";
   const resolvedReadingTime = resolvedPost?.readingTime || readingTime;
-  const resolvedViews = resolvedPost?.views || views;
   const resolvedImageAlt = resolvedPost?.imageAlt || imageAlt || resolvedTitle || "";
   const resolvedHeroImage = resolvedPost?.image || resolvedPost?.heroImage || image || "/articles/default.jpg";
   const resolvedContentMarkdown = resolvedPost?.content || contentMarkdown;
@@ -204,19 +203,19 @@ export default function ArticleLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+    <div className="editorial-shell min-h-screen">
       {resolvedPost && (
         <StructuredData post={resolvedPost} category={structuredCategory} />
       )}
       <ReadingProgress />
 
-      <article className="container mx-auto px-4 pt-12 pb-24">
+      <article className="section-wrap pt-10 pb-24">
         <div className="max-w-4xl mx-auto">
           {resolvedBreadcrumb}
 
-          <div className="mt-6 md:mt-10 bg-white dark:bg-zinc-900 border border-gray-200/70 dark:border-gray-800 rounded-xl shadow-sm p-8">
+          <div className="mt-6 md:mt-10 rounded-lg border border-slate-200 bg-white p-5 shadow-[0_1px_2px_rgba(15,23,42,0.04)] md:p-8">
             <div className="mb-8 md:mb-10">
-              <div className="relative w-full aspect-video rounded-xl shadow-sm overflow-hidden">
+              <div className="relative w-full aspect-video rounded-lg overflow-hidden">
                 <Image
                   src={resolvedHeroImage}
                   alt={resolvedImageAlt}
@@ -234,7 +233,7 @@ export default function ArticleLayout({
                   displayCategory.href || displayCategory.slug ? (
                     <Link
                       href={displayCategory.href || `/category/${displayCategory.slug}`}
-                      className="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 text-sm font-semibold px-4 py-2 rounded-full hover:bg-purple-200 dark:hover:bg-purple-900/50 transition"
+                      className="quiet-pill hover:border-teal-200 hover:bg-teal-50 hover:text-teal-800"
                     >
                       <span className="inline-flex items-center gap-2">
                         {displayCategory.image ? (
@@ -243,12 +242,12 @@ export default function ArticleLayout({
                             alt={displayCategory.imageAlt || displayCategory.name}
                             width={18}
                             height={18}
-                            className="rounded-full object-cover"
+                            className="rounded-md object-cover"
                           />
                         ) : displayCategory.icon ? (
                           <span>{displayCategory.icon}</span>
                         ) : (
-                          <span className="w-4 h-4 rounded-full bg-purple-200 text-[10px] font-semibold text-purple-700 flex items-center justify-center">
+                          <span className="w-4 h-4 rounded-md bg-slate-100 text-[10px] font-bold text-slate-700 flex items-center justify-center">
                             {displayCategory.name.slice(0, 1)}
                           </span>
                         )}
@@ -256,7 +255,7 @@ export default function ArticleLayout({
                       </span>
                     </Link>
                   ) : (
-                    <span className="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 text-sm font-semibold px-4 py-2 rounded-full">
+                    <span className="quiet-pill">
                       <span className="inline-flex items-center gap-2">
                         {displayCategory.image ? (
                           <Image
@@ -264,12 +263,12 @@ export default function ArticleLayout({
                             alt={displayCategory.imageAlt || displayCategory.name}
                             width={18}
                             height={18}
-                            className="rounded-full object-cover"
+                            className="rounded-md object-cover"
                           />
                         ) : displayCategory.icon ? (
                           <span>{displayCategory.icon}</span>
                         ) : (
-                          <span className="w-4 h-4 rounded-full bg-purple-200 text-[10px] font-semibold text-purple-700 flex items-center justify-center">
+                          <span className="w-4 h-4 rounded-md bg-slate-100 text-[10px] font-bold text-slate-700 flex items-center justify-center">
                             {displayCategory.name.slice(0, 1)}
                           </span>
                         )}
@@ -280,30 +279,30 @@ export default function ArticleLayout({
                 )}
               </div>
 
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white leading-tight mb-6">
+              <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-slate-950 leading-tight mb-6">
                 {resolvedTitle}
               </h1>
 
-              <div className="flex flex-wrap items-center gap-3 text-sm md:text-base text-gray-600 dark:text-gray-400">
+              <div className="flex flex-wrap items-center gap-3 text-sm md:text-base text-slate-500">
                 {displayCategory && (
                   displayCategory.href || displayCategory.slug ? (
                     <Link
                       href={displayCategory.href || `/category/${displayCategory.slug}`}
-                      className="font-semibold text-gray-900 dark:text-gray-200 hover:underline"
+                      className="font-bold text-slate-900 hover:underline"
                     >
                       {displayCategory.name}
                     </Link>
                   ) : (
-                    <span className="font-semibold text-gray-900 dark:text-gray-200">
+                    <span className="font-bold text-slate-900">
                       {displayCategory.name}
                     </span>
                   )
                 )}
-                <span className="text-gray-400">|</span>
+                <span className="text-slate-300">|</span>
                 <span>{resolvedDateLabel}</span>
               </div>
 
-              <p className="text-lg md:text-xl text-gray-700 dark:text-gray-300 leading-relaxed mb-8">
+              <p className="text-lg md:text-xl text-slate-600 leading-8 mb-8">
                 {resolvedExcerpt}
               </p>
 
@@ -312,19 +311,19 @@ export default function ArticleLayout({
               </div>
             </header>
 
-            <div className="h-px bg-gray-200/70 dark:bg-gray-800 my-6"></div>
+            <div className="h-px bg-slate-200 my-6"></div>
 
             {!isAdFree && <AdSlot position="top" className="my-6" />}
 
             {resolvedContentMarkdown && (
-              <aside className="bg-gray-50 dark:bg-gray-900/40 border border-gray-200/70 dark:border-gray-800 rounded-xl p-4 sm:p-5 md:p-6">
+              <aside className="rounded-lg border border-slate-200 bg-slate-50 p-4 sm:p-5 md:p-6">
                 <TableOfContents content={resolvedContentMarkdown} />
               </aside>
             )}
 
             {resolvedDidYouKnow && <DidYouKnowBox fact={resolvedDidYouKnow} />}
 
-            <section className="prose prose-lg max-w-3xl mx-auto leading-relaxed text-lg text-gray-700 dark:text-gray-300 prose-p:my-6 prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-li:my-2 prose-h2:mt-10 prose-h2:mb-4 prose-h2:text-2xl md:prose-h2:text-3xl prose-h2:font-semibold prose-h3:mt-10 prose-h3:mb-4 prose-h3:text-xl prose-h3:font-semibold prose-p:first-of-type:text-xl prose-p:first-of-type:first-letter:text-6xl md:prose-p:first-of-type:first-letter:text-7xl prose-p:first-of-type:first-letter:font-bold prose-p:first-of-type:first-letter:leading-none prose-p:first-of-type:first-letter:float-left prose-p:first-of-type:first-letter:mr-3 prose-p:first-of-type:first-letter:text-gray-900 dark:prose-p:first-of-type:first-letter:text-white">
+            <section className="prose prose-lg max-w-3xl mx-auto leading-relaxed text-lg text-slate-700 prose-p:my-6 prose-p:text-slate-700 prose-li:my-2 prose-h2:mt-10 prose-h2:mb-4 prose-h2:text-2xl md:prose-h2:text-3xl prose-h2:font-bold prose-h2:text-slate-950 prose-h3:mt-10 prose-h3:mb-4 prose-h3:text-xl prose-h3:font-bold prose-h3:text-slate-950 prose-a:text-teal-800 prose-a:font-bold prose-p:first-of-type:text-xl prose-p:first-of-type:first-letter:text-6xl md:prose-p:first-of-type:first-letter:text-7xl prose-p:first-of-type:first-letter:font-bold prose-p:first-of-type:first-letter:leading-none prose-p:first-of-type:first-letter:float-left prose-p:first-of-type:first-letter:mr-3 prose-p:first-of-type:first-letter:text-slate-950">
               {resolvedContentWithLinks ? <MarkdownContent content={resolvedContentWithLinks} /> : resolvedContentNode}
             </section>
 
@@ -355,7 +354,7 @@ export default function ArticleLayout({
 
         {resolvedRelatedItems && resolvedRelatedItems.length > 0 && (
           <section className="max-w-5xl mx-auto mt-16">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-8">
+            <h2 className="section-title mb-8">
               {relatedTitle}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -363,7 +362,7 @@ export default function ArticleLayout({
                 <Link
                   key={relatedItem.slug}
                   href={relatedItem.href || `/post/${relatedItem.slug}`}
-                  className="bg-white dark:bg-gray-900 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-800 hover:shadow-lg transition"
+                  className="article-card"
                 >
                   <div className="relative w-full h-40">
                     <Image
@@ -377,21 +376,21 @@ export default function ArticleLayout({
                   <div className="p-4">
                     <div className="flex items-center gap-2 mb-2 flex-wrap">
                       {relatedItem.categoryLabel && (
-                        <span className="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 text-xs font-semibold px-3 py-1 rounded-full">
+                        <span className="quiet-pill">
                           {relatedItem.categoryLabel}
                         </span>
                       )}
                       {relatedItem.readingTime && (
-                        <span className="text-gray-500 dark:text-gray-400 text-sm">
+                        <span className="text-slate-500 text-sm">
                           {relatedItem.readingTime}
                         </span>
                       )}
                       <PostBadge isTrending={relatedItem.isTrending} isFeatured={relatedItem.isFeatured} />
                     </div>
-                    <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-2 leading-tight line-clamp-2">
+                    <h3 className="text-base font-bold text-slate-950 mb-2 leading-tight line-clamp-2">
                       {relatedItem.title}
                     </h3>
-                    <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-2">
+                    <p className="text-slate-600 text-sm line-clamp-2">
                       {relatedItem.excerpt}
                     </p>
                   </div>
@@ -403,7 +402,7 @@ export default function ArticleLayout({
 
         {readNextItems.length > 0 && (
           <section className="max-w-5xl mx-auto mt-16">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-8">
+            <h2 className="section-title mb-8">
               Read Next
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -411,7 +410,7 @@ export default function ArticleLayout({
                 <Link
                   key={item.slug}
                   href={`/post/${item.slug}`}
-                  className="bg-white dark:bg-gray-900 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-800 hover:shadow-lg transition"
+                  className="article-card"
                 >
                   <div className="relative w-full h-40">
                     <Image
@@ -423,10 +422,10 @@ export default function ArticleLayout({
                     />
                   </div>
                   <div className="p-4">
-                    <h3 className="text-base font-semibold text-gray-900 dark:text-white mb-2 leading-tight line-clamp-2">
+                    <h3 className="text-base font-bold text-slate-950 mb-2 leading-tight line-clamp-2">
                       {item.title}
                     </h3>
-                    <p className="text-gray-600 dark:text-gray-400 text-sm line-clamp-2">
+                    <p className="text-slate-600 text-sm line-clamp-2">
                       {item.excerpt}
                     </p>
                   </div>
@@ -437,18 +436,18 @@ export default function ArticleLayout({
         )}
 
         <div className="max-w-3xl mx-auto mt-16">
-          <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl p-8 text-center text-white">
-            <h3 className="text-2xl font-bold mb-3">Enjoyed this fact?</h3>
-            <p className="text-lg mb-6 opacity-90">
+          <div className="rounded-lg bg-slate-950 p-8 text-center text-white">
+            <h3 className="text-2xl font-bold mb-3 text-white">Enjoyed this article?</h3>
+            <p className="text-lg mb-6 text-slate-200">
               Get more amazing facts delivered to your inbox
             </p>
             <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
               <input
                 type="email"
                 placeholder="Enter your email"
-                className="flex-1 px-4 py-3 rounded-lg text-gray-900 focus:outline-none focus:ring-4 focus:ring-white/50"
+                className="flex-1 rounded-md px-4 py-3 text-slate-900 focus:outline-none focus:ring-4 focus:ring-white/30"
               />
-              <button className="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
+              <button className="rounded-md bg-white px-6 py-3 font-bold text-slate-950 transition hover:bg-slate-100">
                 Subscribe
               </button>
             </div>

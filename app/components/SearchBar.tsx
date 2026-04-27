@@ -49,16 +49,16 @@ export default function SearchBar() {
       <div className="relative">
         <input
           type="text"
-          placeholder="Search facts, topics, or keywords"
+          placeholder="Search topics or articles"
           value={query}
           onChange={(e) => {
             setQuery(e.target.value);
             setIsOpen(true);
           }}
           onFocus={() => setIsOpen(true)}
-          className="w-full rounded-full border border-white/30 bg-white/10 backdrop-blur-sm px-4 py-2.5 pl-10 pr-10 text-sm text-white placeholder-white/60 shadow-sm transition focus:border-white/50 focus:outline-none focus:ring-2 focus:ring-white/30"
+          className="w-full rounded-md border border-slate-200 bg-white px-4 py-2.5 pl-10 pr-10 text-sm text-slate-900 placeholder-slate-400 shadow-sm transition focus:border-teal-500 focus:outline-none focus:ring-4 focus:ring-teal-100"
         />
-        <svg className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/60" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
         </svg>
         {query && (
@@ -69,7 +69,7 @@ export default function SearchBar() {
             }}
             className="absolute right-3 top-1/2 -translate-y-1/2"
           >
-            <svg className="h-4 w-4 text-white/60 hover:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="h-4 w-4 text-slate-400 hover:text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
@@ -77,7 +77,7 @@ export default function SearchBar() {
       </div>
 
       {isOpen && results.length > 0 && (
-        <div className="absolute top-full z-50 mt-2 w-full max-h-96 overflow-y-auto rounded-2xl border border-slate-200 bg-white shadow-xl">
+        <div className="absolute top-full z-50 mt-2 w-full max-h-96 overflow-y-auto rounded-lg border border-slate-200 bg-white shadow-xl">
           {results.map((post) => (
             <Link
               key={post.id}
@@ -97,7 +97,7 @@ export default function SearchBar() {
               <div className="mt-2 flex items-center gap-2 text-xs text-slate-500">
                 <span>{post.readingTime}</span>
                 <span>•</span>
-                <span>{post.views} views</span>
+                <span>{post.date}</span>
               </div>
             </Link>
           ))}
@@ -105,7 +105,7 @@ export default function SearchBar() {
       )}
 
       {isOpen && query.length >= 2 && results.length === 0 && (
-        <div className="absolute top-full z-50 mt-2 w-full rounded-2xl border border-slate-200 bg-white p-4 shadow-xl">
+        <div className="absolute top-full z-50 mt-2 w-full rounded-lg border border-slate-200 bg-white p-4 shadow-xl">
           <p className="text-center text-slate-600">
             No results found for "{query}"
           </p>

@@ -23,13 +23,13 @@ export default function AdSense({
   responsive = true,
 }: AdSlotProps) {
   const adRef = useRef<HTMLModElement>(null);
+  const adsenseEnabled = process.env.NEXT_PUBLIC_ENABLE_ADSENSE === 'true';
   const isProduction = process.env.NODE_ENV === 'production';
   const adClient = process.env.NEXT_PUBLIC_ADSENSE_CLIENT || 'ca-pub-9750203778031302';
   const hasValidSlot = Boolean(slot) && !slot.includes('XXXXXXXXXX');
 
   useEffect(() => {
-    if (!isProduction) {
-      // Don't load ads in development
+    if (!isProduction || !adsenseEnabled) {
       return;
     }
 
@@ -40,20 +40,10 @@ export default function AdSense({
     } catch (error) {
       console.error('AdSense error:', error);
     }
-  }, [isProduction]);
+  }, [adsenseEnabled, isProduction]);
 
-  // Don't render ads during SSR, in development, or if slot is not configured.
-  if (!isProduction || typeof window === 'undefined' || !hasValidSlot) {
-    return (
-      <div
-        className={`bg-gray-200 dark:bg-gray-700 border-2 border-dashed border-gray-400 dark:border-gray-600 rounded-lg flex items-center justify-center ${className}`}
-        style={{ minHeight: '250px', ...style }}
-      >
-        <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">
-          Ad Placeholder (Dev Mode)
-        </p>
-      </div>
-    );
+  if (!isProduction || !adsenseEnabled || typeof window === 'undefined' || !hasValidSlot) {
+    return null;
   }
 
   return (

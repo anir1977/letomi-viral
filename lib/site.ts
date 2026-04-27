@@ -1,6 +1,6 @@
 export const SITE_NAME = "CurioSpark";
 export const SITE_URL = "https://curiospark.org";
-export const SITE_DESCRIPTION = "Discover fascinating facts about psychology, science, human behavior, and life. Feed your curiosity with bite-sized knowledge.";
+export const SITE_DESCRIPTION = "CurioSpark publishes clear, source-aware articles about psychology, technology, health, nature, and the science behind everyday life.";
 export const SITE_LOGO_PATH = "/icon.svg";
 
 export function toAbsoluteUrl(path: string) {

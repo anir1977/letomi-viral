@@ -6,7 +6,7 @@ import Breadcrumb from '@/app/components/Breadcrumb';
 
 export const metadata: Metadata = {
   title: '📚 All Facts - CurioSpark',
-  description: 'Browse our complete collection of fascinating, verified facts across science, history, nature, and culture. Discover mind-blowing truths backed by research.',
+  description: 'Browse CurioSpark facts and short explanations across psychology, science, history, nature, and culture.',
   robots: {
     index: false,
     follow: true,
@@ -67,7 +67,7 @@ export default function FactsPage() {
                   
                   <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
                     <span>{post.readingTime}</span>
-                    <span>{post.views} views</span>
+                    <span>{post.readingTime}</span>
                   </div>
                 </div>
               </Link>

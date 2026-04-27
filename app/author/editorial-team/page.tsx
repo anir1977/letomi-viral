@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Editorial Team - CurioSpark",
-  description: "Meet the passionate team behind CurioSpark's fascinating facts and discoveries.",
+  description: "Meet the editorial team behind CurioSpark's clear, source-aware curiosity articles.",
 };
 
 export default function AuthorPage() {
@@ -25,7 +25,7 @@ export default function AuthorPage() {
                   CurioSpark Editorial Team
                 </h1>
                 <p className="text-xl text-gray-600 dark:text-gray-400 mb-6">
-                  Bringing you fascinating facts and mind-blowing discoveries since 2026
+                  Publishing clear, source-aware curiosity articles since 2026
                 </p>
                 
                 <div className="flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-400">

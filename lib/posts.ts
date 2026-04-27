@@ -6456,7 +6456,7 @@ The spotlight effect makes you feel watched, but most people are focused on them
 export function getAllPosts(): Post[] {
   const bySlug = new Map<string, Post>();
 
-  for (const post of posts) {
+  for (const post of posts.filter(isApprovalReadyPost)) {
     const existing = bySlug.get(post.slug);
     if (!existing) {
       bySlug.set(post.slug, post);
@@ -6472,6 +6472,22 @@ export function getAllPosts(): Post[] {
   }
 
   return Array.from(bySlug.values());
+}
+
+function isApprovalReadyPost(post: Post): boolean {
+  const content = post.content || "";
+  const repeatedConstraintPhrase = (content.match(/A stronger strategy starts with constraints/g) || []).length;
+
+  if (post.imageAlt?.includes("AI-generated visual")) return false;
+  if (content.includes("Does this also help SEO performance?")) return false;
+  if (content.includes("From an SEO perspective")) return false;
+  if (repeatedConstraintPhrase > 2) return false;
+  if (content.includes("autocorrectThe")) return false;
+  if (content.includes("показа")) return false;
+  if (content.includes("空白")) return false;
+  if (content.includes("時間")) return false;
+
+  return true;
 }
 
 export function getPostBySlug(slug: string): Post | undefined {
@@ -6558,7 +6574,11 @@ export function getCategoryBySlug(slug: string): Category | undefined {
 
 export function getTrendingPosts(limit: number = 6): Post[] {
   return [...getAllPosts()]
-    .sort((a, b) => parseFloat(b.views.replace('K', '')) - parseFloat(a.views.replace('K', '')))
+    .sort((a, b) => {
+      const featuredScore = Number(Boolean(b.isFeatured || b.isTrending)) - Number(Boolean(a.isFeatured || a.isTrending));
+      if (featuredScore !== 0) return featuredScore;
+      return new Date(b.lastUpdated || b.date).getTime() - new Date(a.lastUpdated || a.date).getTime();
+    })
     .slice(0, limit);
 }
 
@@ -6592,8 +6612,7 @@ export function getPostsWithDidYouKnow(limit: number = 6): Post[] {
 }
 
 export function getMostSharedPosts(limit: number = 6): Post[] {
-  // Sort by view count as proxy for shares
   return [...getAllPosts()]
-    .sort((a, b) => parseFloat(b.views.replace('K', '')) - parseFloat(a.views.replace('K', '')))
+    .sort((a, b) => new Date(b.lastUpdated || b.date).getTime() - new Date(a.lastUpdated || a.date).getTime())
     .slice(0, limit);
 }

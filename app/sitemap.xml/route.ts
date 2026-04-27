@@ -28,11 +28,25 @@ function toIsoDate(value?: string) {
 export async function GET() {
   const lastmod = new Date().toISOString();
   const posts = getAllPosts();
+  const staticUrls = [
+    "",
+    "/latest",
+    "/categories",
+    "/facts",
+    "/about",
+    "/about/editorial-process",
+    "/about/fact-checking",
+    "/contact",
+    "/privacy-policy",
+    "/terms-of-service",
+  ].map((path) => toUrlEntry(path || "/", lastmod));
   const postUrls = posts.map((post) => {
     const updatedAt = toIsoDate(post.lastUpdated) || toIsoDate(post.date) || lastmod;
     return toUrlEntry(`/post/${post.slug}`, updatedAt);
   });
-  const urls = postUrls.join("\n");
+  const categoryUrls = Array.from(new Set(posts.map((post) => post.category)))
+    .map((category) => toUrlEntry(`/category/${category}`, lastmod));
+  const urls = [...staticUrls, ...categoryUrls, ...postUrls].join("\n");
 
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

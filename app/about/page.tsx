@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "About Us - CurioSpark",
-  description: "Learn about CurioSpark, your daily source of fascinating facts, scientific discoveries, and curiosity-driven knowledge.",
+  description: "Learn about CurioSpark's reader-focused editorial approach, source standards, and commitment to clear curiosity-driven articles.",
 };
 
 export default function AboutPage() {

@@ -36,10 +36,10 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
   const isTechnology = category.slug === "technology";
   const title = isTechnology
     ? "Technology Facts & AI Insights - CurioSpark"
-    : `${category.name} Facts - CurioSpark`;
+    : `${category.name} Articles - CurioSpark`;
   const description = isTechnology
-    ? "Explore technology trends, AI breakthroughs, and future-shaping innovations. Clear, concise tech insights updated regularly."
-    : `Discover fascinating ${category.name.toLowerCase()} facts. ${category.description}`;
+    ? "Explore practical technology and AI explainers written with clear context and source-aware editorial standards."
+    : `Explore CurioSpark articles about ${category.name.toLowerCase()}. ${category.description}`;
   const keywords = isTechnology
     ? ["technology", "AI", "artificial intelligence", "tech trends", "innovation", "future tech"]
     : undefined;
@@ -78,29 +78,30 @@ export default function CategoryPage({ params }: CategoryPageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-black">
-      <main className="container mx-auto px-4 py-16">
-        <div className="max-w-4xl mx-auto mb-12">
-          <div className="flex items-center justify-center mb-6">
+    <div className="editorial-shell min-h-screen">
+      <main className="section-wrap py-16">
+        <div className="max-w-4xl mb-12">
+          <div className="flex items-center mb-6">
             {category.image ? (
               <Image
                 src={category.image}
                 alt={category.imageAlt || category.name}
                 width={96}
                 height={96}
-                className="rounded-full object-cover shadow-sm"
+                className="rounded-lg object-cover"
               />
             ) : (
-              <div className="w-24 h-24 rounded-full bg-white/80 flex items-center justify-center text-3xl font-semibold text-gray-700">
+              <div className="w-24 h-24 rounded-lg bg-white flex items-center justify-center text-3xl font-bold text-slate-700">
                 {category.name.slice(0, 1)}
               </div>
             )}
           </div>
-          <h1 className="text-5xl font-bold text-gray-900 dark:text-white mb-6 text-center">
+          <p className="section-kicker mb-3">Category</p>
+          <h1 className="text-5xl font-bold tracking-tight text-slate-950 mb-6">
             {category.name}
           </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-400 text-center max-w-2xl mx-auto">
-            {category.description}. Explore our collection of {posts.length} fascinating articles below.
+          <p className="max-w-2xl text-xl leading-8 text-slate-600">
+            {category.description}. Explore {posts.length} carefully selected articles below.
           </p>
         </div>
 
@@ -109,7 +110,7 @@ export default function CategoryPage({ params }: CategoryPageProps) {
             <Link
               key={post.slug}
               href={`/post/${post.slug}`}
-              className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 hover:shadow-lg transition"
+              className="article-card"
             >
               <div className="relative w-full h-48">
                 <Image
@@ -122,24 +123,24 @@ export default function CategoryPage({ params }: CategoryPageProps) {
               </div>
               <div className="p-6">
                 <div className="flex items-center gap-2 mb-3 flex-wrap">
-                  <span className="bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 text-xs font-semibold px-3 py-1 rounded-full">
+                  <span className="quiet-pill">
                     {category.name}
                   </span>
-                  <span className="text-gray-500 dark:text-gray-400 text-sm">
+                  <span className="text-slate-500 text-sm">
                     {post.readingTime}
                   </span>
                   <PostBadge isTrending={post.isTrending} isFeatured={post.isFeatured} />
                 </div>
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3 leading-tight">
+                <h2 className="text-lg font-bold text-slate-950 mb-3 leading-tight">
                   {post.title}
                 </h2>
-                <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">
+                <p className="text-slate-600 text-sm leading-6 mb-4 line-clamp-2">
                   {post.excerpt}
                 </p>
-                <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
-                  <span>👁️ {post.views} views</span>
-                  <span className="text-purple-600 hover:text-purple-700 font-semibold">
-                    Read →
+                <div className="flex items-center justify-between text-sm text-slate-500">
+                  <span>{post.readingTime}</span>
+                  <span className="font-bold text-teal-700">
+                    Read
                   </span>
                 </div>
               </div>
