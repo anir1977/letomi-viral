@@ -94,6 +94,16 @@ export default function MarkdownContent({ content }: MarkdownContentProps) {
             {children}
           </a>
         ),
+        img: ({ src, alt, ...props }) => (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={src || ""}
+            alt={alt || ""}
+            className="my-8 aspect-video w-full rounded-lg object-cover shadow-sm"
+            loading="lazy"
+            {...props}
+          />
+        ),
         // Blockquotes
         blockquote: ({ children, ...props }) => (
           <blockquote

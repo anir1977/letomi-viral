@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { LockKeyhole, SearchCheck } from "lucide-react";
 import { analyzeDraft, getDraftArticles } from "@/lib/admin/drafts";
+import MarkdownContent from "@/app/components/MarkdownContent";
 
 export const dynamic = "force-dynamic";
 
@@ -148,8 +149,10 @@ export default function DraftDashboard({ searchParams }: DraftDashboardProps) {
                   </div>
 
                   <details className="mt-6 rounded-lg border border-slate-200 bg-slate-50 p-4">
-                    <summary className="cursor-pointer font-bold text-slate-950">Read full draft</summary>
-                    <div className="mt-4 whitespace-pre-wrap leading-7 text-slate-700">{draft.content}</div>
+                    <summary className="cursor-pointer font-bold text-slate-950">Preview full draft</summary>
+                    <div className="mt-5 rounded-lg bg-white p-5">
+                      <MarkdownContent content={draft.content} />
+                    </div>
                   </details>
                 </article>
               );
