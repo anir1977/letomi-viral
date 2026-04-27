@@ -14,7 +14,10 @@
     "promote": "node scripts/generate-promotion.mjs",
     "seo:check": "node scripts/check-indexation-redirects.mjs",
     "posts:dedupe": "node scripts/cleanup-duplicate-posts.mjs",
-    "n8n:deploy": "node scripts/n8n-deploy-workflow.mjs"
+    "n8n:deploy": "node scripts/n8n-deploy-workflow.mjs",
+    "drafts:list": "node scripts/drafts/list-drafts.mjs",
+    "drafts:generate": "node scripts/drafts/generate-drafts.mjs",
+    "drafts:publish": "node scripts/drafts/publish-draft.mjs"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
