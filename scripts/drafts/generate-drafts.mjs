@@ -100,6 +100,28 @@ function existingSlugs() {
   return slugs;
 }
 
+function getInternalLinks(category) {
+  if (!fs.existsSync(postsPath)) {
+    return [
+      { title: 'Latest Articles', url: '/latest' },
+      { title: 'CurioSpark Categories', url: '/categories' },
+    ];
+  }
+
+  const postText = fs.readFileSync(postsPath, 'utf8');
+  const links = [];
+  const regex = /title:\s*"([^"]+)"[\s\S]*?slug:\s*"([^"]+)"[\s\S]*?category:\s*"([^"]+)"/g;
+  let match;
+
+  while ((match = regex.exec(postText)) !== null) {
+    links.push({ title: match[1], url: `/post/${match[2]}`, category: match[3] });
+  }
+
+  const sameCategory = links.filter((link) => link.category === category).slice(0, 2);
+  const fallback = links.slice(0, 2);
+  return (sameCategory.length >= 2 ? sameCategory : fallback).map(({ title, url }) => ({ title, url }));
+}
+
 function words(text) {
   return text.trim().split(/\s+/).filter(Boolean).length;
 }
@@ -109,6 +131,11 @@ function readingTime(content) {
 }
 
 function buildContent(topic) {
+  const internalLinks = getInternalLinks(topic.category);
+  const primaryLink = internalLinks[0] || { title: 'Latest Articles', url: '/latest' };
+  const secondaryLink = internalLinks[1] || { title: 'CurioSpark Categories', url: '/categories' };
+  const categoryLink = `/category/${topic.category}`;
+
   return [
     `You probably know the feeling: one small detail grabs your attention, while a more important fact disappears almost instantly. ${topic.title.replace(/\?$/, '')} because ${topic.angle}. That tiny pattern explains more of daily life than it seems to at first.`,
     '',
@@ -130,7 +157,7 @@ function buildContent(topic) {
     '',
     'Imagine reading two explanations of the same idea. One gives a flat definition. The other starts with a moment you recognize from daily life, then explains what is happening underneath. The second version usually sticks because it gives your memory a place to attach the idea.',
     '',
-    'That is also why good educational content often feels almost conversational. It does not throw facts at you. It builds a small bridge between what you already know and what you are about to learn.',
+    `That is also why good educational content often feels almost conversational. It does not throw facts at you. It builds a small bridge between what you already know and what you are about to learn. For a related example, read [${primaryLink.title}](${primaryLink.url}).`,
     '',
     '## What people often misunderstand',
     '',
@@ -147,7 +174,17 @@ function buildContent(topic) {
     '- Keep the explanation focused on one clear takeaway.',
     '- Add a short real-world scene so the reader can picture it.',
     '',
-    'Small attention patterns shape what people remember, share, and act on. A useful idea can disappear if it is presented poorly, while a modest fact can travel far when it is simple, surprising, and easy to retell.',
+    `Small attention patterns shape what people remember, share, and act on. A useful idea can disappear if it is presented poorly, while a modest fact can travel far when it is simple, surprising, and easy to retell. You can explore more articles in our [${topic.category} section](${categoryLink}).`,
+    '',
+    '## The practical test',
+    '',
+    'Here is a simple way to test the idea: explain it to someone in one sentence, then give one example from daily life. If the other person understands it quickly, the explanation probably has enough structure. If they look confused, the idea may need a stronger image or a clearer contrast.',
+    '',
+    'This is also a useful filter for online content. A good article should leave you with something you can repeat accurately, not only a feeling that something sounded interesting. Strong curiosity and careful explanation can work together.',
+    '',
+    `For another curiosity-driven article with a similar reading style, see [${secondaryLink.title}](${secondaryLink.url}).`,
+    '',
+    '## Final thought',
     '',
     'That does not mean we should exaggerate. The better lesson is to respect the reader. Clear writing helps good information survive. It gives curiosity a clean path instead of relying on empty hype.',
     '',

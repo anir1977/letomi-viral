@@ -99,7 +99,7 @@ export default function MarkdownContent({ content }: MarkdownContentProps) {
           <img
             src={src || ""}
             alt={alt || ""}
-            className="my-8 aspect-video w-full rounded-lg object-cover shadow-sm"
+            className="my-8 aspect-video max-h-[420px] w-full rounded-lg object-cover shadow-sm"
             loading="lazy"
             {...props}
           />
