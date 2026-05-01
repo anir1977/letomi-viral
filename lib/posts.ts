@@ -6603,8 +6603,26 @@ export function getAllPosts(): Post[] {
 
 function isApprovalReadyPost(post: Post): boolean {
   const content = post.content || "";
+  const wordCount = content.trim().split(/\s+/).filter(Boolean).length;
   const repeatedConstraintPhrase = (content.match(/A stronger strategy starts with constraints/g) || []).length;
+  const blockedSlugs = [
+    "basketball",
+    "bulls",
+    "bucks",
+    "magic",
+    "navy",
+    "ole-miss",
+    "thomas-massie",
+    "social-security",
+    "jamaica",
+    "falcon-9",
+    "officials-issue",
+    "homeowners",
+  ];
 
+  if (wordCount < 500) return false;
+  if (!categoryDefinitions.some((category) => category.slug === post.category)) return false;
+  if (blockedSlugs.some((blocked) => post.slug.includes(blocked))) return false;
   if (post.imageAlt?.includes("AI-generated visual")) return false;
   if (content.includes("Does this also help SEO performance?")) return false;
   if (content.includes("From an SEO perspective")) return false;
