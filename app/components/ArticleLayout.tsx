@@ -8,13 +8,10 @@ import TableOfContents from "@/app/components/TableOfContents";
 import MarkdownContent from "@/app/components/MarkdownContent";
 import ReadingProgress from "@/app/components/ReadingProgress";
 import StickyShareButtons from "@/app/components/StickyShareButtons";
-import InlineNewsletter from "@/app/components/InlineNewsletter";
 import DidYouKnowBox from "@/app/components/DidYouKnowBox";
 import SurprisingFact from "@/app/components/SurprisingFact";
 import ShareableQuote from "@/app/components/ShareableQuote";
-import ArticlePoll from "@/app/components/ArticlePoll";
 import SharePrompt from "@/app/components/SharePrompt";
-import ArticleReactions from "@/app/components/ArticleReactions";
 import SourcesSection from "@/app/components/SourcesSection";
 import AdSlot from "@/app/components/AdSlot";
 import InternalLinks from "@/app/components/InternalLinks";
@@ -91,7 +88,6 @@ export default function ArticleLayout({
   didYouKnow,
   surprisingFact,
   shareableQuote,
-  pollQuestion,
   sources,
   lastUpdated,
   faqs,
@@ -134,7 +130,6 @@ export default function ArticleLayout({
   const resolvedDidYouKnow = resolvedPost?.didYouKnow || didYouKnow;
   const resolvedSurprisingFact = resolvedPost?.surprisingFact || surprisingFact;
   const resolvedShareableQuote = resolvedPost?.shareableQuote || shareableQuote;
-  const resolvedPollQuestion = resolvedPost?.pollQuestion || pollQuestion;
   const resolvedSources = resolvedPost?.sources || sources;
   const resolvedLastUpdated = resolvedPost?.lastUpdated || lastUpdated || resolvedPost?.date || resolvedDateLabel;
   const resolvedFaqs = resolvedPost?.faqs || faqs;
@@ -329,12 +324,7 @@ export default function ArticleLayout({
 
             {resolvedSurprisingFact && <SurprisingFact fact={resolvedSurprisingFact} />}
             {resolvedShareableQuote && <ShareableQuote quote={resolvedShareableQuote} />}
-            {resolvedPollQuestion && <ArticlePoll question={resolvedPollQuestion} articleSlug={resolvedSlug} />}
-
             {!isAdFree && <AdSlot position="mid-content" className="my-8" />}
-
-            <InlineNewsletter />
-            <ArticleReactions articleSlug={resolvedSlug} />
 
             {resolvedSources && resolvedSources.length > 0 && (
               <SourcesSection sources={resolvedSources} lastUpdated={resolvedLastUpdated} />
@@ -435,24 +425,6 @@ export default function ArticleLayout({
           </section>
         )}
 
-        <div className="max-w-3xl mx-auto mt-16">
-          <div className="rounded-lg bg-slate-950 p-8 text-center text-white">
-            <h3 className="text-2xl font-bold mb-3 text-white">Enjoyed this article?</h3>
-            <p className="text-lg mb-6 text-slate-200">
-              Get more amazing facts delivered to your inbox
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-1 rounded-md px-4 py-3 text-slate-900 focus:outline-none focus:ring-4 focus:ring-white/30"
-              />
-              <button className="rounded-md bg-white px-6 py-3 font-bold text-slate-950 transition hover:bg-slate-100">
-                Subscribe
-              </button>
-            </div>
-          </div>
-        </div>
       </article>
 
       <BackToTopButton />

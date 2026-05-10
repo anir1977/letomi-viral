@@ -85,25 +85,15 @@ export default function AboutPage() {
               </div>
             </div>
 
-            <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl p-8 text-center text-white mt-12">
-              <h3 className="text-2xl font-bold mb-3">
-                Stay Curious
+            <div className="mt-12 rounded-2xl border border-purple-100 bg-purple-50 p-8 text-center dark:border-purple-500/20 dark:bg-purple-950/20">
+              <h3 className="mb-3 text-2xl font-bold text-slate-950 dark:text-white">
+                Questions or corrections?
               </h3>
-              <p className="text-lg mb-6 opacity-90">
-                Get daily doses of wonder in your inbox
+              <p className="mx-auto max-w-2xl text-lg leading-8 text-slate-600 dark:text-slate-300">
+                We welcome source suggestions, factual corrections, and topic ideas from readers.
               </p>
-              <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  className="flex-1 px-4 py-3 rounded-lg text-gray-900 focus:outline-none focus:ring-4 focus:ring-white/50"
-                />
-                <button className="bg-white text-purple-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition">
-                  Subscribe
-                </button>
-              </div>
-              <p className="text-xs mt-4 opacity-80">
-                Questions? <a className="underline" href="mailto:info@curiospark.org">info@curiospark.org</a>
+              <p className="mt-4 text-sm font-semibold text-purple-700 dark:text-purple-200">
+                <a className="underline underline-offset-4" href="mailto:info@curiospark.org">info@curiospark.org</a>
               </p>
             </div>
           </div>
