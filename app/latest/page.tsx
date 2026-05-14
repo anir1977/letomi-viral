@@ -73,7 +73,6 @@ export default function LatestPage() {
                   
                   <div className="flex items-center justify-between text-sm text-slate-500">
                     <span>{post.readingTime}</span>
-                    <span>{post.readingTime}</span>
                   </div>
                 </div>
               </Link>

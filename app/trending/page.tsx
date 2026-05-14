@@ -29,7 +29,7 @@ export default function TrendingPage() {
 
   const breadcrumbItems = [
     { label: 'Home', href: '/' },
-    { label: 'Trending', href: '/trending' },
+    { label: "Editor's Picks", href: '/trending' },
   ];
 
   return (

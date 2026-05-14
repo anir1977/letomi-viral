@@ -5,15 +5,15 @@ import PostBadge from '@/app/components/PostBadge';
 import Breadcrumb from '@/app/components/Breadcrumb';
 
 export const metadata: Metadata = {
-  title: '📚 All Facts - CurioSpark',
-  description: 'Browse CurioSpark facts and short explanations across psychology, science, history, nature, and culture.',
+  title: 'All Articles - CurioSpark',
+  description: 'Browse CurioSpark articles across psychology, science, history, nature, and technology.',
   robots: {
     index: false,
     follow: true,
   },
   openGraph: {
-    title: '📚 All Facts - Complete Collection | CurioSpark',
-    description: 'Browse our complete collection of fascinating, verified facts across science, history, nature, and culture.',
+    title: 'All Articles | CurioSpark',
+    description: 'Browse CurioSpark articles across science, psychology, history, nature, and technology.',
   },
 };
 
@@ -22,7 +22,7 @@ export default function FactsPage() {
 
   const breadcrumbItems = [
     { label: 'Home', href: '/' },
-    { label: 'All Facts', href: '/facts' },
+    { label: 'All Articles', href: '/facts' },
   ];
 
   return (
@@ -32,10 +32,10 @@ export default function FactsPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-            📚 All Facts
+            All Articles
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-            Browse our complete collection of {posts.length}+ fascinating, verified facts across science, history, nature, and culture.
+            Browse our collection of {posts.length} reviewed articles across science, history, nature, technology, and human behavior.
           </p>
         </div>
 
@@ -66,7 +66,6 @@ export default function FactsPage() {
                   </p>
                   
                   <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
-                    <span>{post.readingTime}</span>
                     <span>{post.readingTime}</span>
                   </div>
                 </div>
